@@ -23,14 +23,14 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
 # Add new user to avoid running as root
 RUN useradd -ms /bin/bash tensorflow
 USER tensorflow
-WORKDIR /home/tensorflow
+WORKDIR /home/tensorflow/
 
 # Copy this version of of the model garden into the image
-COPY --chown=tensorflow . /home/tensorflow/models/research
+COPY --chown=tensorflow . /home/tensorflow/project_nkk/fruit_tf_od_api
 
 # Compile protobuf configs
-RUN (cd /home/tensorflow/models/research/ && protoc fruit_tf_od_api/protos/*.proto --python_out=.)
-WORKDIR /home/tensorflow/models/research/
+RUN (cd /home/tensorflow/project_nkk/ && protoc fruit_tf_od_api/protos/*.proto --python_out=.)
+WORKDIR /home/tensorflow/project_nkk/
 
 RUN cp fruit_tf_od_api/packages/tf2/setup.py ./
 ENV PATH="/home/tensorflow/.local/bin:${PATH}"
