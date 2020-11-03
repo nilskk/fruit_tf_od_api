@@ -32,7 +32,7 @@ COPY --chown=tensorflow . /home/tensorflow/fruit_tf_od_api
 RUN (cd /home/tensorflow/fruit_tf_od_api/ && protoc object_detection/protos/*.proto --python_out=.)
 WORKDIR /home/tensorflow/fruit_tf_od_api/
 
-RUN cp object_detection/packages/tf2/setup.py ./
+RUN cp object_detection/packages/tf2_nightly/setup.py ./
 ENV PATH="/home/tensorflow/.local/bin:${PATH}"
 
 RUN python -m pip install -U pip
