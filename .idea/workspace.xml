@@ -18,8 +18,9 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be117548-dcea-42cd-b927-168c6f13ff27" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="be117548-dcea-42cd-b927-168c6f13ff27" name="Default Changelist" comment="Initial Commit">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +69,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -171,8 +172,16 @@
       <workItem from="1604314161740" duration="4989000" />
       <workItem from="1604322450128" duration="9022000" />
       <workItem from="1604331661542" duration="1263000" />
-      <workItem from="1604402716913" duration="2342000" />
+      <workItem from="1604402716913" duration="3072000" />
     </task>
+    <task id="LOCAL-00001" summary="Initial Commit">
+      <created>1604405642980</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1604405642980</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,6 +203,8 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/../.." />
     </ignored-roots>
+    <MESSAGE value="Initial Commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial Commit" />
   </component>
   <component name="WindowStateProjectService">
     <state x="711" y="344" key="#Notifications" timestamp="1604403671300">
@@ -216,19 +227,23 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="718" y="390" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1601992308741" />
+    <state x="184" y="86" key="DiffContextDialog" timestamp="1604405664886">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="184" y="86" key="DiffContextDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604405664886" />
     <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1604331484631">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604331484631" />
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1604071030001" />
-    <state x="821" y="418" key="Github.ShareDialog" timestamp="1604331885566">
+    <state x="821" y="418" key="Github.ShareDialog" timestamp="1604405472949">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="821" y="418" key="Github.ShareDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604331885566" />
-    <state x="960" y="231" key="Github.UntrackedFilesDialog" timestamp="1604332033685">
+    <state x="821" y="418" key="Github.ShareDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604405472949" />
+    <state x="960" y="231" key="Github.UntrackedFilesDialog" timestamp="1604405503974">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="960" y="231" key="Github.UntrackedFilesDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604332033685" />
+    <state x="960" y="231" key="Github.UntrackedFilesDialog/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604405503974" />
     <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1604079993823">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -265,11 +280,15 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1877" height="348" key="GridCell.Tab.1.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1602871657002" />
-    <state x="461" y="165" key="SettingsEditor" timestamp="1604403720112">
+    <state x="461" y="165" key="SettingsEditor" timestamp="1604405351104">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604403720112" />
+    <state x="461" y="165" key="SettingsEditor/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604405351104" />
     <state x="461" y="165" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1604070086143" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1604405670910">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1604405670910" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
