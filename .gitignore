@@ -1,3 +1,14 @@
-/_fruit_kaggle_project/
-/protos/*.py
+/object_detection/protos/*.py
+
 /.idea/
+
+/models/pretrained_models/*
+/models/exported_models/*
+/models/own_models/my_ssd_mobilenetv2_fpnlite/*
+!/models/own_models/my_ssd_mobilenetv2_fpnlite/pipeline.config
+/models/own_models/my_efficientdet_d0/*
+!/models/own_models/my_efficientdet_d0/pipeline.config
+
+/data/voc_data/*
+/data/tfrecords/*
+
