@@ -39,3 +39,8 @@ RUN python -m pip install -U pip
 RUN python -m pip install .
 
 ENV TF_CPP_MIN_LOG_LEVEL 3
+
+RUN mkdir /models/pretrained_models
+RUN mkdir /models/exported_models
+
+RUN mkdir -p /data/tfrecords
