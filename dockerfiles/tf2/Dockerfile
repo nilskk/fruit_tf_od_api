@@ -29,10 +29,10 @@ WORKDIR /home/tensorflow
 COPY --chown=tensorflow . /home/tensorflow/models/research
 
 # Compile protobuf configs
-RUN (cd /home/tensorflow/models/research/ && protoc object_detection/protos/*.proto --python_out=.)
+RUN (cd /home/tensorflow/models/research/ && protoc fruit_tf_od_api/protos/*.proto --python_out=.)
 WORKDIR /home/tensorflow/models/research/
 
-RUN cp object_detection/packages/tf2/setup.py ./
+RUN cp fruit_tf_od_api/packages/tf2/setup.py ./
 ENV PATH="/home/tensorflow/.local/bin:${PATH}"
 
 RUN python -m pip install -U pip
