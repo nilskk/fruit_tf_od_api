@@ -32,6 +32,11 @@ COPY --chown=tensorflow . /home/tensorflow/fruit_tf_od_api
 RUN (cd /home/tensorflow/fruit_tf_od_api/ && protoc object_detection/protos/*.proto --python_out=.)
 WORKDIR /home/tensorflow/fruit_tf_od_api/
 
+RUN mkdir -p models/pretrained_models
+RUN mkdir -p models/exported_models
+
+RUN mkdir -p data/tfrecords
+
 RUN cp object_detection/packages/tf2/setup.py ./
 ENV PATH="/home/tensorflow/.local/bin:${PATH}"
 
@@ -40,7 +45,3 @@ RUN python -m pip install .
 
 ENV TF_CPP_MIN_LOG_LEVEL 3
 
-RUN mkdir /models/pretrained_models
-RUN mkdir /models/exported_models
-
-RUN mkdir -p /data/tfrecords
