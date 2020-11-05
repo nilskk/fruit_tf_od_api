@@ -32,10 +32,15 @@ COPY --chown=tensorflow . /home/tensorflow/fruit_tf_od_api
 RUN (cd /home/tensorflow/fruit_tf_od_api/ && protoc object_detection/protos/*.proto --python_out=.)
 WORKDIR /home/tensorflow/fruit_tf_od_api/
 
-RUN mkdir -p models/pretrained_models
-RUN mkdir -p models/exported_models
+RUN mkdir -p models/pretrained_models/
+RUN mkdir -p models/exported_models/
 
-RUN mkdir -p data/tfrecords
+RUN (curl http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8.tar.gz \
+    | tar -xzC models/pretrained_models)
+RUN (curl http://download.tensorflow.org/models/object_detection/tf2/20200711/efficientdet_d0_coco17_tpu-32.tar.gz \
+    | tar -xzC models/pretrained_models)
+
+RUN mkdir -p data/tfrecords/
 
 RUN cp object_detection/packages/tf2_nightly/setup.py ./
 ENV PATH="/home/tensorflow/.local/bin:${PATH}"
