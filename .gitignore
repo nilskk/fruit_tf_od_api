@@ -1,4 +1,4 @@
-/object_detection/protos/*.py
+/object_detection/protos/*_pb2.py
 
 /.idea/
 
