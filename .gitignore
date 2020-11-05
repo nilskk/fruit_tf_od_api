@@ -10,5 +10,6 @@
 !/models/own_models/my_efficientdet_d0/pipeline.config
 
 /data/voc_data/*
+!/data/voc_data/.keep
 /data/tfrecords/*
 
