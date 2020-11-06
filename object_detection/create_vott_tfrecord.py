@@ -16,7 +16,7 @@
 r"""Convert VOTT dataset to TFRecord for object_detection.
 
 Example usage:
-    python create_vott_tf_record.py \
+    python create_vott_tfrecord.py \
         --data_dir=pascal_data \
         --set=train \
         --output_dir=tfrecords \
