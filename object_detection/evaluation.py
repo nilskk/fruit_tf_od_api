@@ -24,7 +24,9 @@ def evaluate(argv):
         pipeline_config_path=FLAGS.pipeline_config_path,
         model_dir=FLAGS.model_dir,
         checkpoint_dir=FLAGS.checkpoint_dir,
-        postprocess_on_cpu=True)
+        postprocess_on_cpu=True,
+        wait_interval=300,
+        timeout=600)
 
 
 if __name__ == "__main__":
