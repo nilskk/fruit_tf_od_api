@@ -6,7 +6,7 @@ from absl import flags
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_integer('train_steps', 10000, 'Number of steps to train')
 flags.DEFINE_integer('warmup_steps', 1000, 'Number of steps for warmup')
-flags.DEFINE_integer('num_classes', 1, 'Number of classes in model')
+flags.DEFINE_integer('num_classes', 14, 'Number of classes in model')
 flags.DEFINE_integer('batch_size', 4, 'Batch size for training')
 flags.DEFINE_string('label_map_path', "./data/voc_data/pascal_label_map.pbtxt", 'Path to pascal_label_map.pbtxt')
 flags.DEFINE_string('train_tfrecords_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
