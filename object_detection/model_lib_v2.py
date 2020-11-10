@@ -21,6 +21,7 @@ from __future__ import print_function
 import copy
 import os
 import time
+import csv
 
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2
@@ -848,6 +849,7 @@ def eager_eval_loop(
         eval_metrics[loss_key] = loss_metrics[loss_key].result()
 
     eval_metrics = {str(k): v for k, v in eval_metrics.items()}
+
     tf.logging.info('Eval metrics at step %d', global_step)
     for k in eval_metrics:
         tf.compat.v2.summary.scalar(k, eval_metrics[k], step=global_step)
@@ -970,11 +972,20 @@ def eval_continuously(
         for eval_name, eval_input in eval_inputs:
             summary_writer = tf.compat.v2.summary.create_file_writer(
                 os.path.join(model_dir, 'eval', eval_name))
+            with summary_writer.as_default():
+                eval_metrics = eager_eval_loop(
+                    detection_model,
+                    configs,
+                    eval_input,
+                    use_tpu=use_tpu,
+                    postprocess_on_cpu=postprocess_on_cpu,
+                    global_step=global_step)
 
-            eval_metrics = eager_eval_loop(
-                detection_model,
-                configs,
-                eval_input,
-                use_tpu=use_tpu,
-                postprocess_on_cpu=postprocess_on_cpu,
-                global_step=global_step)
+            csv_path = os.path.join(model_dir, "result.csv")
+            with open(csv_path, 'w') as f:
+                writer = csv.writer(f)
+                for metric in eval_metrics:
+                    writer.writerow([metric, eval_metrics[metric]])
+
+
+
