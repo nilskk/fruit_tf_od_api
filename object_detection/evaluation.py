@@ -25,8 +25,8 @@ def evaluate(argv):
         model_dir=FLAGS.model_dir,
         checkpoint_dir=FLAGS.checkpoint_dir,
         postprocess_on_cpu=True,
-        wait_interval=300,
-        timeout=600)
+        wait_interval=1,
+        timeout=3600)
 
 
 if __name__ == "__main__":
