@@ -9,6 +9,7 @@ flags.DEFINE_integer('cosine_steps', 25000, 'Number of steps for cosine decay')
 flags.DEFINE_integer('warmup_steps', 1000, 'Number of steps for warmup')
 flags.DEFINE_integer('num_classes', 14, 'Number of classes in model')
 flags.DEFINE_integer('batch_size', 16, 'Batch size for training')
+flags.DEFINE_float('learning_rate', 0.01, 'Base learning rate for cosine decay')
 flags.DEFINE_string('label_map_path', "./data/voc_data/pascal_label_map.pbtxt", 'Path to pascal_label_map.pbtxt')
 flags.DEFINE_string('train_tfrecords_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
 flags.DEFINE_string('val_tfrecords_path', "./data/tfrecords/vott_val.tfrecord", 'Path to val tfrecord file')
@@ -29,6 +30,7 @@ def change_pipeline(argv):
     pipeline.train_config.batch_size = FLAGS.batch_size
     pipeline.train_config.optimizer.momentum_optimizer.learning_rate.cosine_decay_learning_rate.total_steps = FLAGS.cosine_steps
     pipeline.train_config.optimizer.momentum_optimizer.learning_rate.cosine_decay_learning_rate.warmup_steps = FLAGS.warmup_steps
+    pipeline.train_config.optimizer.momentum_optimizer.learning_rate.cosine_decay_learning_rate.learning_rate_base = FLAGS.learning_rate
 
     pipeline.train_input_reader.tf_record_input_reader.input_path[0] = FLAGS.train_tfrecords_path
     pipeline.train_input_reader.label_map_path = FLAGS.label_map_path
