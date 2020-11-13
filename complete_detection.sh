@@ -5,9 +5,10 @@ vott_output_dir="./data/tfrecords"
 vott_name="Mango"
 
 learning_rate=0.02
-batch_size=16
+batch_size=8
 num_classes=14
 train_steps=25000
+cosine_steps=25000
 warmup_steps=1000
 
 
@@ -21,7 +22,7 @@ python3 object_detection/create_vott_tfrecord.py --data_dir=$vott_data_dir \
                                                 --vott_sourceconnection_name=$vott_name \
                                                 --set=val
 
-model_path="./models/own_models/my_ssd_mobilenetv2_fpnlite"
+model_path="./models/own_models/my_efficientdet_d0"
 
 python3 object_detection/change_pipeline_config.py --pipeline_config_path="${model_path}/pipeline.config" \
                                                   --label_map_path="${vott_data_dir}/pascal_label_map.pbtxt" \
@@ -31,6 +32,7 @@ python3 object_detection/change_pipeline_config.py --pipeline_config_path="${mod
                                                   --batch_size=$batch_size \
                                                   --learning_rate=$learning_rate \
                                                   --train_steps=$train_steps \
+                                                  --cosine_steps=$cosine_steps \
                                                   --warmup_steps=$warmup_steps
 
 python3 object_detection/training.py --pipeline_config_path="${model_path}/pipeline.config" \
