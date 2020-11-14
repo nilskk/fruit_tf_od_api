@@ -12,4 +12,5 @@
 /data/voc_data/*
 !/data/voc_data/.keep
 /data/tfrecords/*
+/data/test_data/*
 
