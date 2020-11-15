@@ -982,10 +982,17 @@ def eval_continuously(
                     global_step=global_step)
 
             csv_path = os.path.join(model_dir, "result.csv")
-            with open(csv_path, 'w') as f:
-                writer = csv.writer(f)
-                for metric in eval_metrics:
-                    writer.writerow([metric, eval_metrics[metric]])
+            file_exists = os.path.isfile(csv_path)
+            with open(csv_path, 'a') as f:
+                header = list("global_step")
+                header.append(eval_metrics.keys())
+                writer = csv.DictWriter(f, fieldnames=header)
+
+                if not file_exists:
+                    writer.writeheader()
+
+                csv_dict = {'global_step': global_step, **eval_metrics}
+                writer.writerow(csv_dict)
 
 
 
