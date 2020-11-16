@@ -846,7 +846,7 @@ def eager_eval_loop(
     for evaluator in evaluators:
         eval_metrics.update(evaluator.evaluate())
     for loss_key in loss_metrics:
-        eval_metrics[loss_key] = loss_metrics[loss_key].result()
+        eval_metrics[loss_key] = loss_metrics[loss_key].result().numpy()
 
     eval_metrics = {str(k): v for k, v in eval_metrics.items()}
 
@@ -984,14 +984,12 @@ def eval_continuously(
             csv_path = os.path.join(model_dir, "result.csv")
             file_exists = os.path.isfile(csv_path)
             with open(csv_path, 'a') as f:
-                header = list("global_step")
-                header.append(eval_metrics.keys())
-                writer = csv.DictWriter(f, fieldnames=header)
+                csv_dict = {'global_step': global_step.numpy(), **eval_metrics}
+                writer = csv.DictWriter(f, fieldnames=csv_dict)
 
                 if not file_exists:
                     writer.writeheader()
 
-                csv_dict = {'global_step': global_step, **eval_metrics}
                 writer.writerow(csv_dict)
 
 
