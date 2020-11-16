@@ -14,3 +14,7 @@
 /data/tfrecords/*
 /data/test_data/*
 
+/build/
+/dist/
+/object_detection.egg-info/
+
