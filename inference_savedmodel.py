@@ -71,7 +71,8 @@ if __name__=="__main__":
             classes=detections['detection_classes'],
             scores=detections['detection_scores'],
             category_index=categories,
-            use_normalized_coordinates=True
+            use_normalized_coordinates=True,
+            min_score_thresh=0.9
         )
 
         ax = fig.add_subplot(gs[i])
