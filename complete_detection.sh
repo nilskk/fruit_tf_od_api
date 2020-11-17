@@ -4,12 +4,16 @@ vott_data_dir="./data/voc_data"
 vott_output_dir="./data/tfrecords"
 vott_name="Mango"
 
-learning_rate=0.02
-batch_size=8
+learning_rate=0.06
+batch_size=16
 num_classes=14
 train_steps=25000
 cosine_steps=25000
 warmup_steps=1000
+
+model_dir="my_ssd_mobilenetv2_fpnlite"
+model_path="./models/own_models/${model_dir}"
+exported_model_path="./models/exported_models/${model_dir}"
 
 
 python3 object_detection/create_vott_tfrecord.py --data_dir=$vott_data_dir \
@@ -22,7 +26,6 @@ python3 object_detection/create_vott_tfrecord.py --data_dir=$vott_data_dir \
                                                 --vott_sourceconnection_name=$vott_name \
                                                 --set=val
 
-model_path="./models/own_models/my_efficientdet_d0"
 
 python3 object_detection/change_pipeline_config.py --pipeline_config_path="${model_path}/pipeline.config" \
                                                   --label_map_path="${vott_data_dir}/pascal_label_map.pbtxt" \
@@ -55,5 +58,11 @@ function onexit(){
 wait
 
 echo "Berechnung fertig für lr=${learning_rate}"
+
+python3 object_detection/exporter_main_v2.py --pipeline_config_path="${model_path}/pipeline.config" \
+                                            --trained_checkpoint_dir="${model_path}/checkpoints_lr=${learning_rate}" \
+                                            --output_directory="${exported_model_path}_lr=${learning_rate}"
+
+echo "Model exportiert für lr=${learning_rate}"
 
 
