@@ -1,6 +1,7 @@
 import time
 import os
 import math
+import random
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 import tensorflow as tf
@@ -26,17 +27,17 @@ if __name__=="__main__":
     categories = label_map_util.create_category_index_from_labelmap(LABELMAP_PATH, use_display_name=True)
 
     image_dir="./data/test_data"
-    num_images = len(os.listdir(image_dir))
+    num_images = 9
 
     time_diffs = []
 
-    rows = 4
+    rows = 3
     cols = int(math.ceil(num_images/rows))
     gs = plt.GridSpec(rows, cols)
     fig = plt.figure()
     fig.tight_layout()
 
-    for i, image_name in enumerate(os.listdir(image_dir)):
+    for i, image_name in enumerate(random.sample(os.listdir(image_dir), k=num_images)):
 
         image_path = os.path.join(image_dir, image_name)
         image_np = load_image_as_nparray(image_path)
