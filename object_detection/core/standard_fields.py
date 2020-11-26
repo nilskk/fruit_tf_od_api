@@ -47,6 +47,10 @@ class InputDataFields(object):
     groundtruth_boxes: coordinates of the ground truth boxes in the image.
     groundtruth_classes: box-level class labels.
     groundtruth_track_ids: box-level track ID labels.
+    groundtruth_temporal_offset: box-level temporal offsets, i.e.,
+      movement of the box center in adjacent frames.
+    groundtruth_track_match_flags: box-level flags indicating if objects
+      exist in the previous frame.
     groundtruth_confidences: box-level class confidences. The shape should be
       the same as the shape of groundtruth_classes.
     groundtruth_label_types: box-level label types (e.g. explicit negative).
@@ -66,6 +70,9 @@ class InputDataFields(object):
     groundtruth_keypoint_visibilities: ground truth keypoint visibilities.
     groundtruth_keypoint_weights: groundtruth weight factor for keypoints.
     groundtruth_label_weights: groundtruth label weights.
+    groundtruth_verified_negative_classes: groundtruth verified negative classes
+    groundtruth_not_exhaustive_classes: groundtruth not-exhaustively labeled
+      classes.
     groundtruth_weights: groundtruth weight factor for bounding boxes.
     groundtruth_dp_num_points: The number of DensePose sampled points for each
       instance.
@@ -99,6 +106,8 @@ class InputDataFields(object):
   groundtruth_boxes = 'groundtruth_boxes'
   groundtruth_classes = 'groundtruth_classes'
   groundtruth_track_ids = 'groundtruth_track_ids'
+  groundtruth_temporal_offset = 'groundtruth_temporal_offset'
+  groundtruth_track_match_flags = 'groundtruth_track_match_flags'
   groundtruth_confidences = 'groundtruth_confidences'
   groundtruth_label_types = 'groundtruth_label_types'
   groundtruth_is_crowd = 'groundtruth_is_crowd'
@@ -114,6 +123,8 @@ class InputDataFields(object):
   groundtruth_keypoint_visibilities = 'groundtruth_keypoint_visibilities'
   groundtruth_keypoint_weights = 'groundtruth_keypoint_weights'
   groundtruth_label_weights = 'groundtruth_label_weights'
+  groundtruth_verified_neg_classes = 'groundtruth_verified_neg_classes'
+  groundtruth_not_exhaustive_classes = 'groundtruth_not_exhaustive_classes'
   groundtruth_weights = 'groundtruth_weights'
   groundtruth_dp_num_points = 'groundtruth_dp_num_points'
   groundtruth_dp_part_ids = 'groundtruth_dp_part_ids'
@@ -170,6 +181,7 @@ class DetectionResultFields(object):
   detection_keypoints = 'detection_keypoints'
   detection_keypoint_scores = 'detection_keypoint_scores'
   detection_embeddings = 'detection_embeddings'
+  detection_offsets = 'detection_temporal_offsets'
   num_detections = 'num_detections'
   raw_detection_boxes = 'raw_detection_boxes'
   raw_detection_scores = 'raw_detection_scores'
@@ -194,6 +206,8 @@ class BoxListFields(object):
     densepose_part_ids: DensePose part ids per bounding box.
     densepose_surface_coords: DensePose surface coordinates per bounding box.
     is_crowd: is_crowd annotation per bounding box.
+    temporal_offsets: temporal center offsets per bounding box.
+    track_match_flags: match flags per bounding box.
   """
   boxes = 'boxes'
   classes = 'classes'
@@ -212,6 +226,8 @@ class BoxListFields(object):
   is_crowd = 'is_crowd'
   group_of = 'group_of'
   track_ids = 'track_ids'
+  temporal_offsets = 'temporal_offsets'
+  track_match_flags = 'track_match_flags'
 
 
 class PredictionFields(object):

@@ -35,11 +35,14 @@ from object_detection.utils import tf_version
 
 
 @unittest.skipIf(tf_version.is_tf1(), 'Skipping TF2.X only test.')
-class CenterNetMetaArchPredictionHeadTest(test_case.TestCase):
+class CenterNetMetaArchPredictionHeadTest(
+    test_case.TestCase, parameterized.TestCase):
   """Test CenterNet meta architecture prediction head."""
 
-  def test_prediction_head(self):
-    head = cnma.make_prediction_net(num_out_channels=7)
+  @parameterized.parameters([True, False])
+  def test_prediction_head(self, use_depthwise):
+    head = cnma.make_prediction_net(num_out_channels=7,
+                                    use_depthwise=use_depthwise)
     output = head(np.zeros((4, 128, 128, 8)))
 
     self.assertEqual((4, 128, 128, 7), output.shape)
@@ -481,6 +484,70 @@ class CenterNetMetaArchHelpersTest(test_case.TestCase, parameterized.TestCase):
     np.testing.assert_array_equal([1, 0, 0, 2], x_inds[1])
     np.testing.assert_array_equal([0, 0, 1, 1], channel_inds[1])
 
+  def test_top_k_feature_map_locations_k1(self):
+    feature_map_np = np.zeros((2, 3, 3, 2), dtype=np.float32)
+    feature_map_np[0, 2, 0, 0] = 1.0  # Selected.
+    feature_map_np[0, 2, 1, 0] = 0.9
+    feature_map_np[0, 0, 1, 0] = 0.7
+    feature_map_np[0, 2, 2, 1] = 0.5
+    feature_map_np[0, 0, 0, 1] = 0.3
+    feature_map_np[1, 2, 1, 0] = 0.7
+    feature_map_np[1, 1, 0, 0] = 0.4
+    feature_map_np[1, 1, 2, 0] = 0.3
+    feature_map_np[1, 1, 0, 1] = 0.8  # Selected.
+    feature_map_np[1, 1, 2, 1] = 0.3
+
+    def graph_fn():
+      feature_map = tf.constant(feature_map_np)
+      scores, y_inds, x_inds, channel_inds = (
+          cnma.top_k_feature_map_locations(
+              feature_map, max_pool_kernel_size=3, k=1, per_channel=False))
+      return scores, y_inds, x_inds, channel_inds
+
+    scores, y_inds, x_inds, channel_inds = self.execute(graph_fn, [])
+
+    np.testing.assert_allclose([1.0], scores[0])
+    np.testing.assert_array_equal([2], y_inds[0])
+    np.testing.assert_array_equal([0], x_inds[0])
+    np.testing.assert_array_equal([0], channel_inds[0])
+
+    np.testing.assert_allclose([0.8], scores[1])
+    np.testing.assert_array_equal([1], y_inds[1])
+    np.testing.assert_array_equal([0], x_inds[1])
+    np.testing.assert_array_equal([1], channel_inds[1])
+
+  def test_top_k_feature_map_locations_k1_per_channel(self):
+    feature_map_np = np.zeros((2, 3, 3, 2), dtype=np.float32)
+    feature_map_np[0, 2, 0, 0] = 1.0  # Selected.
+    feature_map_np[0, 2, 1, 0] = 0.9
+    feature_map_np[0, 0, 1, 0] = 0.7
+    feature_map_np[0, 2, 2, 1] = 0.5  # Selected.
+    feature_map_np[0, 0, 0, 1] = 0.3
+    feature_map_np[1, 2, 1, 0] = 0.7  # Selected.
+    feature_map_np[1, 1, 0, 0] = 0.4
+    feature_map_np[1, 1, 2, 0] = 0.3
+    feature_map_np[1, 1, 0, 1] = 0.8  # Selected.
+    feature_map_np[1, 1, 2, 1] = 0.3
+
+    def graph_fn():
+      feature_map = tf.constant(feature_map_np)
+      scores, y_inds, x_inds, channel_inds = (
+          cnma.top_k_feature_map_locations(
+              feature_map, max_pool_kernel_size=3, k=1, per_channel=True))
+      return scores, y_inds, x_inds, channel_inds
+
+    scores, y_inds, x_inds, channel_inds = self.execute(graph_fn, [])
+
+    np.testing.assert_allclose([1.0, 0.5], scores[0])
+    np.testing.assert_array_equal([2, 2], y_inds[0])
+    np.testing.assert_array_equal([0, 2], x_inds[0])
+    np.testing.assert_array_equal([0, 1], channel_inds[0])
+
+    np.testing.assert_allclose([0.7, 0.8], scores[1])
+    np.testing.assert_array_equal([2, 1], y_inds[1])
+    np.testing.assert_array_equal([1, 0], x_inds[1])
+    np.testing.assert_array_equal([0, 1], channel_inds[1])
+
   def test_box_prediction(self):
 
     class_pred = np.zeros((3, 128, 128, 5), dtype=np.float32)
@@ -546,6 +613,53 @@ class CenterNetMetaArchHelpersTest(test_case.TestCase, parameterized.TestCase):
     np.testing.assert_allclose(scores[0], [.7, .55])
     np.testing.assert_allclose(scores[1][:1], [.9])
     np.testing.assert_allclose(scores[2], [1., .8])
+
+  def test_offset_prediction(self):
+
+    class_pred = np.zeros((3, 128, 128, 5), dtype=np.float32)
+    offset_pred = np.zeros((3, 128, 128, 2), dtype=np.float32)
+
+    # Sample 1, 2 boxes
+    class_pred[0, 10, 20] = [0.3, .7, 0.0, 0.0, 0.0]
+    offset_pred[0, 10, 20] = [1, 2]
+
+    class_pred[0, 50, 60] = [0.55, 0.0, 0.0, 0.0, 0.45]
+    offset_pred[0, 50, 60] = [0, 0]
+
+    # Sample 2, 2 boxes (at same location)
+    class_pred[1, 100, 100] = [0.0, 0.1, 0.9, 0.0, 0.0]
+    offset_pred[1, 100, 100] = [1, 3]
+
+    # Sample 3, 3 boxes
+    class_pred[2, 60, 90] = [0.0, 0.0, 0.0, 0.2, 0.8]
+    offset_pred[2, 60, 90] = [0, 0]
+
+    class_pred[2, 65, 95] = [0.0, 0.7, 0.3, 0.0, 0.0]
+    offset_pred[2, 65, 95] = [1, 2]
+
+    class_pred[2, 75, 85] = [1.0, 0.0, 0.0, 0.0, 0.0]
+    offset_pred[2, 75, 85] = [5, 2]
+
+    def graph_fn():
+      class_pred_tensor = tf.constant(class_pred)
+      offset_pred_tensor = tf.constant(offset_pred)
+
+      _, y_indices, x_indices, _ = (
+          cnma.top_k_feature_map_locations(
+              class_pred_tensor, max_pool_kernel_size=3, k=2))
+
+      offsets = cnma.prediction_tensors_to_temporal_offsets(
+          y_indices, x_indices, offset_pred_tensor)
+      return offsets
+
+    offsets = self.execute(graph_fn, [])
+
+    np.testing.assert_allclose(
+        [[1, 2], [0, 0]], offsets[0])
+    np.testing.assert_allclose(
+        [[1, 3], [1, 3]], offsets[1])
+    np.testing.assert_allclose(
+        [[5, 2], [0, 0]], offsets[2])
 
   def test_keypoint_candidate_prediction(self):
     keypoint_heatmap_np = np.zeros((2, 3, 3, 2), dtype=np.float32)
@@ -1156,7 +1270,14 @@ def get_fake_track_params():
       task_loss_weight=1.0)
 
 
-def build_center_net_meta_arch(build_resnet=False):
+def get_fake_temporal_offset_params():
+  """Returns the fake temporal offset parameter namedtuple."""
+  return cnma.TemporalOffsetParams(
+      localization_loss=losses.WeightedSmoothL1LocalizationLoss(),
+      task_loss_weight=1.0)
+
+
+def build_center_net_meta_arch(build_resnet=False, num_classes=_NUM_CLASSES):
   """Builds the CenterNet meta architecture."""
   if build_resnet:
     feature_extractor = (
@@ -1174,18 +1295,31 @@ def build_center_net_meta_arch(build_resnet=False):
       min_dimension=128,
       max_dimension=128,
       pad_to_max_dimesnion=True)
-  return cnma.CenterNetMetaArch(
-      is_training=True,
-      add_summaries=False,
-      num_classes=_NUM_CLASSES,
-      feature_extractor=feature_extractor,
-      image_resizer_fn=image_resizer_fn,
-      object_center_params=get_fake_center_params(),
-      object_detection_params=get_fake_od_params(),
-      keypoint_params_dict={_TASK_NAME: get_fake_kp_params()},
-      mask_params=get_fake_mask_params(),
-      densepose_params=get_fake_densepose_params(),
-      track_params=get_fake_track_params())
+
+  if num_classes == 1:
+    return cnma.CenterNetMetaArch(
+        is_training=True,
+        add_summaries=False,
+        num_classes=num_classes,
+        feature_extractor=feature_extractor,
+        image_resizer_fn=image_resizer_fn,
+        object_center_params=get_fake_center_params(),
+        object_detection_params=get_fake_od_params(),
+        keypoint_params_dict={_TASK_NAME: get_fake_kp_params()})
+  else:
+    return cnma.CenterNetMetaArch(
+        is_training=True,
+        add_summaries=False,
+        num_classes=num_classes,
+        feature_extractor=feature_extractor,
+        image_resizer_fn=image_resizer_fn,
+        object_center_params=get_fake_center_params(),
+        object_detection_params=get_fake_od_params(),
+        keypoint_params_dict={_TASK_NAME: get_fake_kp_params()},
+        mask_params=get_fake_mask_params(),
+        densepose_params=get_fake_densepose_params(),
+        track_params=get_fake_track_params(),
+        temporal_offset_params=get_fake_temporal_offset_params())
 
 
 def _logit(p):
@@ -1284,6 +1418,11 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
         fake_feature_map)
     self.assertEqual((4, 128, 128, _REID_EMBED_SIZE), output.shape)
 
+    # "temporal offset" head:
+    output = model._prediction_head_dict[cnma.TEMPORAL_OFFSET][-1](
+        fake_feature_map)
+    self.assertEqual((4, 128, 128, 2), output.shape)
+
   def test_initialize_target_assigners(self):
     model = build_center_net_meta_arch()
     assigner_dict = model._initialize_target_assigners(
@@ -1315,6 +1454,10 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
     self.assertIsInstance(assigner_dict[cnma.TRACK_TASK],
                           cn_assigner.CenterNetTrackTargetAssigner)
 
+    # Temporal Offset target assigner:
+    self.assertIsInstance(assigner_dict[cnma.TEMPORALOFFSET_TASK],
+                          cn_assigner.CenterNetTemporalOffsetTargetAssigner)
+
   def test_predict(self):
     """Test the predict function."""
 
@@ -1341,6 +1484,8 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
                      (2, 32, 32, 2 * _DENSEPOSE_NUM_PARTS))
     self.assertEqual(prediction_dict[cnma.TRACK_REID][0].shape,
                      (2, 32, 32, _REID_EMBED_SIZE))
+    self.assertEqual(prediction_dict[cnma.TEMPORAL_OFFSET][0].shape,
+                     (2, 32, 32, 2))
 
   def test_loss(self):
     """Test the loss function."""
@@ -1361,7 +1506,11 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
         groundtruth_dp_surface_coords_list=groundtruth_dict[
             fields.BoxListFields.densepose_surface_coords],
         groundtruth_track_ids_list=groundtruth_dict[
-            fields.BoxListFields.track_ids])
+            fields.BoxListFields.track_ids],
+        groundtruth_track_match_flags_list=groundtruth_dict[
+            fields.BoxListFields.track_match_flags],
+        groundtruth_temporal_offsets_list=groundtruth_dict[
+            fields.BoxListFields.temporal_offsets])
 
     kernel_initializer = tf.constant_initializer(
         [[1, 1, 0], [-1000000, -1000000, 1000000]])
@@ -1413,6 +1562,9 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
     self.assertGreater(
         0.01, loss_dict['%s/%s' % (cnma.LOSS_KEY_PREFIX,
                                    cnma.TRACK_REID)])
+    self.assertGreater(
+        0.01, loss_dict['%s/%s' % (cnma.LOSS_KEY_PREFIX,
+                                   cnma.TEMPORAL_OFFSET)])
 
   @parameterized.parameters(
       {'target_class_id': 1},
@@ -1431,7 +1583,7 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
     keypoint_offsets = np.zeros((1, 32, 32, 2), dtype=np.float32)
     keypoint_regression = np.random.randn(1, 32, 32, num_keypoints * 2)
 
-    class_probs = np.zeros(10)
+    class_probs = np.ones(10) * _logit(0.25)
     class_probs[target_class_id] = _logit(0.75)
     class_center[0, 16, 16] = class_probs
     height_width[0, 16, 16] = [5, 10]
@@ -1463,6 +1615,9 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
                                     dtype=np.float32)
     track_reid_embedding[0, 16, 16, :] = np.ones(embedding_size)
 
+    temporal_offsets = np.zeros((1, 32, 32, 2), dtype=np.float32)
+    temporal_offsets[..., 1] = 1
+
     class_center = tf.constant(class_center)
     height_width = tf.constant(height_width)
     offset = tf.constant(offset)
@@ -1473,6 +1628,7 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
     dp_part_heatmap = tf.constant(dp_part_heatmap, dtype=tf.float32)
     dp_surf_coords = tf.constant(dp_surf_coords, dtype=tf.float32)
     track_reid_embedding = tf.constant(track_reid_embedding, dtype=tf.float32)
+    temporal_offsets = tf.constant(temporal_offsets, dtype=tf.float32)
 
     prediction_dict = {
         cnma.OBJECT_CENTER: [class_center],
@@ -1487,7 +1643,8 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
         cnma.SEGMENTATION_HEATMAP: [segmentation_heatmap],
         cnma.DENSEPOSE_HEATMAP: [dp_part_heatmap],
         cnma.DENSEPOSE_REGRESSION: [dp_surf_coords],
-        cnma.TRACK_REID: [track_reid_embedding]
+        cnma.TRACK_REID: [track_reid_embedding],
+        cnma.TEMPORAL_OFFSET: [temporal_offsets],
     }
 
     def graph_fn():
@@ -1501,6 +1658,11 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
                         np.array([55, 46, 75, 86]) / 128.0)
     self.assertAllClose(detections['detection_scores'][0],
                         [.75, .5, .5, .5, .5])
+    expected_multiclass_scores = [.25] * 10
+    expected_multiclass_scores[target_class_id] = .75
+    self.assertAllClose(expected_multiclass_scores,
+                        detections['detection_multiclass_scores'][0][0])
+
     # The output embedding extracted at the object center will be a 3-D array of
     # shape [batch, num_boxes, embedding_size]. The valid predicted embedding
     # will be the first embedding in the first batch. It is a 1-D array of
@@ -1519,6 +1681,8 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
                         detections['detection_masks'].shape)
     self.assertAllEqual([1, max_detection, embedding_size],
                         detections['detection_embeddings'].shape)
+    self.assertAllEqual([1, max_detection, 2],
+                        detections['detection_temporal_offsets'].shape)
 
     # Masks should be empty for everything but the first detection.
     self.assertAllEqual(
@@ -1561,6 +1725,72 @@ class CenterNetMetaArchTest(test_case.TestCase, parameterized.TestCase):
       np.testing.assert_allclose(
           detections['detection_surface_coords'][0, 0, :, :],
           np.zeros_like(detections['detection_surface_coords'][0, 0, :, :]))
+
+  def test_postprocess_simple(self):
+    """Test the postprocess function."""
+    model = build_center_net_meta_arch(num_classes=1)
+    max_detection = model._center_params.max_box_predictions
+    num_keypoints = len(model._kp_params_dict[_TASK_NAME].keypoint_indices)
+
+    class_center = np.zeros((1, 32, 32, 1), dtype=np.float32)
+    height_width = np.zeros((1, 32, 32, 2), dtype=np.float32)
+    offset = np.zeros((1, 32, 32, 2), dtype=np.float32)
+    keypoint_heatmaps = np.zeros((1, 32, 32, num_keypoints), dtype=np.float32)
+    keypoint_offsets = np.zeros((1, 32, 32, 2), dtype=np.float32)
+    keypoint_regression = np.random.randn(1, 32, 32, num_keypoints * 2)
+
+    class_probs = np.zeros(1)
+    class_probs[0] = _logit(0.75)
+    class_center[0, 16, 16] = class_probs
+    height_width[0, 16, 16] = [5, 10]
+    offset[0, 16, 16] = [.25, .5]
+    keypoint_regression[0, 16, 16] = [
+        -1., -1.,
+        -1., 1.,
+        1., -1.,
+        1., 1.]
+    keypoint_heatmaps[0, 14, 14, 0] = _logit(0.9)
+    keypoint_heatmaps[0, 14, 18, 1] = _logit(0.9)
+    keypoint_heatmaps[0, 18, 14, 2] = _logit(0.9)
+    keypoint_heatmaps[0, 18, 18, 3] = _logit(0.05)  # Note the low score.
+
+    class_center = tf.constant(class_center)
+    height_width = tf.constant(height_width)
+    offset = tf.constant(offset)
+    keypoint_heatmaps = tf.constant(keypoint_heatmaps, dtype=tf.float32)
+    keypoint_offsets = tf.constant(keypoint_offsets, dtype=tf.float32)
+    keypoint_regression = tf.constant(keypoint_regression, dtype=tf.float32)
+
+    prediction_dict = {
+        cnma.OBJECT_CENTER: [class_center],
+        cnma.BOX_SCALE: [height_width],
+        cnma.BOX_OFFSET: [offset],
+        cnma.get_keypoint_name(_TASK_NAME, cnma.KEYPOINT_HEATMAP):
+            [keypoint_heatmaps],
+        cnma.get_keypoint_name(_TASK_NAME, cnma.KEYPOINT_OFFSET):
+            [keypoint_offsets],
+        cnma.get_keypoint_name(_TASK_NAME, cnma.KEYPOINT_REGRESSION):
+            [keypoint_regression],
+    }
+
+    def graph_fn():
+      detections = model.postprocess(prediction_dict,
+                                     tf.constant([[128, 128, 3]]))
+      return detections
+
+    detections = self.execute_cpu(graph_fn, [])
+
+    self.assertAllClose(detections['detection_boxes'][0, 0],
+                        np.array([55, 46, 75, 86]) / 128.0)
+    self.assertAllClose(detections['detection_scores'][0],
+                        [.75, .5, .5, .5, .5])
+
+    self.assertEqual(detections['detection_classes'][0, 0], 0)
+    self.assertEqual(detections['num_detections'], [5])
+    self.assertAllEqual([1, max_detection, num_keypoints, 2],
+                        detections['detection_keypoints'].shape)
+    self.assertAllEqual([1, max_detection, num_keypoints],
+                        detections['detection_keypoint_scores'].shape)
 
   def test_get_instance_indices(self):
     classes = tf.constant([[0, 1, 2, 0], [2, 1, 2, 2]], dtype=tf.int32)
@@ -1632,6 +1862,10 @@ def get_fake_prediction_dict(input_height, input_width, stride):
                                    _REID_EMBED_SIZE), dtype=np.float32)
   track_reid_embedding[0, 2, 4, :] = np.arange(_REID_EMBED_SIZE)
 
+  temporal_offsets = np.zeros((2, output_height, output_width, 2),
+                              dtype=np.float32)
+  temporal_offsets[0, 2, 4, :] = 5
+
   prediction_dict = {
       'preprocessed_inputs':
           tf.zeros((2, input_height, input_width, 3)),
@@ -1674,7 +1908,11 @@ def get_fake_prediction_dict(input_height, input_width, stride):
       cnma.TRACK_REID: [
           tf.constant(track_reid_embedding),
           tf.constant(track_reid_embedding),
-      ]
+      ],
+      cnma.TEMPORAL_OFFSET: [
+          tf.constant(temporal_offsets),
+          tf.constant(temporal_offsets),
+      ],
   }
   return prediction_dict
 
@@ -1736,6 +1974,14 @@ def get_fake_groundtruth_dict(input_height, input_width, stride):
       tf.constant([2], dtype=tf.int32),
       tf.constant([1], dtype=tf.int32),
   ]
+  temporal_offsets = [
+      tf.constant([[5.0, 5.0]], dtype=tf.float32),
+      tf.constant([[2.0, 3.0]], dtype=tf.float32),
+  ]
+  track_match_flags = [
+      tf.constant([1.0], dtype=tf.float32),
+      tf.constant([1.0], dtype=tf.float32),
+  ]
   groundtruth_dict = {
       fields.BoxListFields.boxes: boxes,
       fields.BoxListFields.weights: weights,
@@ -1747,6 +1993,8 @@ def get_fake_groundtruth_dict(input_height, input_width, stride):
       fields.BoxListFields.densepose_surface_coords:
           densepose_surface_coords,
       fields.BoxListFields.track_ids: track_ids,
+      fields.BoxListFields.temporal_offsets: temporal_offsets,
+      fields.BoxListFields.track_match_flags: track_match_flags,
       fields.InputDataFields.groundtruth_labeled_classes: labeled_classes,
   }
   return groundtruth_dict

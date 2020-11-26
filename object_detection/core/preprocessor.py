@@ -1049,6 +1049,28 @@ def random_rgb_to_gray(image,
   return image
 
 
+def adjust_gamma(image, gamma=1.0, gain=1.0):
+  """Adjusts the gamma.
+
+  Args:
+    image: rank 3 float32 tensor contains 1 image -> [height, width, channels]
+           with pixel values varying between [0, 255].
+    gamma: the gamma value. Must be a non-negative real number.
+    gain: a constant multiplier.
+
+  Returns:
+    image: image which is the same shape as input image.
+  """
+  with tf.name_scope('AdjustGamma', values=[image]):
+    def _adjust_gamma(image):
+      image = tf.image.adjust_gamma(image / 255, gamma, gain) * 255
+      image = tf.clip_by_value(image, clip_value_min=0.0, clip_value_max=255.0)
+      return image
+
+    image = _augment_only_rgb_channels(image, _adjust_gamma)
+    return image
+
+
 def random_adjust_brightness(image,
                              max_delta=0.2,
                              seed=None,
@@ -1069,7 +1091,6 @@ def random_adjust_brightness(image,
 
   Returns:
     image: image which is the same shape as input image.
-    boxes: boxes which is the same shape as input boxes.
   """
   with tf.name_scope('RandomAdjustBrightness', values=[image]):
     generator_func = functools.partial(tf.random_uniform, [],
@@ -2937,7 +2958,7 @@ def resize_to_range(image,
               for i in range(len(channels))
           ],
           axis=2)
-      new_image.set_shape([max_dimension, max_dimension, 3])
+      new_image.set_shape([max_dimension, max_dimension, len(channels)])
 
     result = [new_image]
     if masks is not None:
@@ -3111,6 +3132,7 @@ def resize_pad_to_multiple(image, masks=None, multiple=1):
     image_height, image_width, num_channels = _get_image_info(image)
     image = image[tf.newaxis, :, :, :]
     image = ops.pad_to_multiple(image, multiple)[0, :, :, :]
+    result = [image]
 
     if masks is not None:
       masks = tf.transpose(masks, (1, 2, 0))
@@ -3118,11 +3140,10 @@ def resize_pad_to_multiple(image, masks=None, multiple=1):
 
       masks = ops.pad_to_multiple(masks, multiple)[0, :, :, :]
       masks = tf.transpose(masks, (2, 0, 1))
+      result.append(masks)
 
-  if masks is None:
-    return image, tf.stack([image_height, image_width, num_channels])
-  else:
-    return image, masks, tf.stack([image_height, image_width, num_channels])
+    result.append(tf.stack([image_height, image_width, num_channels]))
+    return result
 
 
 def scale_boxes_to_pixel_coordinates(image, boxes, keypoints=None):
@@ -4143,6 +4164,7 @@ def random_scale_crop_and_pad_to_square(
     label_weights,
     masks=None,
     keypoints=None,
+    label_confidences=None,
     scale_min=0.1,
     scale_max=2.0,
     output_size=512,
@@ -4176,6 +4198,8 @@ def random_scale_crop_and_pad_to_square(
       as the input `image`.
     keypoints: (optional) rank 3 float32 tensor with shape [num_instances,
       num_keypoints, 2]. The keypoints are in y-x normalized coordinates.
+    label_confidences: (optional) float32 tensor of shape [num_instance]
+      representing the confidence for each box.
     scale_min: float, the minimum value for the random scale factor.
     scale_max: float, the maximum value for the random scale factor.
     output_size: int, the desired (square) output image size.
@@ -4191,9 +4215,8 @@ def random_scale_crop_and_pad_to_square(
     label_weights: rank 1 float32 tensor with shape [num_instances].
     masks: rank 3 float32 tensor with shape [num_instances, height, width]
            containing instance masks.
-
+    label_confidences: confidences for retained boxes.
   """
-
   img_shape = tf.shape(image)
   input_height, input_width = img_shape[0], img_shape[1]
   random_scale = tf.random_uniform([], scale_min, scale_max, seed=seed)
@@ -4257,6 +4280,9 @@ def random_scale_crop_and_pad_to_square(
     keypoints = keypoint_ops.prune_outside_window(
         keypoints, [0.0, 0.0, 1.0, 1.0])
     return_values.append(keypoints)
+
+  if label_confidences is not None:
+    return_values.append(tf.gather(label_confidences, indices))
 
   return return_values
 
@@ -4498,7 +4524,8 @@ def get_default_func_arg_map(include_label_weights=True,
            fields.InputDataFields.groundtruth_boxes,
            fields.InputDataFields.groundtruth_classes,
            groundtruth_label_weights, groundtruth_instance_masks,
-           groundtruth_keypoints),
+           groundtruth_keypoints, groundtruth_label_confidences),
+      adjust_gamma: (fields.InputDataFields.image,),
   }
 
   return prep_func_arg_map

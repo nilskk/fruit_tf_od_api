@@ -12,7 +12,7 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 LABELMAP_PATH="./data/voc_data/pascal_label_map.pbtxt"
-MODEL_PATH = "./models/exported_models/mobilenetv2_fpnlite_lr=0.04"
+MODEL_PATH = "./models/exported_models/mobilenetv2_5classes_lr=0.01_bs=16_snms=0.5_iou=0.6"
 SAVED_MODEL_PATH = MODEL_PATH + "/saved_model"
 
 
@@ -27,7 +27,7 @@ if __name__=="__main__":
     categories = label_map_util.create_category_index_from_labelmap(LABELMAP_PATH, use_display_name=True)
 
     image_dir="./data/test_data"
-    num_images = 9
+    num_images = 16
 
     time_diffs = []
 
@@ -72,7 +72,7 @@ if __name__=="__main__":
             scores=detections['detection_scores'],
             category_index=categories,
             use_normalized_coordinates=True,
-            min_score_thresh=0.9
+            min_score_thresh=0.5
         )
 
         ax = fig.add_subplot(gs[i])

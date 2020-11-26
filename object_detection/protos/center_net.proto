@@ -9,6 +9,7 @@ import "object_detection/protos/losses.proto";
 // Points" paper [1]
 // [1]: https://arxiv.org/abs/1904.07850
 
+// Next Id = 16
 message CenterNet {
   // Number of classes to predict.
   optional int32 num_classes = 1;
@@ -18,6 +19,15 @@ message CenterNet {
 
   // Image resizer for preprocessing the input image.
   optional ImageResizer image_resizer = 3;
+
+  // If set, all task heads will be constructed with separable convolutions.
+  optional bool use_depthwise = 13 [default = false];
+
+  // Indicates whether or not to use the sparse version of the Op that computes
+  // the center heatmaps. The sparse version scales better with number of
+  // channels in the heatmap, but in some cases is known to cause an OOM error.
+  // TODO(b/170989061) When bug is fixed, make this the default behavior.
+  optional bool compute_heatmap_sparse = 15 [default = false];
 
   // Parameters which are related to object detection task.
   message ObjectDetection {
@@ -245,6 +255,21 @@ message CenterNet {
   }
   optional TrackEstimation track_estimation_task = 10;
 
+  // Temporal offset prediction head similar to CenterTrack.
+  // Currently our implementation adopts LSTM, different from original paper.
+  // See go/lstd-centernet for more details.
+  // Tracking Objects as Points [3]
+  // [3]: https://arxiv.org/abs/2004.01177
+  message TemporalOffsetEstimation {
+    // Weight of the task loss. The total loss of the model will be the
+    // summation of task losses weighted by the weights.
+    optional float task_loss_weight = 1 [default = 1.0];
+
+    // Localization loss configuration for offset loss.
+    optional LocalizationLoss localization_loss = 2;
+  }
+  optional TemporalOffsetEstimation temporal_offset_task = 12;
+
 
 }
 
@@ -263,4 +288,9 @@ message CenterNetFeatureExtractor {
   // If set, will change channel order to be [blue, green, red]. This can be
   // useful to be compatible with some pre-trained feature extractors.
   optional bool bgr_ordering = 4 [default = false];
+
+  // If set, the feature upsampling layers will be constructed with
+  // separable convolutions. This is typically applied to feature pyramid
+  // network if any.
+  optional bool use_depthwise = 5 [default = false];
 }
