@@ -31,11 +31,11 @@ if __name__=="__main__":
 
     time_diffs = []
 
-    rows = 3
-    cols = int(math.ceil(num_images/rows))
-    gs = plt.GridSpec(rows, cols)
-    fig = plt.figure()
-    fig.tight_layout()
+    # rows = 3
+    # cols = int(math.ceil(num_images/rows))
+    # gs = plt.GridSpec(rows, cols)
+    # fig = plt.figure()
+    # fig.tight_layout()
 
     for i, image_name in enumerate(random.sample(os.listdir(image_dir), k=num_images)):
 
@@ -52,33 +52,32 @@ if __name__=="__main__":
         print(time_diff)
         time_diffs.append(time_diff)
 
-        #detections['detection_classes'] = tf.cast(detections['detection_classes'], dtype=tf.int64)
 
-        num_detections = int(detections.pop('num_detections'))
-        detections = {key: value[0, :num_detections].numpy()
-                      for key, value in detections.items()}
-        detections['num_detections'] = num_detections
+        # num_detections = int(detections.pop('num_detections'))
+        # detections = {key: value[0, :num_detections].numpy()
+        #               for key, value in detections.items()}
+        # detections['num_detections'] = num_detections
+        #
+        # # detection_classes should be ints.
+        # detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
+        #
+        #
+        # image_np_with_detections = image_np.copy()
+        #
+        # visualization_utils.visualize_boxes_and_labels_on_image_array(
+        #     image_np_with_detections,
+        #     boxes=detections['detection_boxes'],
+        #     classes=detections['detection_classes'],
+        #     scores=detections['detection_scores'],
+        #     category_index=categories,
+        #     use_normalized_coordinates=True,
+        #     min_score_thresh=0.5
+        # )
+        #
+        # ax = fig.add_subplot(gs[i])
+        # ax.imshow(image_np_with_detections)
 
-        # detection_classes should be ints.
-        detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
-
-
-        image_np_with_detections = image_np.copy()
-
-        visualization_utils.visualize_boxes_and_labels_on_image_array(
-            image_np_with_detections,
-            boxes=detections['detection_boxes'],
-            classes=detections['detection_classes'],
-            scores=detections['detection_scores'],
-            category_index=categories,
-            use_normalized_coordinates=True,
-            min_score_thresh=0.5
-        )
-
-        ax = fig.add_subplot(gs[i])
-        ax.imshow(image_np_with_detections)
-
-    plt.show()
+    # plt.show()
 
     time_diffs_array = np.array(time_diffs)
 
