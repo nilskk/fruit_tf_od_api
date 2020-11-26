@@ -23,6 +23,9 @@ import os
 import time
 import csv
 
+import numpy as np
+from tensorflow.keras.backend import count_params
+
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2
 
@@ -662,6 +665,23 @@ def train_loop(
     clean_temporary_directories(strategy, manager_dir)
     clean_temporary_directories(strategy, summary_writer_filepath)
 
+    ## Get Number of Parameters and Flops of the model
+    trainable_params = int(np.sum([count_params(p) for p in detection_model.trainable_weights]))
+    non_trainable_params = int(np.sum([count_params(p) for p in detection_model.non_trainable_weights]))
+    total_params = trainable_params + non_trainable_params
+
+    params_path = os.path.join(model_dir, "params.csv")
+    file_exists = os.path.isfile(params_path)
+    if not file_exists:
+        with open(params_path, 'w') as f:
+            params_dict = {'total_params': total_params, 'trainable_params': trainable_params,
+                           'non_trainable_params': non_trainable_params}
+            writer = csv.DictWriter(f, fieldnames=params_dict)
+
+            if not file_exists:
+                writer.writeheader()
+
+            writer.writerow(params_dict)
 
 def eager_eval_loop(
         detection_model,
@@ -991,6 +1011,3 @@ def eval_continuously(
                     writer.writeheader()
 
                 writer.writerow(csv_dict)
-
-
-
