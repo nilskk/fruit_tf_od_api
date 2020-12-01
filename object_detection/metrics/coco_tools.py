@@ -301,6 +301,8 @@ class COCOEvalWrapper(cocoeval.COCOeval):
             metric_name, category_name)] = value
     if not include_metrics_per_category:
       return summary_metrics, {}
+    if include_metrics_per_category is True:
+      self.summarize_per_category()
     if not hasattr(self, 'category_stats'):
       raise ValueError('Category stats do not exist')
     per_category_ap = OrderedDict([])
