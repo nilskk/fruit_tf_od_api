@@ -24,6 +24,7 @@ import time
 import csv
 import numpy as np
 from tensorflow.keras.backend import count_params
+from csv_util import write_metrics, write_params
 
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2
@@ -679,6 +680,12 @@ def train_loop(
 
                 writer.writerow(params_dict)
 
+    ## Write Params to Dataframe/CSV
+    head, tail = os.path.split(str(model_dir))
+    write_params(head, total_params)
+
+
+
 
 def prepare_eval_dict(detections, groundtruth, features):
     """Prepares eval dictionary containing detections and groundtruth.
@@ -1086,13 +1093,17 @@ def eval_continuously(
                 postprocess_on_cpu=postprocess_on_cpu,
                 global_step=global_step)
 
-            csv_path = os.path.join(model_dir, "result.csv")
-            file_exists = os.path.isfile(csv_path)
-            with open(csv_path, 'a') as f:
-                csv_dict = {'global_step': global_step.numpy(), **eval_metrics}
-                writer = csv.DictWriter(f, fieldnames=csv_dict)
+        csv_path = os.path.join(model_dir, "result.csv")
+        file_exists = os.path.isfile(csv_path)
+        with open(csv_path, 'a') as f:
+            csv_dict = {'global_step': global_step.numpy(), **eval_metrics}
+            writer = csv.DictWriter(f, fieldnames=csv_dict)
 
-                if not file_exists:
-                    writer.writeheader()
+            if not file_exists:
+                writer.writeheader()
 
-                writer.writerow(csv_dict)
+            writer.writerow(csv_dict)
+
+        ## Write Metrics to Dataframe/CSV
+        head, tail = os.path.split(str(model_dir))
+        write_metrics(head, eval_metrics)

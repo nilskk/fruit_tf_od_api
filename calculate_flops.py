@@ -2,15 +2,21 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
 import numpy as np
+import os
+from csv_util import write_flops
+from absl import flags
 
 
-MODEL_PATH = "./models/exported_models/mobilenetv2_5classes_lr=0.01_bs=16_snms=0.5_iou=0.6"
-SAVED_MODEL_PATH = MODEL_PATH + "/saved_model"
+flags.DEFINE_string('export_dir', None, 'Path to exported model')
+
+FLAGS = flags.FLAGS
 
 
-if __name__=="__main__":
-
-    model = tf.saved_model.load(SAVED_MODEL_PATH)
+def flops(argv):
+    flags.mark_flag_as_required('export_dir')
+    saved_model_path = os.path.join(FLAGS.export_dir, 'saved_model')
+    
+    model = tf.saved_model.load(saved_model_path)
 
     full_model = tf.function(lambda x: model(x))
     full_model = full_model.get_concrete_function(tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8))
@@ -25,3 +31,10 @@ if __name__=="__main__":
         flops = tf.compat.v1.profiler.profile(graph=graph, run_meta=run_meta, cmd="op", options=opts)
 
         print("Flops: {}".format(flops.total_float_ops))
+      
+        head, tail = os.path.split(str(FLAGS.export_dir))
+        write_flops(head, flops.total_float_ops)
+    
+
+if __name__ == "__main__":
+    tf.compat.v1.app.run(flops)

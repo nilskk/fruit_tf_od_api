@@ -2,8 +2,11 @@ import tensorflow.compat.v2 as tf
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
 from absl import flags
+from csv_util import create_dataframe, write_bs, write_lr, write_name
+import os
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
+flags.DEFINE_string('model_dir', None, 'Path to model directory')
 flags.DEFINE_integer('train_steps', 25000, 'Number of steps to train')
 flags.DEFINE_integer('cosine_steps', 25000, 'Number of steps for cosine decay')
 flags.DEFINE_integer('warmup_steps', 1000, 'Number of steps for warmup')
@@ -19,6 +22,7 @@ FLAGS = flags.FLAGS
 
 def change_pipeline(argv):
     flags.mark_flag_as_required('pipeline_config_path')
+    flags.mark_flag_as_required('model_dir')
     pipeline = pipeline_pb2.TrainEvalPipelineConfig()
     with tf.io.gfile.GFile(FLAGS.pipeline_config_path, 'r') as f:
         proto_str = f.read()
@@ -41,6 +45,13 @@ def change_pipeline(argv):
     pipeline_text = text_format.MessageToString(pipeline)
     with tf.io.gfile.GFile(FLAGS.pipeline_config_path, 'wb') as f:
         f.write(pipeline_text)
+    
+    head, tail = os.path.split(FLAGS.model_dir)
+
+    name = pipeline.model.ssd.feature_extractor.type
+    write_name(head, name)
+    write_bs(head, FLAGS.batch_size)
+    write_lr(head, FLAGS.learning_rate)
 
 if __name__=="__main__":
     tf.compat.v1.app.run(change_pipeline)
