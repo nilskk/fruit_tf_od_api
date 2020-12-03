@@ -21,7 +21,7 @@ first_decay_epochs=10
 #model_dir="mobilenetv2_fpnlite_notl"
 model_dir="efficientdet_d0_notl"
 model_path="./models/own_models/${model_dir}"
-save_path="${model_path}/lr=${learning_rate}_bs=${batch_size}_classes=${num_classes}_adam_eps=1e-4"
+save_path="${model_path}/lr=${learning_rate}_bs=${batch_size}_classes=${num_classes}_${optimizer}"
 
 
 python3 create_vott_tfrecord.py --data_dir=$vott_data_dir \
