@@ -11,16 +11,15 @@ vott_data_dir="./data/voc_data"
 vott_output_dir="./data/tfrecords"
 vott_name="Mango"
 
-learning_rate=0.01
+learning_rate=0.0001
 batch_size=16
 num_classes=5
-train_steps=10000
-cosine_steps=10000
-warmup_steps=1000
+train_steps=150
+first_decay_epochs=10
 
 model_dir="mobilenetv2_fpnlite_notl"
 model_path="./models/own_models/${model_dir}"
-save_path="${model_path}/lr=${learning_rate}_bs=${batch_size}_classes=${num_classes}"
+save_path="${model_path}/lr=${learning_rate}_bs=${batch_size}_classes=${num_classes}_adam_eps=1e-4"
 
 
 python3 create_vott_tfrecord.py --data_dir=$vott_data_dir \
@@ -42,12 +41,14 @@ python3 change_pipeline_config.py --pipeline_config_path="${model_path}/pipeline
                                                   --num_classes=$num_classes \
                                                   --batch_size=$batch_size \
                                                   --learning_rate=$learning_rate \
-                                                  --train_steps=$train_steps \
-                                                  --cosine_steps=$cosine_steps \
-                                                  --warmup_steps=$warmup_steps
+                                                  --train_epochs=$train_epochs \
+                                                  --first_decay_epochs=$first_decay_epochs
+
 
 python3 training.py --pipeline_config_path="${model_path}/pipeline.config" \
-                                    --model_dir="${save_path}/checkpoints" &
+                                    --model_dir="${save_path}/checkpoints" \
+                                    --train_tfrecords_path="${vott_output_dir}/vott_train.tfrecord" \
+                                    --checkpoint_every_n_epochs=10 &
 
 training_pid=$!
 

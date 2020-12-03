@@ -199,6 +199,17 @@ def _create_learning_rate(learning_rate_config, global_step=None):
         config.warmup_steps,
         config.hold_base_rate_steps)
 
+  if learning_rate_type == 'cosine_restart_learning_rate':
+    config = learning_rate_config.cosine_restart_learning_rate
+    learning_rate = learning_schedules.cosine_decay_with_restarts(
+      global_step,
+      config.initial_learning_rate,
+      config.first_decay_steps,
+      config.t_mul,
+      config.m_mul,
+      config.alpha
+    )
+
   if learning_rate is None:
     raise ValueError('Learning_rate %s not supported.' % learning_rate_type)
 
