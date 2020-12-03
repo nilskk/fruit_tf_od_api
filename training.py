@@ -1,12 +1,14 @@
 from absl import flags
 import tensorflow.compat.v2 as tf
 from object_detection import model_lib_v2
+import math
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_string('model_dir', None, 'Path to output model directory '
                                        'where event and checkpoint files will be written.')
 flags.DEFINE_string('train_tfrecords_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
 flags.DEFINE_integer('checkpoint_every_n_epochs', 10, 'Number of epochs until next checkpoint')
+flags.DEFINE_integer('batch_size', 16, 'Batch size for training')
 
 FLAGS = flags.FLAGS
 
@@ -29,7 +31,7 @@ def train(argv):
             print(e)
 
     num_train_images = sum(1 for _ in tf.data.TFRecordDataset(FLAGS.train_tfrecords_path))
-    steps_per_epoch = tf.ceil(num_train_images / FLAGS.batch_size)
+    steps_per_epoch = math.ceil(num_train_images / FLAGS.batch_size)
     checkpoints_every_n_steps = steps_per_epoch * FLAGS.checkpoint_every_n_epochs
 
     strategy = tf.compat.v2.distribute.MirroredStrategy()

@@ -2,8 +2,9 @@ import tensorflow.compat.v2 as tf
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
 from absl import flags
-from csv_util import create_dataframe, write_bs, write_lr, write_name
+from csv_util import create_dataframe, write_bs, write_lr, write_name, write_optimizer
 import os
+import math
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_string('model_dir', None, 'Path to model directory')
@@ -11,7 +12,8 @@ flags.DEFINE_integer('train_epochs', 150, 'Number of epochs to train')
 flags.DEFINE_integer('first_decay_epochs', 10, 'Number of epochs for first cosine decay')
 flags.DEFINE_integer('num_classes', 5, 'Number of classes in model')
 flags.DEFINE_integer('batch_size', 16, 'Batch size for training')
-flags.DEFINE_float('learning_rate', 0.01, 'Base learning rate for cosine decay')
+flags.DEFINE_string('optimizer', 'adam', 'which optimizer to use')
+flags.DEFINE_float('learning_rate', 0.01, 'Base learning rate')
 flags.DEFINE_string('label_map_path', "./data/voc_data/pascal_label_map.pbtxt", 'Path to pascal_label_map.pbtxt')
 flags.DEFINE_string('train_tfrecords_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
 flags.DEFINE_string('val_tfrecords_path', "./data/tfrecords/vott_val.tfrecord", 'Path to val tfrecord file')
@@ -28,15 +30,18 @@ def change_pipeline(argv):
         text_format.Merge(proto_str, pipeline)
 
     num_train_images = sum(1 for _ in tf.data.TFRecordDataset(FLAGS.train_tfrecords_path))
-    steps_per_epoch = tf.ceil(num_train_images / FLAGS.batch_size)
+    steps_per_epoch = math.ceil(num_train_images / FLAGS.batch_size)
 
     pipeline.model.ssd.num_classes = FLAGS.num_classes
 
     pipeline.train_config.num_steps = FLAGS.train_epochs * steps_per_epoch
     pipeline.train_config.batch_size = FLAGS.batch_size
 
-    pipeline.train_config.optimizer.adam_optimizer.learning_rate.cosine_restart_learning_rate.first_decay_steps = FLAGS.first_decay_epochs * steps_per_epoch
-    pipeline.train_config.optimizer.adam_optimizer.learning_rate.cosine_restart_learning_rate.initial_learning_rate = FLAGS.learning_rate
+    if FLAGS.optimizer == 'adam':
+        optimizer = pipeline.train_config.optimizer.adam_optimizer
+
+    optimizer.learning_rate.cosine_restart_learning_rate.first_decay_steps = FLAGS.first_decay_epochs * steps_per_epoch
+    optimizer.learning_rate.cosine_restart_learning_rate.initial_learning_rate = FLAGS.learning_rate
 
     pipeline.train_input_reader.tf_record_input_reader.input_path[0] = FLAGS.train_tfrecords_path
     pipeline.train_input_reader.label_map_path = FLAGS.label_map_path
@@ -51,7 +56,9 @@ def change_pipeline(argv):
     head, tail = os.path.split(FLAGS.model_dir)
 
     model = pipeline.model.ssd.feature_extractor.type
+    optimizer_name = FLAGS.optimizer
     write_name(head, model)
+    write_optimizer(head, optimizer_name)
     write_bs(head, FLAGS.batch_size)
     write_lr(head, FLAGS.learning_rate)
 

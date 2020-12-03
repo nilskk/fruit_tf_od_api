@@ -54,3 +54,9 @@ def write_metrics(dir, metrics):
     df = df.drop(columns=k, axis=1, errors='ignore')
     df.insert(loc=0, column=k, value=[metrics[k]])
   df.to_csv(path, index=False)
+
+def write_optimizer(dir, optimizer_name):
+  path = os.path.join(dir, 'metrics.csv')
+  df = pd.read_csv(path)
+  df.insert(loc=0, column='Optimizer', value=[optimizer_name])
+  df.to_csv(path, index=False)
