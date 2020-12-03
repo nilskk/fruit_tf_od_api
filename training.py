@@ -5,6 +5,8 @@ from object_detection import model_lib_v2
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_string('model_dir', None, 'Path to output model directory '
                                        'where event and checkpoint files will be written.')
+flags.DEFINE_string('train_tfrecords_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
+flags.DEFINE_integer('checkpoint_every_n_epochs', 10, 'Number of epochs until next checkpoint')
 
 FLAGS = flags.FLAGS
 
@@ -26,11 +28,16 @@ def train(argv):
             # Memory growth must be set before GPUs have been initialized
             print(e)
 
+    num_train_images = sum(1 for _ in tf.data.TFRecordDataset(FLAGS.train_tfrecords_path))
+    steps_per_epoch = tf.ceil(num_train_images / FLAGS.batch_size)
+    checkpoints_every_n_steps = steps_per_epoch * FLAGS.checkpoint_every_n_epochs
+
     strategy = tf.compat.v2.distribute.MirroredStrategy()
     with strategy.scope():
         model_lib_v2.train_loop(
             pipeline_config_path=FLAGS.pipeline_config_path,
-            model_dir=FLAGS.model_dir)
+            model_dir=FLAGS.model_dir,
+            checkpoint_every_n=checkpoints_every_n_steps)
 
 
 if __name__ == "__main__":
