@@ -4,17 +4,22 @@
 
 /models/pretrained_models/*
 /models/exported_models/*
+
 /models/own_models/my_ssd_mobilenetv2_fpnlite/*
 !/models/own_models/my_ssd_mobilenetv2_fpnlite/pipeline.config
+
 /models/own_models/my_efficientdet_d0/*
 !/models/own_models/my_efficientdet_d0/pipeline.config
+
 /models/own_models/mobilenetv2_fpnlite_notl/*
 !/models/own_models/mobilenetv2_fpnlite_notl/pipeline.config
+
 /models/own_models/efficientdet_d0_notl/*
 !/models/own_models/efficientdet_d0_notl/pipeline.config
 
+/models/own_models/summary.csv
+
 /data/voc_data/*
-!/data/voc_data/.keep
 /data/tfrecords/*
 /data/test_data/*
 
