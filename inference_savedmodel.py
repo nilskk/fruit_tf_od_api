@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from csv_util import write_speed
 from absl import flags
+import glob
 
 flags.DEFINE_string('export_dir', None, 'Path to exported model')
 flags.DEFINE_string('test_image_dir', './data/test_data/images',
@@ -29,19 +30,18 @@ def inference(argv):
 
     categories = label_map_util.create_category_index_from_labelmap(FLAGS.label_map_path, use_display_name=True)
 
-    image_dir = "./data/test_data/images"
-    num_images = 16
-
+    num_images = len(glob.glob(FLAGS.test_image_dir + '/**/*', recursive=True))
+    print(num_images)
     time_diffs = []
 
-    rows = 4
+    rows = math.ceil(math.sqrt(num_images))
     cols = int(math.ceil(num_images / rows))
     gs = plt.GridSpec(rows, cols)
-    fig = plt.figure(figsize=(20, 20))
+    fig = plt.figure(figsize=(40, 40))
     fig.tight_layout()
 
-    for i, image_name in enumerate(random.sample(os.listdir(image_dir), k=num_images)):
-        image_path = os.path.join(image_dir, image_name)
+    for i, image_name in enumerate(random.sample(os.listdir(FLAGS.test_image_dir), k=num_images)):
+        image_path = os.path.join(FLAGS.test_image_dir, image_name)
         image_np = load_image_as_nparray(image_path)
         image_tensor = tf.convert_to_tensor(image_np)
         image_tensor = image_tensor[tf.newaxis, ...]
@@ -93,4 +93,5 @@ def inference(argv):
 
 
 if __name__ == "__main__":
+    tf.config.set_visible_devices([], 'GPU')
     tf.compat.v1.app.run(inference)
