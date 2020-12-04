@@ -7,10 +7,10 @@ function onexit(){
   kill -term $$
 }
 
-data_dir="./data"
+data_dir="/data"
 test_dir="${data_dir}/test_data"
-voc_dir="${data_dir}/voc_data"
-tfrecords_dir="${data_dir}/tfrecords"
+voc_dir="${data_dir}/voc_data_5"
+tfrecords_dir="${data_dir}/tfrecords_5"
 vott_name="Mango"
 
 learning_rate=0.0001
@@ -22,7 +22,7 @@ first_decay_epochs=10
 
 model_dir="mobilenetv2_fpnlite_notl"
 #model_dir="efficientdet_d0_notl"
-own_models_path="./models/own_models"
+own_models_path="/data/models/own_models"
 model_path="${own_models_path}/${model_dir}"
 save_path="${model_path}/lr=${learning_rate}_bs=${batch_size}_classes=${num_classes}_${optimizer}"
 

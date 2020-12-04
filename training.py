@@ -2,6 +2,7 @@ from absl import flags
 import tensorflow.compat.v2 as tf
 from object_detection import model_lib_v2
 import math
+import os
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_string('model_dir', None, 'Path to output model directory '
@@ -17,6 +18,8 @@ def train(argv):
     flags.mark_flag_as_required('model_dir')
     flags.mark_flag_as_required('pipeline_config_path')
     tf.config.set_soft_device_placement(True)
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
     # gpus = tf.config.experimental.list_physical_devices('GPU')
     # if gpus:
