@@ -17,6 +17,9 @@
 /models/own_models/efficientdet_d0_notl/*
 !/models/own_models/efficientdet_d0_notl/pipeline.config
 
+/models/own_models/mobilenetv2_512px/*
+!/models/own_models/mobilenetv2_512px/pipeline.config
+
 /models/own_models/summary.csv
 
 /data/voc_data/*
