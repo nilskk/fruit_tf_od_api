@@ -1,3 +1,5 @@
+!pipeline.config
+
 /object_detection/protos/*_pb2.py
 
 /.idea/
@@ -6,7 +8,6 @@
 /models/exported_models/*
 
 /models/own_models/*
-!pipeline.config
 
 /models/own_models/summary.csv
 
