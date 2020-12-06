@@ -6,7 +6,7 @@
 /models/exported_models/*
 
 /models/own_models/*
-!/models/own_models/*/pipeline.config
+!pipeline.config
 
 /models/own_models/summary.csv
 
