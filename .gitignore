@@ -1,5 +1,3 @@
-!pipeline.config
-
 /object_detection/protos/*_pb2.py
 
 /.idea/
