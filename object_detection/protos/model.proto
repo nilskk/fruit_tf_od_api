@@ -20,6 +20,7 @@ message DetectionModel {
 
     CenterNet center_net = 4;
   }
+  optional string name = 5 [default=""];
 }
 
 message ExperimentalModel {

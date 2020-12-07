@@ -8,6 +8,7 @@ import math
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_string('model_dir', None, 'Path to model directory')
+flags.DEFINE_string('model_name', "", 'Name of the model')
 flags.DEFINE_integer('train_epochs', 150, 'Number of epochs to train')
 flags.DEFINE_integer('first_decay_epochs', 10, 'Number of epochs for first cosine decay')
 flags.DEFINE_integer('num_classes', 5, 'Number of classes in model')
@@ -32,6 +33,8 @@ def change_pipeline(argv):
     num_train_images = sum(1 for _ in tf.data.TFRecordDataset(FLAGS.train_tfrecords_path))
     steps_per_epoch = math.ceil(num_train_images / FLAGS.batch_size)
 
+    pipeline.model.name = FLAGS.model_name
+
     pipeline.model.ssd.num_classes = FLAGS.num_classes
 
     pipeline.train_config.num_steps = FLAGS.train_epochs * steps_per_epoch
@@ -39,6 +42,10 @@ def change_pipeline(argv):
 
     if FLAGS.optimizer == 'adam':
         optimizer = pipeline.train_config.optimizer.adam_optimizer
+        pipeline.train_config.optimizer.adam_optimizer.epsilon = 1e-8
+    elif FLAGS.optimizer == 'sgd':
+        optimizer = pipeline.train_config.optimizer.momentum_optimizer
+        pipeline.train_config.optimizer.momentum_optimizer.momentum_optimizer_value = 0.9
 
     optimizer.learning_rate.cosine_restart_learning_rate.first_decay_steps = FLAGS.first_decay_epochs * steps_per_epoch
     optimizer.learning_rate.cosine_restart_learning_rate.initial_learning_rate = FLAGS.learning_rate
@@ -54,10 +61,8 @@ def change_pipeline(argv):
         f.write(pipeline_text)
     
     head, tail = os.path.split(FLAGS.model_dir)
-
-    model = pipeline.model.ssd.feature_extractor.type
     optimizer_name = FLAGS.optimizer
-    write_name(head, model)
+    write_name(head, FLAGS.model_name)
     write_optimizer(head, optimizer_name)
     write_bs(head, FLAGS.batch_size)
     write_lr(head, FLAGS.learning_rate)
