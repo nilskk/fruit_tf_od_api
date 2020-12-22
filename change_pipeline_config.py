@@ -62,6 +62,7 @@ def change_pipeline(argv):
     
     head, tail = os.path.split(FLAGS.model_dir)
     optimizer_name = FLAGS.optimizer
+    create_dataframe(head)
     write_name(head, FLAGS.model_name)
     write_optimizer(head, optimizer_name)
     write_bs(head, FLAGS.batch_size)

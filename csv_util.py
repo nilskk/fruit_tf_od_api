@@ -6,14 +6,13 @@ def create_dataframe(dir):
   if not os.path.exists(dir):
     os.mkdir(dir)
   path = os.path.join(dir, 'metrics.csv')
-  df = pd.DataFrame(list())
+  df = pd.DataFrame(columns=['Name', 'Optimizer', 'Batch Size', 'Learning Rate', 'Parameter', 'Flops', 'Inference Speed',
+                   'DetectionBoxes_Precision/mAP', 'Loss/total_loss'])
   df.to_csv(path, index=False)
 
 def write_name(dir, name):
-  if not os.path.exists(dir):
-    os.mkdir(dir)
   path = os.path.join(dir, 'metrics.csv')
-  df = pd.DataFrame([])
+  df = pd.read_csv(path)
   df = df.drop(columns='Name', axis=1, errors='ignore')
   df.insert(loc=0, column='Name', value=[name])
   df.to_csv(path, index=False)
