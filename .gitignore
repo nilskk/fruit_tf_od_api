@@ -4,7 +4,6 @@
 
 /models/pretrained_models/*
 /models/exported_models/*
-
 /models/own_models/*
 
 /models/own_models/summary.csv
