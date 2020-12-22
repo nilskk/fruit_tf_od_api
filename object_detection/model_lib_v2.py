@@ -153,7 +153,8 @@ def eager_train_step(detection_model,
                      add_regularization_loss=True,
                      clip_gradients_value=None,
                      global_step=None,
-                     num_replicas=1.0):
+                     num_replicas=1.0,
+                     num_visualization=0):
     """Process a single training batch.
 
   This method computes the loss for the model on a single training batch,
@@ -265,11 +266,13 @@ def eager_train_step(detection_model,
         gradients, _ = tf.clip_by_global_norm(gradients, clip_gradients_value)
     optimizer.apply_gradients(zip(gradients, trainable_variables))
     tf.compat.v2.summary.scalar('learning_rate', learning_rate, step=global_step)
-    tf.compat.v2.summary.image(
-        name='train_input_images',
-        step=global_step,
-        data=features[fields.InputDataFields.image],
-        max_outputs=3)
+
+    if num_visualization > 0:
+        tf.compat.v2.summary.image(
+            name='train_input_images',
+            step=global_step,
+            data=features[fields.InputDataFields.image],
+            max_outputs=num_visualization)
     return total_loss
 
 
