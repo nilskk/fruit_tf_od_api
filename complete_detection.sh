@@ -13,15 +13,15 @@ voc_dir="${data_dir}/voc_data"
 tfrecords_dir="${data_dir}/tfrecords"
 vott_name="Mango"
 
-learning_rate=0.0001
-batch_size=8
+learning_rate=0.001
+batch_size=4
 num_classes=5
-train_epochs=150
+train_epochs=310
 optimizer='adam'
 first_decay_epochs=10
 
 #model_dir="mobilenetv2_fpnlite_notl"
-model_dir="efficientdet_d0_notl"
+model_dir="efficientdet_d1_notl"
 own_models_path="./models/own_models"
 model_path="${own_models_path}/${model_dir}"
 save_path="${model_path}/lr=${learning_rate}_bs=${batch_size}_classes=${num_classes}_${optimizer}"
@@ -48,7 +48,8 @@ python3 change_pipeline_config.py --pipeline_config_path="${model_path}/pipeline
                                                   --optimizer=$optimizer \
                                                   --learning_rate=$learning_rate \
                                                   --train_epochs=$train_epochs \
-                                                  --first_decay_epochs=$first_decay_epochs
+                                                  --first_decay_epochs=$first_decay_epochs \
+                                                  --model_name=$model_dir
 
 
 python3 training.py --pipeline_config_path="${model_path}/pipeline.config" \
