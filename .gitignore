@@ -16,3 +16,5 @@
 /dist/
 /object_detection.egg-info/
 
+/plots/
+
