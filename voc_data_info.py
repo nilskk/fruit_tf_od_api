@@ -3,55 +3,68 @@ from pathlib import Path
 import json
 import os
 import seaborn as sns
+import pandas as pd
 
 plot_path = Path("./plots/kaggle")
 
 classes_list = ['Apple1', 'Kiwi1', 'Mango', 'Muskmelon', 'Tomato']
 
-def get_classnumber_from_xml(root, voc_class):
-    return len(root.findall("./object[name=\'"+voc_class+"\']"))
 
 def parse_voc(xml_path):
+
     tree = ET.parse(xml_path)
     root = tree.getroot()
     num_objects = len(root.findall('object'))
-    class_objects_dict = {"num_objects": num_objects}
+
+    count_list = []
+    class_list = []
     for voc_class in classes_list:
-        class_count = get_classnumber_from_xml(root=root, voc_class=voc_class)
-        class_objects_dict[voc_class] = class_count
+        class_count = len(root.findall("./object[name=\'"+voc_class+"\']"))
+        if class_count > 0:
+            class_list.append(voc_class)
+            count_list.append(class_count)
 
-    return class_objects_dict
-
-def calculate_imagenum_per_numobjects(dict_list):
-    imagenum_per_numobjects = {}
-    for dict in dict_list:
-        if dict['num_objects'] in imagenum_per_numobjects:
-            imagenum_per_numobjects[dict['num_objects']] += 1
-        else:
-            imagenum_per_numobjects[dict['num_objects']] = 1
-
-    return imagenum_per_numobjects
-
-def create_numobjects_graph(dict):
-    fig1 = plt.figure()
-    fig1.tight_layout()
-    plt.bar(*zip(*sorted(dict.items())))
-    plt.savefig(os.path.join(plot_path, 'num_objects_gesamt.png'))
-    
+    return class_list, count_list, num_objects
 
 
-if __name__=="__main__":
+def create_numobjects_graph(df_classes):
+    plt = sns.barplot(data=df_classes, x=df_classes['classes'], y=df_classes['num_objects'])
+    plt.set(xlabel='Classes', ylabel='Number of Objects per Image')
+    plt.get_figure().savefig(os.path.join(plot_path, 'num_objects_per_class_barplot.png'))
+    plt.get_figure().clf()
+
+    plt = sns.stripplot(data=df_classes, x=df_classes['classes'], y=df_classes['num_objects'],
+                        jitter=0.4, size=8, linewidth=1, alpha=0.5)
+    plt.set(xlabel='Classes', ylabel='Number of Objects per Image', yticks=range(12))
+    plt.get_figure().savefig(os.path.join(plot_path, 'num_objects_per_class_stripplot.png'))
+    plt.get_figure().clf()
+
+
+if __name__ == "__main__":
     plot_path.mkdir(parents=True, exist_ok=True)
 
     xml_folder = Path("./data/voc_data/Annotations")
 
-    dict_list = []
+    class_list_ges = []
+    count_list_ges = []
+    num_objects_list = []
+
     for file in os.listdir(xml_folder):
         xml_file = os.path.join(xml_folder, file)
-        class_dict = parse_voc(xml_path=xml_file)
-        dict_list.append(class_dict)
+        class_list, count_list, num_objects = parse_voc(xml_path=xml_file)
+        class_list_ges.append(class_list)
+        count_list_ges.append(count_list)
+        num_objects_list.append(num_objects)
 
-    imagenum_per_numobjects = calculate_imagenum_per_numobjects(dict_list=dict_list)
-    print(imagenum_per_numobjects)
+    class_count_list_ges = list(zip(class_list_ges, count_list_ges))
 
-    create_numobjects_graph(imagenum_per_numobjects)
+    print(class_list_ges)
+
+    df_classes = pd.DataFrame(data=class_count_list_ges, columns=['classes', 'num_objects'])
+    df_classes['classes'] = df_classes['classes'].str[0]
+    df_classes['num_objects'] = df_classes['num_objects'].str[0]
+    df_gesamt = pd.DataFrame(data=num_objects_list, columns=['num_objects_gesamt'])
+
+    print(df_classes)
+
+    create_numobjects_graph(df_classes=df_classes)
