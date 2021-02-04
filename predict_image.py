@@ -2,12 +2,12 @@ from absl import flags, app
 import os
 import tensorflow as tf
 from pathlib import Path
-import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 import pandas as pd
+from lxml import etree as ET
 
 flags.DEFINE_string('export_dir', None, 'Path to exported model')
 flags.DEFINE_string('label_map_path', './data/voc_data/pascal_label_map.pbtxt',
@@ -28,6 +28,7 @@ def load_image_as_nparray(path):
 
 def visualize_image(model, image_path, categories):
     image_name = Path(image_path).stem
+    image_name_with_extension = Path(image_path).name
     image_np = load_image_as_nparray(image_path)
     image_tensor = tf.convert_to_tensor(image_np)
     image_tensor = image_tensor[tf.newaxis, ...]
@@ -71,7 +72,78 @@ def visualize_image(model, image_path, categories):
         im = Image.fromarray(image_np_with_detections)
         png_path = Path(os.path.join(FLAGS.output, 'plots'))
         png_path.mkdir(parents=True, exist_ok=True)
-        im.save(os.path.join(png_path, image_name + '.png'))
+        im.save(os.path.join(png_path, image_name_with_extension))
+
+        create_voc(image_path=image_path, image=image_np, detection_matrix=detection_matrix, categories=categories)
+
+
+def create_voc(image_path, image, detection_matrix, categories):
+    voc_annotation_path = Path('voc/Annotations')
+    complete_voc_annotation_path = Path(os.path.join(FLAGS.output, voc_annotation_path))
+    complete_voc_annotation_path.mkdir(parents=True, exist_ok=True)
+
+    voc_image_path = Path('voc/JPEGImages')
+    complete_voc_image_path = Path(os.path.join(FLAGS.output, voc_image_path))
+    complete_voc_image_path.mkdir(parents=True, exist_ok=True)
+
+    image_name = Path(image_path).stem
+    image_name_with_extension = Path(image_path).name
+
+    im = Image.fromarray(image)
+    im.save(os.path.join(complete_voc_image_path, image_name_with_extension))
+
+    root = ET.Element('annotation')
+    root.set('verified', 'yes')
+
+    folder = ET.SubElement(root, 'folder')
+    folder.text = 'Annotation'
+
+    filename = ET.SubElement(root, 'filename')
+    filename.text = image_name_with_extension
+
+    path = ET.SubElement(root, 'path')
+    path.text = os.path.join(voc_image_path, image_name_with_extension)
+
+    source = ET.SubElement(root, 'source')
+    database = ET.SubElement(source, 'database')
+    database.text = 'Unknown'
+
+    size = ET.SubElement(root, 'size')
+    width = ET.SubElement(size, 'width')
+    width.text = str(im.width)
+    height = ET.SubElement(size, 'height')
+    height.text = str(im.height)
+    depth = ET.SubElement(size, 'depth')
+    depth.text = str(3)
+
+    segmented = ET.SubElement(root, 'segmented')
+    segmented.text = str(0)
+
+    for row in detection_matrix.T:
+        object = ET.SubElement(root, 'object')
+
+        name = ET.SubElement(object, 'name')
+        name.text = categories[row[0]]['name']
+        pose = ET.SubElement(object, 'pose')
+        pose.text = 'Unspecified'
+        truncated = ET.SubElement(object, 'truncated')
+        truncated.text = str(0)
+        difficult = ET.SubElement(object, 'difficult')
+        difficult.text = str(0)
+
+        bndbox = ET.SubElement(object, 'bndbox')
+        xmin = ET.SubElement(bndbox, 'xmin')
+        xmin.text = str(row[2]*im.width)
+        ymin = ET.SubElement(bndbox, 'ymin')
+        ymin.text = str(row[3]*im.height)
+        xmax = ET.SubElement(bndbox, 'xmax')
+        xmax.text = str(row[4]*im.width)
+        ymax = ET.SubElement(bndbox, 'ymax')
+        ymax.text = str(row[5]*im.height)
+
+    xml_string = ET.tostring(root, pretty_print=True)
+    with open(os.path.join(complete_voc_annotation_path, image_name + '.xml'), 'wb') as files:
+        files.write(xml_string)
 
 
 def predict(argv):
