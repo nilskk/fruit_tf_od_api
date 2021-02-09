@@ -6,6 +6,8 @@
 
 /data/
 
+/matrix/
+
 /build/
 /dist/
 /object_detection.egg-info/
