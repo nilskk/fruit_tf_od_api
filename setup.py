@@ -21,17 +21,17 @@ REQUIRED_PACKAGES = [
     'lvis',
     'scipy',
     'pandas',
-    'tf-models-nightly'
+    'tf-models-official'
 ]
 
 setup(
     name='object_detection',
     version='0.1',
-    #install_requires=REQUIRED_PACKAGES,
+    install_requires=REQUIRED_PACKAGES,
     include_package_data=True,
     packages=(
-            [p for p in find_packages() if p.startswith('object_detection')] +
-            find_packages(where=os.path.join('.', 'slim'))),
+        [p for p in find_packages() if p.startswith('object_detection')] +
+        find_packages(where=os.path.join('.', 'slim'))),
     package_dir={
         'datasets': os.path.join('slim', 'datasets'),
         'nets': os.path.join('slim', 'nets'),
