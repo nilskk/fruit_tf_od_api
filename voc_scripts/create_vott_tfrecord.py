@@ -108,8 +108,6 @@ def dict_to_tf_example(data,
             difficult = bool(int(obj['difficult']))
             if ignore_difficult_instances and difficult:
                 continue
-            if obj['name'] not in ["Apple1", "Tomato", "Kiwi1", "Muskmelon", "Mango"]:
-                continue
 
             difficult_obj.append(int(difficult))
 

@@ -14,7 +14,7 @@ def convert_classes(classes, start=1):
 
 
 if __name__ == '__main__':
-    jpeg_path = Path('./data/voc_data/JPEGImages')
+    jpeg_path = Path('../data/voc_data/JPEGImages')
     output_trainval = Path('./test/ImageSets/Main/')
     output_trainval.mkdir(parents=True, exist_ok=True)
     output_labelmap = Path('./test/')
