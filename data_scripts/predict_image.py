@@ -70,7 +70,7 @@ def visualize_image(model, image_path, categories):
         )
 
         im = Image.fromarray(image_np_with_detections)
-        png_path = Path(os.path.join(FLAGS.output, 'plots'))
+        png_path = Path(os.path.join(FLAGS.output, '../plots'))
         png_path.mkdir(parents=True, exist_ok=True)
         im.save(os.path.join(png_path, image_name_with_extension))
 
@@ -166,4 +166,6 @@ def predict(argv):
 
 
 if __name__ == '__main__':
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
     app.run(predict)
