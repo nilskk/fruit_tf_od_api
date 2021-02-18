@@ -1,9 +1,7 @@
 import tensorflow as tf
-from tensorflow import keras
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
-import numpy as np
 import os
-from csv_util import write_flops
+from util.csv_util import write_flops
 from absl import flags
 
 

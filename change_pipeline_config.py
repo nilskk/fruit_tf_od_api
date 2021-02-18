@@ -2,7 +2,7 @@ import tensorflow.compat.v2 as tf
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
 from absl import flags
-from csv_util import create_dataframe, write_bs, write_lr, write_name, write_optimizer
+from util.csv_util import create_dataframe, write_bs, write_lr, write_name, write_optimizer
 import os
 import math
 

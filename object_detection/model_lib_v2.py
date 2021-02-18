@@ -24,7 +24,7 @@ import time
 import csv
 import numpy as np
 from tensorflow.keras.backend import count_params
-from csv_util import write_metrics, write_params
+from util.csv_util import write_metrics, write_params
 
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2

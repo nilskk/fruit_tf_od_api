@@ -4,7 +4,7 @@ import random
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-from csv_util import write_speed
+from util.csv_util import write_speed
 from absl import flags
 import glob
 
