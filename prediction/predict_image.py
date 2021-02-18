@@ -13,7 +13,8 @@ flags.DEFINE_string('export_dir', None, 'Path to exported model')
 flags.DEFINE_string('label_map_path', './data/voc_data/pascal_label_map.pbtxt',
                     'Path to label map proto')
 
-flags.DEFINE_float('threshold', 0.5, 'Minimum score threshold')
+flags.DEFINE_float('score_threshold', 0.9, 'Minimum score threshold')
+flags.DEFINE_float('iou_threshold', 0.95, 'Minimum iou threshold')
 flags.DEFINE_string('image', None, 'Path to single image')
 flags.DEFINE_string('image_folder', None, 'Path to image folder')
 flags.DEFINE_boolean('visualize', True, 'Visualize Object Detection results')
@@ -24,6 +25,13 @@ FLAGS = flags.FLAGS
 
 def load_image_as_nparray(path):
     return np.array(Image.open(path))
+
+
+def filter_detections_nms(detections, iou_threshold, score_threshold):
+    indices = tf.image.non_max_suppression(boxes=detections['detection_boxes'], scores=detections['detection_scores'],
+                                           iou_threshold=iou_threshold, score_threshold=score_threshold, max_output_size=30)
+
+    return indices.numpy()
 
 
 def visualize_image(model, image_path, categories):
@@ -43,9 +51,11 @@ def visualize_image(model, image_path, categories):
     # detection_classes should be ints.
     detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
-    detection_scores_threshold = np.expand_dims(detections['detection_scores'][detections['detection_scores'] > FLAGS.threshold], axis=0)
-    detection_classes_threshold = np.expand_dims(detections['detection_classes'][detections['detection_scores'] > FLAGS.threshold], axis=0)
-    detection_boxes_threshold = np.swapaxes(detections['detection_boxes'][detections['detection_scores'] > FLAGS.threshold], axis1=0, axis2=1)
+    indices = filter_detections_nms(detections, iou_threshold=FLAGS.iou_threshold, score_threshold=FLAGS.score_threshold)
+
+    detection_scores_threshold = np.expand_dims(detections['detection_scores'][indices], axis=0)
+    detection_classes_threshold = np.expand_dims(detections['detection_classes'][indices], axis=0)
+    detection_boxes_threshold = np.swapaxes(detections['detection_boxes'][indices], axis1=0, axis2=1)
     detection_matrix = np.concatenate((np.concatenate((detection_classes_threshold, detection_scores_threshold), axis=0), detection_boxes_threshold), axis=0)
 
     detection_frame = pd.DataFrame({'class': detection_matrix[0, :], 'score': detection_matrix[1, :],
@@ -61,16 +71,15 @@ def visualize_image(model, image_path, categories):
 
         visualization_utils.visualize_boxes_and_labels_on_image_array(
             image_np_with_detections,
-            boxes=detections['detection_boxes'],
-            classes=detections['detection_classes'],
-            scores=detections['detection_scores'],
+            boxes=detections['detection_boxes'][indices],
+            classes=detections['detection_classes'][indices],
+            scores=detections['detection_scores'][indices],
             category_index=categories,
-            use_normalized_coordinates=True,
-            min_score_thresh=FLAGS.threshold
+            use_normalized_coordinates=True
         )
 
         im = Image.fromarray(image_np_with_detections)
-        png_path = Path(os.path.join(FLAGS.output, '../plots'))
+        png_path = Path(os.path.join(FLAGS.output, 'plots'))
         png_path.mkdir(parents=True, exist_ok=True)
         im.save(os.path.join(png_path, image_name_with_extension))
 
