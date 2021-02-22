@@ -9,6 +9,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 import pandas as pd
 from lxml import etree as ET
+from utils.file_util import read_tfrecord
 
 flags.DEFINE_string('export_dir', None, 'Path to exported model')
 flags.DEFINE_string('label_map_path', './data/voc_data/pascal_label_map.pbtxt',
@@ -24,11 +25,6 @@ flags.DEFINE_string('output', None, 'Path for output files')
 
 FLAGS = flags.FLAGS
 
-
-def load_image_as_nparray(path):
-    return np.array(Image.open(path))
-
-
 def filter_detections_nms(detections, iou_threshold, score_threshold):
     indices = tf.image.non_max_suppression(boxes=detections['detection_boxes'], scores=detections['detection_scores'],
                                            iou_threshold=iou_threshold, score_threshold=score_threshold, max_output_size=30)
@@ -37,9 +33,6 @@ def filter_detections_nms(detections, iou_threshold, score_threshold):
 
 
 def visualize_image(model, image, image_name, categories):
-    # image_name = Path(image_path).stem
-    # image_name_with_extension = Path(image_path).name
-    # image_np = load_image_as_nparray(image_path)
     image_tensor = tf.convert_to_tensor(image)
     image_tensor = image_tensor[tf.newaxis, ...]
     tf.image.convert_image_dtype(image, dtype=tf.uint8)
@@ -156,32 +149,6 @@ def create_voc(image_name, image, detection_matrix, categories):
         files.write(xml_string)
 
 
-def read_tfrecord(tfrecord_path):
-    image_list = []
-    filename_list = []
-
-    features = {
-        # Extract features using the keys set during creation
-        "image/filename": tf.io.FixedLenFeature([], tf.string),
-        "image/encoded": tf.io.FixedLenFeature([], tf.string)
-    }
-
-    dataset = tf.data.TFRecordDataset(tfrecord_path)
-    for record in dataset:
-        sample = tf.io.parse_single_example(record, features)
-
-        image = tf.io.decode_jpeg(sample["image/encoded"]).numpy()
-
-        filename = sample['image/filename'].numpy().decode('UTF-8')
-
-        image_list.append(image)
-        filename_list.append(filename)
-
-    record_dict = {'image': image_list, 'filename': filename_list}
-
-    return record_dict
-
-
 def predict(argv):
     flags.mark_flag_as_required('export_dir')
     flags.mark_flag_as_required('output')
@@ -193,16 +160,15 @@ def predict(argv):
     categories = label_map_util.create_category_index_from_labelmap(FLAGS.label_map_path, use_display_name=True)
 
 
-    if FLAGS.image_folder is not None:
-        for image_name in os.listdir(FLAGS.image_folder):
-            image_path = os.path.join(FLAGS.image_folder, image_name)
-            visualize_image(model=model, image_path=image_path, categories=categories)
-    elif FLAGS.image is not None:
-        image_path = FLAGS.image
-        visualize_image(model=model, image_path=image_path, categories=categories)
-    elif FLAGS.tfrecord is not None:
+    # if FLAGS.image_folder is not None:
+    #     for image_name in os.listdir(FLAGS.image_folder):
+    #         image_path = os.path.join(FLAGS.image_folder, image_name)
+    #         visualize_image(model=model, image_path=image_path, categories=categories)
+    # elif FLAGS.image is not None:
+    #     image_path = FLAGS.image
+    #     visualize_image(model=model, image_path=image_path, categories=categories)
+    if FLAGS.tfrecord is not None:
         records = read_tfrecord(FLAGS.tfrecord)
-
         for image, filename in zip(records['image'], records['filename']):
             visualize_image(model=model, image=image, image_name=filename, categories=categories)
 

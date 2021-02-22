@@ -24,7 +24,7 @@ import time
 import csv
 import numpy as np
 from tensorflow.keras.backend import count_params
-from util.csv_util import write_coco_metrics, write_metric
+from utils.csv_util import write_metrics
 
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2
@@ -672,7 +672,8 @@ def train_loop(
 
     ## Write Params to Dataframe/CSV
     head, tail = os.path.split(str(model_dir))
-    write_metric(head, 'Parameter', total_params)
+    metrics = {'Parameter': total_params}
+    write_metrics(head, metrics)
 
 
 
@@ -1070,6 +1071,8 @@ def eval_continuously(
             step=global_step, model=detection_model)
 
         ckpt.restore(checkpoint).expect_partial()
+        
+        tf.logging.info('Evaluate Checkpoint {}'.format(checkpoint))
 
         summary_writer = tf.compat.v2.summary.create_file_writer(
             os.path.join(model_dir, 'eval', eval_input_config.name))
@@ -1084,4 +1087,4 @@ def eval_continuously(
 
         ## Write Metrics to Dataframe/CSV
         head, tail = os.path.split(str(model_dir))
-        write_coco_metrics(head, eval_metrics)
+        write_metrics(head, eval_metrics)
