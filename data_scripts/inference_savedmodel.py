@@ -39,8 +39,8 @@ def inference(argv):
     time_diffs = []
     records = read_tfrecord(FLAGS.tfrecord)
 
-    for image in records['image']:
-        time_diff = inference_on_single_image(model=model, image=image)
+    for record in records:
+        time_diff = inference_on_single_image(model=model, image=record['image'])
         print(time_diff)
         time_diffs.append(time_diff)
 
