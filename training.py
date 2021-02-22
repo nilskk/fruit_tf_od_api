@@ -42,7 +42,8 @@ def train(argv):
         model_lib_v2.train_loop(
             pipeline_config_path=FLAGS.pipeline_config_path,
             model_dir=FLAGS.model_dir,
-            checkpoint_every_n=checkpoints_every_n_steps)
+            checkpoint_every_n=checkpoints_every_n_steps,
+            checkpoint_max_to_keep=150)
 
 
 if __name__ == "__main__":

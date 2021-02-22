@@ -670,19 +670,6 @@ def train_loop(
     non_trainable_params = int(np.sum([count_params(p) for p in detection_model.non_trainable_weights]))
     total_params = trainable_params + non_trainable_params
 
-    params_path = os.path.join(model_dir, "params.csv")
-    file_exists = os.path.isfile(params_path)
-    if not file_exists:
-        with open(params_path, 'w') as f:
-            params_dict = {'total_params': total_params, 'trainable_params': trainable_params,
-                           'non_trainable_params': non_trainable_params}
-            writer = csv.DictWriter(f, fieldnames=params_dict)
-
-            if not file_exists:
-                writer.writeheader()
-
-                writer.writerow(params_dict)
-
     ## Write Params to Dataframe/CSV
     head, tail = os.path.split(str(model_dir))
     write_metric(head, 'Parameter', total_params)
@@ -1078,12 +1065,11 @@ def eval_continuously(
     global_step = tf.compat.v2.Variable(
         0, trainable=False, dtype=tf.compat.v2.dtypes.int64)
 
-    for latest_checkpoint in tf.train.checkpoints_iterator(
-            checkpoint_dir, timeout=timeout, min_interval_secs=wait_interval):
+    for checkpoint in tf.compat.v2.train.get_checkpoint_state(checkpoint_dir).all_model_checkpoint_paths:
         ckpt = tf.compat.v2.train.Checkpoint(
             step=global_step, model=detection_model)
 
-        ckpt.restore(latest_checkpoint).expect_partial()
+        ckpt.restore(checkpoint).expect_partial()
 
         summary_writer = tf.compat.v2.summary.create_file_writer(
             os.path.join(model_dir, 'eval', eval_input_config.name))
@@ -1095,17 +1081,6 @@ def eval_continuously(
                 use_tpu=use_tpu,
                 postprocess_on_cpu=postprocess_on_cpu,
                 global_step=global_step)
-
-        csv_path = os.path.join(model_dir, "result.csv")
-        file_exists = os.path.isfile(csv_path)
-        with open(csv_path, 'a') as f:
-            csv_dict = {'global_step': global_step.numpy(), **eval_metrics}
-            writer = csv.DictWriter(f, fieldnames=csv_dict)
-
-            if not file_exists:
-                writer.writeheader()
-
-            writer.writerow(csv_dict)
 
         ## Write Metrics to Dataframe/CSV
         head, tail = os.path.split(str(model_dir))
