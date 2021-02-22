@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
 import os
-from util.csv_util import write_flops
+from util.csv_util import write_metric
 from absl import flags
 
 
@@ -31,7 +31,7 @@ def flops(argv):
         print("Flops: {}".format(flops.total_float_ops))
       
         head, tail = os.path.split(str(FLAGS.export_dir))
-        write_flops(head, flops.total_float_ops)
+        write_metric(head, 'Flops', flops.total_float_ops)
     
 
 if __name__ == "__main__":

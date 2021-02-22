@@ -4,6 +4,7 @@ import tensorflow as tf
 from pathlib import Path
 from PIL import Image
 import numpy as np
+import io
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 import pandas as pd
@@ -13,10 +14,11 @@ flags.DEFINE_string('export_dir', None, 'Path to exported model')
 flags.DEFINE_string('label_map_path', './data/voc_data/pascal_label_map.pbtxt',
                     'Path to label map proto')
 
-flags.DEFINE_float('score_threshold', 0.9, 'Minimum score threshold')
+flags.DEFINE_float('score_threshold', 0.7, 'Minimum score threshold')
 flags.DEFINE_float('iou_threshold', 0.95, 'Minimum iou threshold')
 flags.DEFINE_string('image', None, 'Path to single image')
 flags.DEFINE_string('image_folder', None, 'Path to image folder')
+flags.DEFINE_string('tfrecord', None, 'Path to tfrecord file')
 flags.DEFINE_boolean('visualize', True, 'Visualize Object Detection results')
 flags.DEFINE_string('output', None, 'Path for output files')
 
@@ -34,13 +36,13 @@ def filter_detections_nms(detections, iou_threshold, score_threshold):
     return indices.numpy()
 
 
-def visualize_image(model, image_path, categories):
-    image_name = Path(image_path).stem
-    image_name_with_extension = Path(image_path).name
-    image_np = load_image_as_nparray(image_path)
-    image_tensor = tf.convert_to_tensor(image_np)
+def visualize_image(model, image, image_name, categories):
+    # image_name = Path(image_path).stem
+    # image_name_with_extension = Path(image_path).name
+    # image_np = load_image_as_nparray(image_path)
+    image_tensor = tf.convert_to_tensor(image)
     image_tensor = image_tensor[tf.newaxis, ...]
-    tf.image.convert_image_dtype(image_tensor, dtype=tf.uint8)
+    tf.image.convert_image_dtype(image, dtype=tf.uint8)
 
     detections = model(image_tensor)
 
@@ -58,16 +60,16 @@ def visualize_image(model, image_path, categories):
     detection_boxes_threshold = np.swapaxes(detections['detection_boxes'][indices], axis1=0, axis2=1)
     detection_matrix = np.concatenate((np.concatenate((detection_classes_threshold, detection_scores_threshold), axis=0), detection_boxes_threshold), axis=0)
 
-    detection_frame = pd.DataFrame({'class': detection_matrix[0, :], 'score': detection_matrix[1, :],
-                                    'bbox_x_min': detection_matrix[2, :], 'bbox_y_min': detection_matrix[3, :],
-                                    'bbox_x_max': detection_matrix[4, :], 'bbox_y_max': detection_matrix[5, :]})
-
-    csv_path = Path(os.path.join(FLAGS.output, 'csv'))
-    csv_path.mkdir(parents=True, exist_ok=True)
-    detection_frame.to_csv(os.path.join(csv_path, image_name + '.csv'), index=False)
+    # detection_frame = pd.DataFrame({'class': detection_matrix[0, :], 'score': detection_matrix[1, :],
+    #                                 'bbox_x_min': detection_matrix[2, :], 'bbox_y_min': detection_matrix[3, :],
+    #                                 'bbox_x_max': detection_matrix[4, :], 'bbox_y_max': detection_matrix[5, :]})
+    #
+    # csv_path = Path(os.path.join(FLAGS.output, 'csv'))
+    # csv_path.mkdir(parents=True, exist_ok=True)
+    # detection_frame.to_csv(os.path.join(csv_path, image_name + '.csv'), index=False)
     
     if FLAGS.visualize is True:
-        image_np_with_detections = image_np.copy()
+        image_np_with_detections = image.copy()
 
         visualization_utils.visualize_boxes_and_labels_on_image_array(
             image_np_with_detections,
@@ -81,12 +83,12 @@ def visualize_image(model, image_path, categories):
         im = Image.fromarray(image_np_with_detections)
         png_path = Path(os.path.join(FLAGS.output, 'plots'))
         png_path.mkdir(parents=True, exist_ok=True)
-        im.save(os.path.join(png_path, image_name_with_extension))
+        im.save(os.path.join(png_path, image_name))
 
-        create_voc(image_path=image_path, image=image_np, detection_matrix=detection_matrix, categories=categories)
+        create_voc(image_name=image_name, image=image, detection_matrix=detection_matrix, categories=categories)
 
 
-def create_voc(image_path, image, detection_matrix, categories):
+def create_voc(image_name, image, detection_matrix, categories):
     voc_annotation_path = Path('voc/Annotations')
     complete_voc_annotation_path = Path(os.path.join(FLAGS.output, voc_annotation_path))
     complete_voc_annotation_path.mkdir(parents=True, exist_ok=True)
@@ -95,11 +97,10 @@ def create_voc(image_path, image, detection_matrix, categories):
     complete_voc_image_path = Path(os.path.join(FLAGS.output, voc_image_path))
     complete_voc_image_path.mkdir(parents=True, exist_ok=True)
 
-    image_name = Path(image_path).stem
-    image_name_with_extension = Path(image_path).name
+    image_name_without_extension = Path(image_name).stem
 
     im = Image.fromarray(image)
-    im.save(os.path.join(complete_voc_image_path, image_name_with_extension))
+    im.save(os.path.join(complete_voc_image_path, image_name))
 
     root = ET.Element('annotation')
     root.set('verified', 'yes')
@@ -108,10 +109,10 @@ def create_voc(image_path, image, detection_matrix, categories):
     folder.text = 'Annotation'
 
     filename = ET.SubElement(root, 'filename')
-    filename.text = image_name_with_extension
+    filename.text = image_name
 
     path = ET.SubElement(root, 'path')
-    path.text = os.path.join(voc_image_path, image_name_with_extension)
+    path.text = os.path.join(voc_image_path, image_name)
 
     source = ET.SubElement(root, 'source')
     database = ET.SubElement(source, 'database')
@@ -142,28 +143,55 @@ def create_voc(image_path, image, detection_matrix, categories):
 
         bndbox = ET.SubElement(object, 'bndbox')
         xmin = ET.SubElement(bndbox, 'xmin')
-        xmin.text = str(row[2]*im.width)
+        xmin.text = str(row[3]*im.width)
         ymin = ET.SubElement(bndbox, 'ymin')
-        ymin.text = str(row[3]*im.height)
+        ymin.text = str(row[2]*im.height)
         xmax = ET.SubElement(bndbox, 'xmax')
-        xmax.text = str(row[4]*im.width)
+        xmax.text = str(row[5]*im.width)
         ymax = ET.SubElement(bndbox, 'ymax')
-        ymax.text = str(row[5]*im.height)
+        ymax.text = str(row[4]*im.height)
 
     xml_string = ET.tostring(root, pretty_print=True)
-    with open(os.path.join(complete_voc_annotation_path, image_name + '.xml'), 'wb') as files:
+    with open(os.path.join(complete_voc_annotation_path, image_name_without_extension + '.xml'), 'wb') as files:
         files.write(xml_string)
+
+
+def read_tfrecord(tfrecord_path):
+    image_list = []
+    filename_list = []
+
+    features = {
+        # Extract features using the keys set during creation
+        "image/filename": tf.io.FixedLenFeature([], tf.string),
+        "image/encoded": tf.io.FixedLenFeature([], tf.string)
+    }
+
+    dataset = tf.data.TFRecordDataset(tfrecord_path)
+    for record in dataset:
+        sample = tf.io.parse_single_example(record, features)
+
+        image = tf.io.decode_jpeg(sample["image/encoded"]).numpy()
+
+        filename = sample['image/filename'].numpy().decode('UTF-8')
+
+        image_list.append(image)
+        filename_list.append(filename)
+
+    record_dict = {'image': image_list, 'filename': filename_list}
+
+    return record_dict
 
 
 def predict(argv):
     flags.mark_flag_as_required('export_dir')
     flags.mark_flag_as_required('output')
-    flags.mark_flags_as_mutual_exclusive(flag_names=['image', 'image_folder'], required=True)
+    flags.mark_flags_as_mutual_exclusive(flag_names=['image', 'image_folder', 'tfrecord'], required=True)
 
     saved_model_path = os.path.join(FLAGS.export_dir, 'saved_model')
     model = tf.saved_model.load(saved_model_path)
 
     categories = label_map_util.create_category_index_from_labelmap(FLAGS.label_map_path, use_display_name=True)
+
 
     if FLAGS.image_folder is not None:
         for image_name in os.listdir(FLAGS.image_folder):
@@ -172,6 +200,12 @@ def predict(argv):
     elif FLAGS.image is not None:
         image_path = FLAGS.image
         visualize_image(model=model, image_path=image_path, categories=categories)
+    elif FLAGS.tfrecord is not None:
+        records = read_tfrecord(FLAGS.tfrecord)
+
+        for image, filename in zip(records['image'], records['filename']):
+            visualize_image(model=model, image=image, image_name=filename, categories=categories)
+
 
 
 if __name__ == '__main__':

@@ -70,6 +70,7 @@ def get_class_list():
     val2_list = []
     val3_list = []
     for list in [apfel_list, kiwi_list, paprikamix_list, paprikarot_list, mango_list, tomate_list, kohlrabi_list]:
+
         tmp_list = random.sample(list, 200)
         train1_list = train1_list + tmp_list
         remaining_list = list_difference(list, tmp_list)

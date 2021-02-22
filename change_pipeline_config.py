@@ -2,7 +2,7 @@ import tensorflow.compat.v2 as tf
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
 from absl import flags
-from util.csv_util import create_dataframe, write_bs, write_lr, write_name, write_optimizer
+from util.csv_util import create_dataframe, write_metric
 import os
 import math
 
@@ -63,10 +63,10 @@ def change_pipeline(argv):
     head, tail = os.path.split(FLAGS.model_dir)
     optimizer_name = FLAGS.optimizer
     create_dataframe(head)
-    write_name(head, FLAGS.model_name)
-    write_optimizer(head, optimizer_name)
-    write_bs(head, FLAGS.batch_size)
-    write_lr(head, FLAGS.learning_rate)
+    write_metric(head, 'Name', FLAGS.model_name)
+    write_metric(head, 'Optimizer', optimizer_name)
+    write_metric(head, 'Batch Size', FLAGS.batch_size)
+    write_metric(head, 'Learning Rate', FLAGS.learning_rate)
 
 if __name__=="__main__":
     tf.compat.v1.app.run(change_pipeline)

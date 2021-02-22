@@ -4,7 +4,7 @@ import random
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-from util.csv_util import write_speed
+from util.csv_util import write_metric
 from absl import flags
 import glob
 
@@ -49,7 +49,7 @@ def inference(argv):
     average_inference_speed = np.average(time_diffs_array[1:])
     print("Average Inference Speed: " + str(average_inference_speed))
 
-    write_speed(head, average_inference_speed)
+    write_metric(head, 'Inference Speed', average_inference_speed)
 
 
 if __name__ == "__main__":

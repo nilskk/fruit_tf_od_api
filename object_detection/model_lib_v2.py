@@ -24,7 +24,7 @@ import time
 import csv
 import numpy as np
 from tensorflow.keras.backend import count_params
-from util.csv_util import write_metrics, write_params
+from util.csv_util import write_coco_metrics, write_metric
 
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2
@@ -685,7 +685,7 @@ def train_loop(
 
     ## Write Params to Dataframe/CSV
     head, tail = os.path.split(str(model_dir))
-    write_params(head, total_params)
+    write_metric(head, 'Parameter', total_params)
 
 
 
@@ -1109,4 +1109,4 @@ def eval_continuously(
 
         ## Write Metrics to Dataframe/CSV
         head, tail = os.path.split(str(model_dir))
-        write_metrics(head, eval_metrics)
+        write_coco_metrics(head, eval_metrics)
