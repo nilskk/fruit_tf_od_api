@@ -1,9 +1,8 @@
-import tf
+import tensorflow as tf
 
 
 def read_tfrecord(tfrecord_path):
-    image_list = []
-    filename_list = []
+    record_list = []
 
     features = {
         # Extract features using the keys set during creation
@@ -19,9 +18,8 @@ def read_tfrecord(tfrecord_path):
 
         filename = sample['image/filename'].numpy().decode('UTF-8')
 
-        image_list.append(image)
-        filename_list.append(filename)
+        record_dict = {'image': image, 'filename': filename}
 
-    record_dict = {'image': image_list, 'filename': filename_list}
+        record_list.append(record_dict)
 
-    return record_dict
+    return record_list
