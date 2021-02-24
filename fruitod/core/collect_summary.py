@@ -4,9 +4,9 @@ from absl import flags, app
 import os
 
 
-flags.DEFINE_string('models_path', None, 'Path to models directory')
-
-FLAGS = flags.FLAGS
+# flags.DEFINE_string('models_path', None, 'Path to models directory')
+#
+# FLAGS = flags.FLAGS
 
 
 def collect_csv(models_path):
@@ -27,12 +27,12 @@ def collect_csv(models_path):
 
 
 def main(argv):
-    flags.mark_flag_as_required('models_path')
+    # flags.mark_flag_as_required('models_path')
 
     collect_csv(models_path=FLAGS.models_path)
 
 
 if __name__ == '__main__':
-    app.run(main)
-
+    # app.run(main)
+    main()
 

@@ -9,18 +9,17 @@ from object_detection.utils import visualization_utils
 from lxml import etree as ET
 from fruitod.utils.file_util import read_tfrecord
 
-flags.DEFINE_string('export_path', None, 'Path to exported model')
-flags.DEFINE_string('output_path', None, 'Path for output files')
-flags.DEFINE_string('tfrecord_path', None, 'Path to tfrecord file')
-flags.DEFINE_string('labelmap_path', './data/voc_data/pascal_label_map.pbtxt',
-                    'Path to label map proto')
-
-flags.DEFINE_float('score_threshold', 0.7, 'Minimum score threshold')
-flags.DEFINE_float('iou_threshold', 0.95, 'Minimum iou threshold')
-flags.DEFINE_boolean('visualize', True, 'Visualize Object Detection results')
-
-
-FLAGS = flags.FLAGS
+# flags.DEFINE_string('export_path', None, 'Path to exported model')
+# flags.DEFINE_string('output_path', None, 'Path for output files')
+# flags.DEFINE_string('tfrecord_path', None, 'Path to tfrecord file')
+# flags.DEFINE_string('labelmap_path', './data/voc_data/pascal_label_map.pbtxt',
+#                     'Path to label map proto')
+# 
+# flags.DEFINE_float('score_threshold', 0.7, 'Minimum score threshold')
+# flags.DEFINE_float('iou_threshold', 0.95, 'Minimum iou threshold')
+# flags.DEFINE_boolean('visualize', True, 'Visualize Object Detection results')
+# 
+# FLAGS = flags.FLAGS
 
 
 def filter_detections_nms(detections, iou_threshold, score_threshold):
@@ -76,7 +75,7 @@ def visualize_detections(output_path,
     )
 
     im = Image.fromarray(image_np_with_detections)
-    png_path = Path(os.path.join(output_path, '../../plots'))
+    png_path = Path(os.path.join(output_path, 'plots'))
     png_path.mkdir(parents=True, exist_ok=True)
     im.save(os.path.join(png_path, image_name))
 
@@ -189,9 +188,9 @@ def predict(export_path,
 
 
 def main(argv):
-    flags.mark_flag_as_required('export_path')
-    flags.mark_flag_as_required('output_path')
-    flags.mark_flag_as_required('tfrecord_path')
+    # flags.mark_flag_as_required('export_path')
+    # flags.mark_flag_as_required('output_path')
+    # flags.mark_flag_as_required('tfrecord_path')
 
     predict(export_path=FLAGS.export_path,
             output_path=FLAGS.output_path,
@@ -203,4 +202,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    app.run(main)
+    # app.run(main)
+    main()

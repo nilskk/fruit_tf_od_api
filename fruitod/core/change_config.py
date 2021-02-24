@@ -5,21 +5,22 @@ from absl import flags
 from fruitod.utils.csv_util import write_metrics
 from fruitod.utils.file_util import get_steps_per_epoch
 import os
+from pathlib import Path
 
-flags.DEFINE_string('config_path', None, 'Path to pipeline config file.')
-flags.DEFINE_string('model_path', None, 'Path to model directory')
-flags.DEFINE_string('model_name', "", 'Name of the model')
-flags.DEFINE_integer('train_epochs', 150, 'Number of epochs to train')
-flags.DEFINE_integer('first_decay_epochs', 10, 'Number of epochs for first cosine decay')
-flags.DEFINE_integer('num_classes', 5, 'Number of classes in model')
-flags.DEFINE_integer('batch_size', 16, 'Batch size for training')
-flags.DEFINE_string('optimizer', 'adam', 'which optimizer to use')
-flags.DEFINE_float('learning_rate', 0.01, 'Base learning rate')
-flags.DEFINE_string('labelmap_path', "./data/voc_data/pascal_label_map.pbtxt", 'Path to pascal_label_map.pbtxt')
-flags.DEFINE_string('train_tfrecord_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
-flags.DEFINE_string('val_tfrecord_path', "./data/tfrecords/vott_val.tfrecord", 'Path to val tfrecord file')
-
-FLAGS = flags.FLAGS
+# flags.DEFINE_string('config_path', None, 'Path to pipeline config file.')
+# flags.DEFINE_string('model_path', None, 'Path to model directory')
+# flags.DEFINE_string('model_name', "", 'Name of the model')
+# flags.DEFINE_integer('train_epochs', 150, 'Number of epochs to train')
+# flags.DEFINE_integer('first_decay_epochs', 10, 'Number of epochs for first cosine decay')
+# flags.DEFINE_integer('num_classes', 5, 'Number of classes in model')
+# flags.DEFINE_integer('batch_size', 16, 'Batch size for training')
+# flags.DEFINE_string('optimizer', 'adam', 'which optimizer to use')
+# flags.DEFINE_float('learning_rate', 0.01, 'Base learning rate')
+# flags.DEFINE_string('labelmap_path', "./data/voc_data/pascal_label_map.pbtxt", 'Path to pascal_label_map.pbtxt')
+# flags.DEFINE_string('train_tfrecord_path', "./data/tfrecords/vott_train.tfrecord", 'Path to train tfrecord file')
+# flags.DEFINE_string('val_tfrecord_path', "./data/tfrecords/vott_val.tfrecord", 'Path to val tfrecord file')
+# 
+# FLAGS = flags.FLAGS
 
 
 def read_config(config_path):
@@ -91,7 +92,7 @@ def set_val_tfrecord(pipeline,
     pipeline.eval_input_reader[0].tf_record_input_reader.input_path[0] = val_tfrecord_path
 
 
-def change_pipeline(model_path,
+def change_pipeline(checkpoint_path,
                     config_path,
                     labelmap_path,
                     train_tfrecord_path,
@@ -103,6 +104,7 @@ def change_pipeline(model_path,
                     learning_rate,
                     train_epochs,
                     first_decay_epochs):
+
     pipeline = read_config(config_path=config_path)
 
     steps_per_epoch = get_steps_per_epoch(tfrecord_path=train_tfrecord_path, batch_size=batch_size)
@@ -122,7 +124,8 @@ def change_pipeline(model_path,
 
     write_config(pipeline, config_path=config_path)
 
-    head, tail = os.path.split(model_path)
+    head, tail = os.path.split(checkpoint_path)
+    Path(head).mkdir(parents=True, exist_ok=True)
 
     metrics = {'Name': model_name,
                'Optimizer': optimizer_name,
@@ -132,10 +135,10 @@ def change_pipeline(model_path,
 
 
 def main(argv):
-    flags.mark_flag_as_required('config_path')
-    flags.mark_flag_as_required('model_path')
+    # flags.mark_flag_as_required('config_path')
+    # flags.mark_flag_as_required('model_path')
 
-    change_pipeline(model_path=FLAGS.model_path,
+    change_pipeline(checkpoint_path=FLAGS.model_path,
                     config_path=FLAGS.config_path,
                     labelmap_path=FLAGS.labelmap_path,
                     train_tfrecord_path=FLAGS.train_tfrecord_path,
@@ -150,4 +153,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    tf.compat.v1.app.run(main)
+    # tf.compat.v1.app.run(main)
+    main()

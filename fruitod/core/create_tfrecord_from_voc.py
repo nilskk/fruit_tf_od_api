@@ -38,17 +38,17 @@ import tensorflow.compat.v1 as tf
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
-flags = tf.app.flags
-flags.DEFINE_string('data_path', '', 'Root directory to raw PASCAL VOC dataset.')
-flags.DEFINE_string('set', 'train', 'Convert training set or validation set.')
-flags.DEFINE_string('voc_set_name', 'vott', 'Name of the set in voc for naming of '
-                                                          'train and val txt files.')
-flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore '
-                                                          'difficult instances')
-FLAGS = flags.FLAGS
-
-SETS = ['train', 'val']
+# flags = tf.app.flags
+# flags.DEFINE_string('data_path', '', 'Root directory to raw PASCAL VOC dataset.')
+# flags.DEFINE_string('set', 'train', 'Convert training set or validation set.')
+# flags.DEFINE_string('voc_set_name', 'vott', 'Name of the set in voc for naming of '
+#                                                           'train and val txt files.')
+# flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
+# flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore '
+#                                                           'difficult instances')
+# FLAGS = flags.FLAGS
+# 
+# SETS = ['train', 'val']
 
 
 def dict_to_tf_example(data,
@@ -143,14 +143,13 @@ def create_tfrecord(output_path,
                     data_path,
                     set,
                     voc_set_name,
-                    ignore_difficult_instances):
+                    ignore_difficult_instances=False):
 
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-    output_file = os.path.join(output_path, 'vott_' + set + '.tfrecord')
-    writer = tf.python_io.TFRecordWriter(output_file)
+    if not os.path.exists(os.path.split(output_path)[0]):
+        os.makedirs(os.path.split(output_path)[0])
+    writer = tf.python_io.TFRecordWriter(output_path)
 
-    complete_label_map_path = os.path.join(data_dir, 'pascal_label_map.pbtxt')
+    complete_label_map_path = os.path.join(data_path, 'pascal_label_map.pbtxt')
     label_map_dict = label_map_util.get_label_map_dict(complete_label_map_path)
 
     examples_path = os.path.join(data_path, 'ImageSets', 'Main',
@@ -175,8 +174,8 @@ def create_tfrecord(output_path,
 
 
 def main(_):
-    if FLAGS.set not in SETS:
-        raise ValueError('set must be in : {}'.format(SETS))
+    # if FLAGS.set not in SETS:
+    #     raise ValueError('set must be in : {}'.format(SETS))
 
     create_tfrecord(output_path=FLAGS.output_path,
                     data_path=FLAGS.data_path,
@@ -186,4 +185,5 @@ def main(_):
 
 
 if __name__ == '__main__':
-    tf.app.run()
+    # tf.app.run()
+    main()
