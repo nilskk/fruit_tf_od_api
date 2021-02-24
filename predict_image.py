@@ -162,6 +162,8 @@ def predict(export_path,
             score_threshold=0.5,
             iou_threshold=0.5,
             visualize=False):
+    tf.config.set_visible_devices([], 'GPU')
+
     saved_model_path = os.path.join(export_path, 'saved_model')
     model = tf.saved_model.load(saved_model_path)
 
@@ -203,5 +205,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    tf.config.set_visible_devices([], 'GPU')
     app.run(main)
