@@ -14,7 +14,7 @@ from object_detection import model_lib_v2
 
 def evaluate(checkpoint_path,
              config_path):
-    tf.config.set_visible_devices([], 'GPU')
+    # tf.config.set_visible_devices([], 'GPU')
 
     model_lib_v2.eval_continuously(
         pipeline_config_path=config_path,
