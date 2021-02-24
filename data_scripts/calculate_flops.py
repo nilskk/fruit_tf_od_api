@@ -5,15 +5,13 @@ from utils.csv_util import write_metrics
 from absl import flags
 
 
-flags.DEFINE_string('export_dir', None, 'Path to exported model')
+flags.DEFINE_string('export_path', None, 'Path to exported model')
 
 FLAGS = flags.FLAGS
 
 
-def flops(argv):
-    flags.mark_flag_as_required('export_dir')
-    saved_model_path = os.path.join(FLAGS.export_dir, 'saved_model')
-    
+def flops(export_path):
+    saved_model_path = os.path.join(export_path, 'saved_model')
     model = tf.saved_model.load(saved_model_path)
 
     full_model = tf.function(lambda x: model(x))
@@ -30,10 +28,15 @@ def flops(argv):
 
         print("Flops: {}".format(flops.total_float_ops))
       
-        head, tail = os.path.split(str(FLAGS.export_dir))
+        head, tail = os.path.split(str(export_path))
         metrics = {'Flops': flops.total_float_ops}
         write_metrics(head, metrics)
-    
+
+
+def main(argv):
+    flags.mark_flag_as_required('export_path')
+
+    flops(export_path=FLAGS.export_path)
 
 if __name__ == "__main__":
-    tf.compat.v1.app.run(flops)
+    tf.compat.v1.app.run(main)
