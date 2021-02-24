@@ -1,11 +1,7 @@
-import os
 from fruitod.core.create_tfrecord_from_voc import create_tfrecord
 from fruitod.core.training import train
 from fruitod.core.evaluation import evaluate
 from fruitod.core.change_config import change_pipeline
-from fruitod.core.collect_summary import collect_csv
-from fruitod.core.calculate_performance import flops, inference
-from fruitod.core.predict_image import predict
 from fruitod.core.exporter import export
 from fruitod.settings import *
 import tensorflow as tf
@@ -63,18 +59,18 @@ if __name__ == '__main__':
            checkpoint_path=CHECKPOINT_PATH,
            export_path=EXPORT_PATH)
     
-    inference(export_path=EXPORT_PATH,
-              tfrecord_path=VAL_TFRECORD_PATH)
-    
-    flops(export_path=EXPORT_PATH)
-    
-    collect_csv(models_path=os.path.split(MODEL_PATH)[0])
-
-    predict(export_path=EXPORT_PATH,
-            output_path=PREDICTION_OUTPUT_PATH,
-            labelmap_path=LABELMAP_PATH,
-            tfrecord_path=VAL_TFRECORD_PATH,
-            score_threshold=SCORE_THRESHOLD,
-            iou_threshold=IOU_THRESHOLD,
-            visualize=VISUALIZE)
+    # inference(export_path=EXPORT_PATH,
+    #           tfrecord_path=VAL_TFRECORD_PATH)
+    #
+    # flops(export_path=EXPORT_PATH)
+    #
+    # collect_csv(models_path=os.path.split(MODEL_PATH)[0])
+    #
+    # predict(export_path=EXPORT_PATH,
+    #         output_path=PREDICTION_OUTPUT_PATH,
+    #         labelmap_path=LABELMAP_PATH,
+    #         tfrecord_path=VAL_TFRECORD_PATH,
+    #         score_threshold=SCORE_THRESHOLD,
+    #         iou_threshold=IOU_THRESHOLD,
+    #         visualize=VISUALIZE)
 
