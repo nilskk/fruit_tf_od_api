@@ -4,12 +4,10 @@ import tensorflow as tf
 from pathlib import Path
 from PIL import Image
 import numpy as np
-import io
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
-import pandas as pd
 from lxml import etree as ET
-from utils.file_util import read_tfrecord
+from fruitod.utils.file_util import read_tfrecord
 
 flags.DEFINE_string('export_path', None, 'Path to exported model')
 flags.DEFINE_string('output_path', None, 'Path for output files')
@@ -78,7 +76,7 @@ def visualize_detections(output_path,
     )
 
     im = Image.fromarray(image_np_with_detections)
-    png_path = Path(os.path.join(output_path, 'plots'))
+    png_path = Path(os.path.join(output_path, '../../plots'))
     png_path.mkdir(parents=True, exist_ok=True)
     im.save(os.path.join(png_path, image_name))
 

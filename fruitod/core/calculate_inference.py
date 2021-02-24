@@ -1,13 +1,10 @@
 import time
 import os
-import random
 import tensorflow as tf
-from PIL import Image
 import numpy as np
-from utils.csv_util import write_metrics
-from utils.file_util import read_tfrecord
+from fruitod.utils.csv_util import write_metrics
+from fruitod.utils.file_util import read_tfrecord
 from absl import flags
-import glob
 
 flags.DEFINE_string('export_path', None, 'Path to exported model')
 flags.DEFINE_string('tfrecord_path', './data/tfrecords/vott_val.tfrecord',

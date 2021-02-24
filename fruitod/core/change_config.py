@@ -2,10 +2,9 @@ import tensorflow.compat.v2 as tf
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
 from absl import flags
-from utils.csv_util import write_metrics
-from utils.file_util import get_steps_per_epoch
+from fruitod.utils.csv_util import write_metrics
+from fruitod.utils.file_util import get_steps_per_epoch
 import os
-import math
 
 flags.DEFINE_string('config_path', None, 'Path to pipeline config file.')
 flags.DEFINE_string('model_path', None, 'Path to model directory')

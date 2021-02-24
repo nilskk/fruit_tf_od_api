@@ -5,7 +5,7 @@ import os
 import seaborn as sns
 import pandas as pd
 
-plot_path = Path("../plots/kaggle")
+plot_path = Path("../../plots/kaggle")
 
 classes_list = ['Apple1', 'Kiwi1', 'Mango', 'Muskmelon', 'Tomato']
 
@@ -43,7 +43,7 @@ def create_numobjects_graph(df_classes):
 if __name__ == "__main__":
     plot_path.mkdir(parents=True, exist_ok=True)
 
-    xml_folder = Path("../data/voc_data/Annotations")
+    xml_folder = Path("../../data/voc_data/Annotations")
 
     class_list_ges = []
     count_list_ges = []

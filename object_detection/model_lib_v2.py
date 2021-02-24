@@ -21,10 +21,9 @@ from __future__ import print_function
 import copy
 import os
 import time
-import csv
 import numpy as np
 from tensorflow.keras.backend import count_params
-from utils.csv_util import write_metrics
+from fruitod.utils.csv_util import write_metrics
 
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v2 as tf2

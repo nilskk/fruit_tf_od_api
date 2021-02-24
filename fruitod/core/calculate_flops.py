@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
 import os
-from utils.csv_util import write_metrics
+from fruitod.utils.csv_util import write_metrics
 from absl import flags
 
 
