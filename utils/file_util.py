@@ -23,3 +23,11 @@ def read_tfrecord(tfrecord_path):
         record_list.append(record_dict)
 
     return record_list
+
+
+def get_steps_per_epoch(tfrecord_path,
+                        batch_size):
+    num_train_images = sum(1 for _ in tf.data.TFRecordDataset(tfrecord_path))
+    steps_per_epoch = math.ceil(num_train_images / batch_size)
+
+    return steps_per_epoch
