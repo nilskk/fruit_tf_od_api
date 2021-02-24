@@ -1,10 +1,9 @@
-from absl import flags
 import tensorflow.compat.v2 as tf
 from object_detection import model_lib_v2
 import math
-import os
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
+from fruitod.settings import *
 
 # flags.DEFINE_string('config_path', None, 'Path to pipeline config file.')
 # flags.DEFINE_string('model_path', None, 'Path to output model directory '
@@ -43,10 +42,10 @@ def main(argv):
     # flags.mark_flag_as_required('model_path')
     # flags.mark_flag_as_required('config_path')
 
-    train(checkpoint_path=FLAGS.model_path,
-          config_path=FLAGS.config_path,
-          checkpoint_every_n_epochs=FLAGS.checkpoint_every_n_epochs,
-          batch_size=FLAGS.batch_size)
+    train(checkpoint_path=CHECKPOINT_PATH,
+          config_path=CONFIG_PATH,
+          checkpoint_every_n_epochs=10,
+          batch_size=BATCH_SIZE)
 
 
 if __name__ == "__main__":
