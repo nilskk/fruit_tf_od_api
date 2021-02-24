@@ -1,4 +1,5 @@
 import tensorflow as tf
+import math
 
 
 def read_tfrecord(tfrecord_path):
