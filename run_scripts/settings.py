@@ -1,15 +1,15 @@
 import os
 
 
-TFRECORDS_PATH = '../data/tfrecords'
+TFRECORDS_PATH = './data/tfrecords'
 TRAIN_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'vott_train.tfrecord')
 VAL_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'vott_val.tfrecord')
 
-VOC_PATH = '../data/voc_data'
+VOC_PATH = './data/voc_data'
 LABELMAP_PATH = os.path.join(VOC_PATH, 'pascal_label_map.pbtxt')
 VOC_SET_NAME = 'vott'
 
-MODEL_PATH = '../models/test/mobilenetv2'
+MODEL_PATH = './models/test/mobilenetv2'
 CONFIG_PATH = os.path.join(MODEL_PATH, 'pipeline.config')
 
 MODEL_NAME = os.path.basename(MODEL_PATH)
