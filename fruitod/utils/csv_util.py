@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 def write_metrics(dir, metrics):
+    Path(dir).mkdir(parents=True, exist_ok=True)
     path = Path(os.path.join(dir, 'metrics.csv'))
     if path.exists():
         df = pd.read_csv(path)
