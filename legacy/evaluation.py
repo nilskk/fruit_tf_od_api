@@ -24,7 +24,7 @@ def evaluate(checkpoint_path,
     )
 
 
-def main(argv):
+def main():
     # flags.mark_flag_as_required('model_path')
     # flags.mark_flag_as_required('config_path')
     # flags.mark_flag_as_required('checkpoint_path')
