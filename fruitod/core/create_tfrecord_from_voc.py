@@ -97,7 +97,6 @@ def dict_to_tf_example(data,
     classes = []
     classes_text = []
     truncated = []
-    poses = []
     difficult_obj = []
     if 'object' in data:
         for obj in data['object']:
@@ -114,7 +113,6 @@ def dict_to_tf_example(data,
             classes_text.append(obj['name'].encode('utf8'))
             classes.append(label_map_dict[obj['name']])
             truncated.append(int(obj['truncated']))
-            poses.append(obj['pose'].encode('utf8'))
 
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
@@ -134,7 +132,6 @@ def dict_to_tf_example(data,
         'image/object/class/label': dataset_util.int64_list_feature(classes),
         'image/object/difficult': dataset_util.int64_list_feature(difficult_obj),
         'image/object/truncated': dataset_util.int64_list_feature(truncated),
-        'image/object/view': dataset_util.bytes_list_feature(poses),
     }))
     return example
 
