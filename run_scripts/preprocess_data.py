@@ -1,6 +1,7 @@
 from fruitod.core.pipeline import Pipeline
 from fruitod.core.create_tfrecord_from_voc import create_tfrecord
 from fruitod.utils.file_util import get_steps_per_epoch
+from fruitod.utils.csv_util import write_metrics
 from settings import *
 
 
@@ -28,4 +29,11 @@ if __name__ == '__main__':
                          learning_rate=LEARNING_RATE)
     config.set_batch_size(batch_size=BATCH_SIZE)
     config.set_num_classes(num_classes=NUM_CLASSES)
-    config.set_train_epochs(train_epochs=TRAIN_EPOCHS)
+    config.set_train_epochs(train_epochs=TRAIN_EPOCHS,
+                            steps_per_epoch=steps_per_epoch)
+
+    metrics = {'Name': MODEL_NAME,
+               'Optimizer': OPTIMIZER_NAME,
+               'Batch Size': BATCH_SIZE,
+               'Learning Rate': LEARNING_RATE}
+    write_metrics(SAVE_PATH, metrics)
