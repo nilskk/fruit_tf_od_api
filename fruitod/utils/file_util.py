@@ -1,5 +1,7 @@
 import tensorflow as tf
 import math
+from google.protobuf import text_format
+from object_detection.protos import pipeline_pb2
 
 
 def read_tfrecord(tfrecord_path):
@@ -32,3 +34,19 @@ def get_steps_per_epoch(tfrecord_path,
     steps_per_epoch = math.ceil(num_train_images / batch_size)
 
     return steps_per_epoch
+
+
+def read_config(config_path):
+    pipeline = pipeline_pb2.TrainEvalPipelineConfig()
+    with tf.io.gfile.GFile(config_path, 'r') as f:
+        proto_str = f.read()
+        text_format.Merge(proto_str, pipeline)
+
+    return pipeline
+
+
+def write_config(pipeline,
+                 config_path):
+    pipeline_text = text_format.MessageToString(pipeline)
+    with tf.io.gfile.GFile(config_path, 'wb') as f:
+        f.write(pipeline_text)
