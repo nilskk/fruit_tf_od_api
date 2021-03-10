@@ -1,4 +1,3 @@
-from absl import flags, app
 import os
 import tensorflow as tf
 from pathlib import Path
@@ -8,18 +7,6 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 from lxml import etree as ET
 from fruitod.utils.file_util import read_tfrecord
-
-# flags.DEFINE_string('export_path', None, 'Path to exported model')
-# flags.DEFINE_string('output_path', None, 'Path for output files')
-# flags.DEFINE_string('tfrecord_path', None, 'Path to tfrecord file')
-# flags.DEFINE_string('labelmap_path', './data/voc_data/pascal_label_map.pbtxt',
-#                     'Path to label map proto')
-# 
-# flags.DEFINE_float('score_threshold', 0.7, 'Minimum score threshold')
-# flags.DEFINE_float('iou_threshold', 0.95, 'Minimum iou threshold')
-# flags.DEFINE_boolean('visualize', True, 'Visualize Object Detection results')
-# 
-# FLAGS = flags.FLAGS
 
 
 def filter_detections_nms(detections, iou_threshold, score_threshold):
@@ -187,11 +174,7 @@ def predict(export_path,
                    detections=detections)
 
 
-def main(argv):
-    # flags.mark_flag_as_required('export_path')
-    # flags.mark_flag_as_required('output_path')
-    # flags.mark_flag_as_required('tfrecord_path')
-
+def main():
     predict(export_path=FLAGS.export_path,
             output_path=FLAGS.output_path,
             labelmap_path=FLAGS.labelmap_path,
@@ -202,5 +185,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    # app.run(main)
     main()

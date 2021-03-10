@@ -1,12 +1,6 @@
 import pandas as pd
 import glob
-from absl import flags, app
 import os
-
-
-# flags.DEFINE_string('models_path', None, 'Path to models directory')
-#
-# FLAGS = flags.FLAGS
 
 
 def collect_csv(models_path):
@@ -26,13 +20,10 @@ def collect_csv(models_path):
     summary_df.to_csv(summary_path, index=False)
 
 
-def main(argv):
-    # flags.mark_flag_as_required('models_path')
-
+def main():
     collect_csv(models_path=FLAGS.models_path)
 
 
 if __name__ == '__main__':
-    # app.run(main)
     main()
 

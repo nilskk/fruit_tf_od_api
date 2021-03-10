@@ -4,15 +4,7 @@ import os
 import time
 from fruitod.utils.csv_util import write_metrics
 from fruitod.utils.file_util import read_tfrecord
-from absl import flags
 import numpy as np
-
-
-# flags.DEFINE_string('export_path', None, 'Path to exported model')
-# flags.DEFINE_string('tfrecord_path', './data/tfrecords/vott_val.tfrecord',
-#                     'Path to tfrecord')
-# 
-# FLAGS = flags.FLAGS
 
 
 def inference_on_single_image(model, image):
@@ -78,14 +70,11 @@ def flops(export_path):
         write_metrics(head, metrics)
 
 
-def main(argv):
-    # flags.mark_flag_as_required('export_path')
-
+def main():
     flops(export_path=FLAGS.export_path)
     inference(export_path=FLAGS.export_path,
               tfrecord_path=FLAGS.tfrecord_path)
 
 
 if __name__ == "__main__":
-    # tf.compat.v1.app.run(main)
     main()

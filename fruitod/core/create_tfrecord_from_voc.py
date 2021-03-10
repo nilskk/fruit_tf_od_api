@@ -13,15 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-r"""Convert VOTT dataset to TFRecord for object_detection.
-
-Example usage:
-    python create_tfrecord_from_voc.py \
-        --data_dir=pascal_data \
-        --set=train \
-        --output_dir=tfrecords \
-        --vott_sourceconnection_name=Mango \
-        """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -37,18 +28,6 @@ import tensorflow.compat.v1 as tf
 
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
-
-# flags = tf.app.flags
-# flags.DEFINE_string('data_path', '', 'Root directory to raw PASCAL VOC dataset.')
-# flags.DEFINE_string('set', 'train', 'Convert training set or validation set.')
-# flags.DEFINE_string('voc_set_name', 'vott', 'Name of the set in voc for naming of '
-#                                                           'train and val txt files.')
-# flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-# flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore '
-#                                                           'difficult instances')
-# FLAGS = flags.FLAGS
-# 
-# SETS = ['train', 'val']
 
 
 def dict_to_tf_example(data,
@@ -170,10 +149,7 @@ def create_tfrecord(output_path,
     writer.close()
 
 
-def main(_):
-    # if FLAGS.set not in SETS:
-    #     raise ValueError('set must be in : {}'.format(SETS))
-
+def main():
     create_tfrecord(output_path=FLAGS.output_path,
                     data_path=FLAGS.data_path,
                     set=FLAGS.set,
@@ -182,5 +158,4 @@ def main(_):
 
 
 if __name__ == '__main__':
-    # tf.app.run()
     main()
