@@ -112,7 +112,7 @@ def create_voc(output_path,
     segmented = ET.SubElement(root, 'segmented')
     segmented.text = str(0)
 
-    for row, category in zip(detections['detection_boxes'], detections['detection_classes']):
+    for row, category, score in zip(detections['detection_boxes'], detections['detection_classes'], detections['detection_scores']):
         object = ET.SubElement(root, 'object')
 
         name = ET.SubElement(object, 'name')
@@ -123,6 +123,9 @@ def create_voc(output_path,
         truncated.text = str(0)
         difficult = ET.SubElement(object, 'difficult')
         difficult.text = str(0)
+
+        score = ET.SubElement(object, 'score')
+        score.text = str(detections['detection_scores'])
 
         bndbox = ET.SubElement(object, 'bndbox')
         xmin = ET.SubElement(bndbox, 'xmin')
