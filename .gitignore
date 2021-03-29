@@ -10,7 +10,7 @@
 
 /build/
 /dist/
-/object_detection.egg-info/
+/fruitod.egg-info/
 
 /plots/
 /predictions_test/
