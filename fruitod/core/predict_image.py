@@ -117,6 +117,8 @@ def create_voc(output_path,
 
         name = ET.SubElement(object, 'name')
         name.text = categories[category]['name']
+        id = ET.SubElement(object, 'id')
+        id.text = str(category)
         pose = ET.SubElement(object, 'pose')
         pose.text = 'Unspecified'
         truncated = ET.SubElement(object, 'truncated')
