@@ -7,6 +7,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 from lxml import etree as ET
 from fruitod.utils.file_util import read_tfrecord
+from fruitod.settings import *
 
 
 def filter_detections_nms(detections, iou_threshold, score_threshold):
@@ -178,13 +179,13 @@ def predict(export_path,
 
 
 def main():
-    predict(export_path=FLAGS.export_path,
-            output_path=FLAGS.output_path,
-            labelmap_path=FLAGS.labelmap_path,
-            tfrecord_path=FLAGS.tfrecord_path,
-            score_threshold=FLAGS.score_threshold,
-            iou_threshold=FLAGS.iou_threshold,
-            visualize=FLAGS.visualize)
+    predict(export_path=EXPORT_PATH,
+            output_path=PREDICTION_OUTPUT_PATH,
+            labelmap_path=LABELMAP_PATH,
+            tfrecord_path=VAL_TFRECORD_PATH,
+            score_threshold=SCORE_THRESHOLD,
+            iou_threshold=IOU_THRESHOLD,
+            visualize=VISUALIZE)
 
 
 if __name__ == '__main__':
