@@ -1,7 +1,5 @@
-from fruitod.core.calculate_performance import inference, flops
-from fruitod.core.collect_summary import collect_csv
 from fruitod.core.predict_image import predict
-from settings import *
+from fruitod.settings import *
 
 if __name__ == '__main__':
     #inference(export_path=EXPORT_PATH,

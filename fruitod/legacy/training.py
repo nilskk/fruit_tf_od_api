@@ -3,7 +3,7 @@ from object_detection import model_lib_v2
 import math
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
-from run_scripts.settings import *
+from fruitod.settings import *
 
 # flags.DEFINE_string('config_path', None, 'Path to pipeline config file.')
 # flags.DEFINE_string('model_path', None, 'Path to output model directory '

@@ -1,15 +1,16 @@
 import os
+from pathlib import Path
 
-
-TFRECORDS_PATH = './data/tfrecords'
+HOME = os.path.join(Path.home(), 'rewe_project')
+TFRECORDS_PATH = os.path.join(HOME, 'data/tfrecords')
 TRAIN_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'vott_train.tfrecord')
 VAL_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'vott_val.tfrecord')
 
-VOC_PATH = './data/voc_data'
+VOC_PATH = os.path.join(HOME, 'data/voc_data')
 LABELMAP_PATH = os.path.join(VOC_PATH, 'pascal_label_map.pbtxt')
 VOC_SET_NAME = 'vott'
 
-MODEL_PATH = './models/test/efficientdet_d0'
+MODEL_PATH = os.path.join(HOME, 'models/own_models/efficientdet_d0_notl')
 CONFIG_PATH = os.path.join(MODEL_PATH, 'pipeline.config')
 
 MODEL_NAME = os.path.basename(MODEL_PATH)
@@ -31,4 +32,4 @@ EXPORT_PATH = os.path.join(SAVE_PATH, 'export')
 PREDICTION_OUTPUT_PATH = os.path.join(SAVE_PATH, 'prediction')
 SCORE_THRESHOLD = 0.7
 IOU_THRESHOLD = 0.95
-VISUALIZE = False
+VISUALIZE = True

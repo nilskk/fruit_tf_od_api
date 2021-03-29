@@ -1,5 +1,5 @@
 from fruitod.core.model import Model
-from settings import *
+from fruitod.settings import *
 
 
 if __name__ == '__main__':
