@@ -5,7 +5,7 @@ from PIL import Image
 import numpy as np
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
-from lxml import etree as ET
+from lxml import etree
 from fruitod.utils.file_util import read_tfrecord
 from fruitod.settings import *
 
@@ -86,61 +86,63 @@ def create_voc(output_path,
     im = Image.fromarray(image)
     im.save(os.path.join(complete_voc_image_path, image_name))
 
-    root = ET.Element('annotation')
+    root = etree.Element('annotation')
     root.set('verified', 'yes')
 
-    folder = ET.SubElement(root, 'folder')
+    folder = etree.SubElement(root, 'folder')
     folder.text = 'Annotation'
 
-    filename = ET.SubElement(root, 'filename')
+    filename = etree.SubElement(root, 'filename')
     filename.text = image_name
 
-    path = ET.SubElement(root, 'path')
+    path = etree.SubElement(root, 'path')
     path.text = os.path.join(voc_image_path, image_name)
 
-    source = ET.SubElement(root, 'source')
-    database = ET.SubElement(source, 'database')
+    source = etree.SubElement(root, 'source')
+    database = etree.SubElement(source, 'database')
     database.text = 'Unknown'
 
-    size = ET.SubElement(root, 'size')
-    width = ET.SubElement(size, 'width')
+    size = etree.SubElement(root, 'size')
+    width = etree.SubElement(size, 'width')
     width.text = str(im.width)
-    height = ET.SubElement(size, 'height')
+    height = etree.SubElement(size, 'height')
     height.text = str(im.height)
-    depth = ET.SubElement(size, 'depth')
+    depth = etree.SubElement(size, 'depth')
     depth.text = str(3)
 
-    segmented = ET.SubElement(root, 'segmented')
+    segmented = etree.SubElement(root, 'segmented')
     segmented.text = str(0)
 
     for row, category, detection_score in zip(detections['detection_boxes'], detections['detection_classes'], detections['detection_scores']):
-        object = ET.SubElement(root, 'object')
+        object = etree.SubElement(root, 'object')
 
-        name = ET.SubElement(object, 'name')
+        name = etree.SubElement(object, 'name')
         name.text = categories[category]['name']
-        pose = ET.SubElement(object, 'pose')
+        pose = etree.SubElement(object, 'pose')
         pose.text = 'Unspecified'
-        truncated = ET.SubElement(object, 'truncated')
+        truncated = etree.SubElement(object, 'truncated')
         truncated.text = str(0)
-        difficult = ET.SubElement(object, 'difficult')
+        difficult = etree.SubElement(object, 'difficult')
         difficult.text = str(0)
 
-        score = ET.SubElement(object, 'score')
+        score = etree.SubElement(object, 'score')
         score.text = str(detection_score)
 
-        bndbox = ET.SubElement(object, 'bndbox')
-        xmin = ET.SubElement(bndbox, 'xmin')
+        bndbox = etree.SubElement(object, 'bndbox')
+        xmin = etree.SubElement(bndbox, 'xmin')
         xmin.text = str(row[1]*im.width)
-        ymin = ET.SubElement(bndbox, 'ymin')
+        ymin = etree.SubElement(bndbox, 'ymin')
         ymin.text = str(row[0]*im.height)
-        xmax = ET.SubElement(bndbox, 'xmax')
+        xmax = etree.SubElement(bndbox, 'xmax')
         xmax.text = str(row[3]*im.width)
-        ymax = ET.SubElement(bndbox, 'ymax')
+        ymax = etree.SubElement(bndbox, 'ymax')
         ymax.text = str(row[2]*im.height)
 
-    xml_string = ET.tostring(root, pretty_print=True)
-    with open(os.path.join(complete_voc_annotation_path, image_name_without_extension + '.xml'), 'wb') as files:
-        files.write(xml_string)
+    # xml_string = etree.tostring(root, pretty_print=True)
+    # with open(os.path.join(complete_voc_annotation_path, image_name_without_extension + '.xml'), 'wb') as files:
+    #     files.write(xml_string)
+    tree = etree.ElementTree(root)
+    tree.write(os.path.join(complete_voc_annotation_path, image_name_without_extension + '.xml'), pretty_print=True)
 
 
 def predict(export_path,
