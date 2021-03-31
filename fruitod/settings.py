@@ -5,19 +5,18 @@ from pathlib import Path
 HOME = os.path.join(Path.home(), 'rewe_project')
 TFRECORDS_PATH = os.path.join(HOME, 'data/tfrecords')
 VOC_PATH = os.path.join(HOME, 'data/voc_data')
-
 MODEL_PATH = os.path.join(HOME, 'models/own_models/efficientdet_d0_notl')
 
-OPTIMIZER_NAME = 'adam'
 NUM_CLASSES = 5
 BATCH_SIZE = 8
 LEARNING_RATE = 0.001
 TRAIN_EPOCHS = 10
 FIRST_DECAY_EPOCHS = 10
+OPTIMIZER_NAME = 'adam'
 
 SCORE_THRESHOLD = 0.5
 IOU_THRESHOLD = 0.95
-VISUALIZE = True
+VISUALIZE = False
 
 
 # Inferred Variables
