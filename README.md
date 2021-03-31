@@ -1,19 +1,69 @@
 # fruit_tf_od_api
 
-Erweiterte bzw abgeänderte Version der Tensorflow Object Detetction API
+## Installation
 
-https://github.com/tensorflow/models/tree/master/research/object_detection
+1. Tensorflow Models Repository klonen
+```bash
+git clone https://github.com/nilskk/models.git
+```
 
-Datensatz: 
+2. Object Detection Package installieren
+```bash
+cd models/research
+# Compile protos.
+protoc object_detection/protos/*.proto --python_out=.
+# Install TensorFlow Object Detection API.
+cp object_detection/packages/tf2/setup.py .
+python -m pip install .
+```
 
-https://drive.google.com/file/d/1iPyTZxVDNdkoSBv0kOqSt_T-9pAVhvNE/view?usp=sharing
+3. fruit_tf_od_api Repository klonen
+```bash
+git clone https://github.com/nilskk/fruit_tf_od_api.git
+```
 
-Pretrained Models:
+4. fruitod Package installieren
+```bash
+cd fruit_tf_od_api
+python -m pip install --editable .
+```
 
-`wget "http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8.tar.gz"`
 
-`wget "http://download.tensorflow.org/models/object_detection/tf2/20200711/efficientdet_d0_coco17_tpu-32.tar.gz"`
+## Verwendung
 
-Pycocotools installieren
+1. Variablen in `fruitod/settings.py` anpassen
+2. `fruitod/preprocess_data.py` ausführen
+3. `fruitod/train_eval_export.py` ausführen
+4. `fruitod/predict.py` ausführen
 
-`pip install "git+https://github.com/nilskk/cocoapi.git#egg=pycocotools&subdirectory=PythonAPI"`
+### settings.py Variablen
+
+Variable        |   Bedeutung
+---             |   ---
+HOME            |   Pfad an dem alle Daten gespeichert werden sollen
+VOC_PATH        |   Pfad zu dem VOC Ordner
+TFRECORDS_PATH  |   Pfad an dem die generierten .tfrecord Dateien gespeichert werden sollen
+MODEL_PATH      |   Pfad zum Ordner des aktuell verwendeten Models
+
+### VOC Ordnerstruktur
+
+```
+<folder_name>
+├── Annotations
+│   ├── <image_1>.xml
+│   ├── <image_2>.xml
+│   ...
+├── ImageSets
+│   └── Main
+│       ├── train.txt
+│       └── val.txt
+├── JPEGImages
+│   ├── <image_1>.png
+│   ├── <image_2>.png
+│   ...
+└── pascal_label_map.pbtxt
+```
+
+            
+
+
