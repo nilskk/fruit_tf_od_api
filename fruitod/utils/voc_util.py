@@ -34,5 +34,15 @@ def read_voc_for_detections(voc_file_path, scores=False):
         detection_boxes = np.expand_dims(detection_boxes, axis=0)
 
     return image_id, detection_boxes, detection_classes, detection_scores
+
+def write_class_name(voc_file_path, class_name):
+    root = etree.parse(voc_file_path)
+    objects = root.findall('object')
+    
+    for item in objects:
+        name = item.find('name')
+        name.text = class_name
+
+    root.write(voc_file_path, pretty_print=True)
         
 
