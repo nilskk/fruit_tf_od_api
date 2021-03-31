@@ -4,6 +4,7 @@ import os
 import time
 from fruitod.utils.csv_util import write_metrics
 from fruitod.utils.file_util import read_tfrecord
+from fruitod.settings import *
 import numpy as np
 
 
@@ -71,9 +72,9 @@ def flops(export_path):
 
 
 def main():
-    flops(export_path=FLAGS.export_path)
-    inference(export_path=FLAGS.export_path,
-              tfrecord_path=FLAGS.tfrecord_path)
+    flops(export_path=EXPORT_PATH)
+    inference(export_path=EXPORT_PATH,
+              tfrecord_path=VAL_TFRECORD_PATH)
 
 
 if __name__ == "__main__":

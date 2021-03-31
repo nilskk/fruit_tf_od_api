@@ -29,6 +29,8 @@ import tensorflow.compat.v1 as tf
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
+from fruitod.settings import *
+
 
 def dict_to_tf_example(data,
                        dataset_directory,
@@ -150,11 +152,15 @@ def create_tfrecord(output_path,
 
 
 def main():
-    create_tfrecord(output_path=FLAGS.output_path,
-                    data_path=FLAGS.data_path,
-                    set=FLAGS.set,
-                    voc_set_name=FLAGS.voc_set_name,
-                    ignore_difficult_instances=FLAGS.ignore_difficult_instances)
+    create_tfrecord(output_path=TFRECORDS_PATH,
+                    data_path=VOC_PATH,
+                    set='train',
+                    voc_set_name=VOC_SET_NAME)
+
+    create_tfrecord(output_path=TFRECORDS_PATH,
+                    data_path=VOC_PATH,
+                    set='val',
+                    voc_set_name=VOC_SET_NAME)
 
 
 if __name__ == '__main__':

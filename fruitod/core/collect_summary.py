@@ -2,6 +2,8 @@ import pandas as pd
 import glob
 import os
 
+from fruitod.settings import *
+
 
 def collect_csv(models_path):
     cols_to_order = ['Name', 'Optimizer', 'Batch Size', 'Learning Rate', 'Parameter', 'Flops', 'Inference Speed',
@@ -21,7 +23,7 @@ def collect_csv(models_path):
 
 
 def main():
-    collect_csv(models_path=FLAGS.models_path)
+    collect_csv(models_path=MODEL_PATH)
 
 
 if __name__ == '__main__':
