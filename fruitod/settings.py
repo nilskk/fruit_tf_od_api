@@ -5,7 +5,6 @@ from pathlib import Path
 HOME = os.path.join(Path.home(), 'rewe_project')
 TFRECORDS_PATH = os.path.join(HOME, 'data/tfrecords')
 VOC_PATH = os.path.join(HOME, 'data/voc_data')
-VOC_SET_NAME = 'vott'
 
 MODEL_PATH = os.path.join(HOME, 'models/own_models/efficientdet_d0_notl')
 

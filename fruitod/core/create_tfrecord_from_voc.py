@@ -120,7 +120,6 @@ def dict_to_tf_example(data,
 def create_tfrecord(output_path,
                     data_path,
                     set,
-                    voc_set_name,
                     ignore_difficult_instances=False):
 
     if not os.path.exists(os.path.split(output_path)[0]):
@@ -130,8 +129,7 @@ def create_tfrecord(output_path,
     complete_label_map_path = os.path.join(data_path, 'pascal_label_map.pbtxt')
     label_map_dict = label_map_util.get_label_map_dict(complete_label_map_path)
 
-    examples_path = os.path.join(data_path, 'ImageSets', 'Main',
-                                 voc_set_name + "_" + set + '.txt')
+    examples_path = os.path.join(data_path, 'ImageSets', 'Main', set + '.txt')
     annotations_dir = os.path.join(data_path, 'Annotations')
     examples_list = dataset_util.read_examples_list(examples_path)
     for idx, example in enumerate(examples_list):
@@ -154,13 +152,11 @@ def create_tfrecord(output_path,
 def main():
     create_tfrecord(output_path=TFRECORDS_PATH,
                     data_path=VOC_PATH,
-                    set='train',
-                    voc_set_name=VOC_SET_NAME)
+                    set='train')
 
     create_tfrecord(output_path=TFRECORDS_PATH,
                     data_path=VOC_PATH,
-                    set='val',
-                    voc_set_name=VOC_SET_NAME)
+                    set='val')
 
 
 if __name__ == '__main__':
