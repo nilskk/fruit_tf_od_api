@@ -3,7 +3,6 @@ from pathlib import Path
 
 # Variables to customize
 HOME = os.path.join(Path.home(), 'rewe_project')
-TFRECORDS_PATH = os.path.join(HOME, 'data/tfrecords')
 VOC_PATH = os.path.join(HOME, 'data/voc_data')
 MODEL_PATH = os.path.join(HOME, 'models/own_models/efficientdet_d0_notl')
 
@@ -20,6 +19,7 @@ VISUALIZE = False
 
 
 # Inferred Variables
+TFRECORDS_PATH = VOC_PATH
 TRAIN_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'train.tfrecord')
 VAL_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'val.tfrecord')
 LABELMAP_PATH = os.path.join(VOC_PATH, 'pascal_label_map.pbtxt')
