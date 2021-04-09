@@ -152,7 +152,7 @@ def predict(export_path,
             score_threshold=0.5,
             iou_threshold=0.5,
             visualize=False,
-            gpu_device=-1):
+            gpu_device="-1"):
     os.environ["CUDA_VISIBLE_DEVICES"] = gpu_device
 
     saved_model_path = os.path.join(export_path, 'saved_model')
