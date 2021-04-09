@@ -65,7 +65,7 @@ if __name__ == '__main__':
         evaluator_base.add_single_detected_image_info(image_id=detection_image_id, detections_dict=detections)
 
         #get class_name from soft voting majority and write in xml
-        best_class_name = soft_voting_decision(detection_classes_id, detection_scores)
+        best_class_name = soft_voting_decision(detection_classes_index, detection_scores)
         write_class_name(os.path.join(softvoting_path, file), best_class_name)
 
         # add detections from voc file to evaluator
