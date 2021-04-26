@@ -3,7 +3,7 @@ from pathlib import Path
 
 # Variables to customize
 HOME = os.path.join(Path.home(), 'rewe_project')
-VOC_PATH = os.path.join(HOME, 'data/voc_data')
+VOC_PATH = os.path.join(HOME, 'data/voc_weight_test')
 MODEL_PATH = os.path.join(HOME, 'models/own_models/efficientdet_d0_notl')
 
 NUM_CLASSES = 5
@@ -16,6 +16,8 @@ OPTIMIZER_NAME = 'adam'
 SCORE_THRESHOLD = 0.5
 IOU_THRESHOLD = 0.95
 VISUALIZE = False
+
+ADD_WEIGHT_INFORMATION = True
 
 
 # Inferred Variables

@@ -21,6 +21,7 @@ import hashlib
 import io
 import logging
 import os
+import json
 
 from lxml import etree
 import PIL.Image
@@ -71,6 +72,11 @@ def dict_to_tf_example(data,
     width = int(data['size']['width'])
     height = int(data['size']['height'])
 
+    if 'weightInGrams' in data.keys():
+        weight_in_grams = int(data['weightInGrams'])
+    else:
+        weight_in_grams = -1
+
     xmin = []
     ymin = []
     xmax = []
@@ -98,6 +104,7 @@ def dict_to_tf_example(data,
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
         'image/width': dataset_util.int64_feature(width),
+        'image/weightInGrams': dataset_util.int64_feature(weight_in_grams),
         'image/filename': dataset_util.bytes_feature(
             data['filename'].encode('utf8')),
         'image/source_id': dataset_util.bytes_feature(
@@ -120,6 +127,7 @@ def dict_to_tf_example(data,
 def create_tfrecord(output_path,
                     data_path,
                     set,
+                    add_weight_information=False,
                     ignore_difficult_instances=False):
 
     if not os.path.exists(os.path.split(output_path)[0]):
@@ -131,6 +139,7 @@ def create_tfrecord(output_path,
 
     examples_path = os.path.join(data_path, 'ImageSets', 'Main', set + '.txt')
     annotations_dir = os.path.join(data_path, 'Annotations')
+    weights_dir = os.path.join(data_path, 'Weights')
     examples_list = dataset_util.read_examples_list(examples_path)
     for idx, example in enumerate(examples_list):
         example_without_extension = os.path.splitext(example)[0]
@@ -142,6 +151,14 @@ def create_tfrecord(output_path,
         xml = etree.fromstring(xml_str)
         data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
+        # read weight informations from voc/Weights/<file>.json
+        if add_weight_information:
+            weight_file = os.path.join(weights_dir, example_without_extension + '.json')
+            with open(weight_file) as f:
+                json_dict = json.load(f)
+
+            data['weightInGrams'] = json_dict['weightInGrams']
+
         tf_example = dict_to_tf_example(data, data_path, label_map_dict,
                                         ignore_difficult_instances)
         writer.write(tf_example.SerializeToString())
@@ -150,12 +167,14 @@ def create_tfrecord(output_path,
 
 
 def main():
-    create_tfrecord(output_path=TFRECORDS_PATH,
+    create_tfrecord(output_path=TRAIN_TFRECORD_PATH,
                     data_path=VOC_PATH,
+                    add_weight_information=ADD_WEIGHT_INFORMATION,
                     set='train')
 
-    create_tfrecord(output_path=TFRECORDS_PATH,
+    create_tfrecord(output_path=VAL_TFRECORD_PATH,
                     data_path=VOC_PATH,
+                    add_weight_information=ADD_WEIGHT_INFORMATION,
                     set='val')
 
 
