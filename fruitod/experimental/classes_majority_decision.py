@@ -42,7 +42,10 @@ if __name__ == '__main__':
         # add groundtruth from voc file to evaluator_base and evaluator_softvoting
         groundtruth_image_id, groundtruth_boxes, groundtruth_classes, groundtruth_scores = read_voc_for_detections(
             os.path.join(groundtruth_annotation_path, file))
-        groundtruth_classes_index = np.vectorize(category_name_to_index.get)(groundtruth_classes)
+        if groundtruth_classes.size == 0:
+            groundtruth_classes_index = np.empty(groundtruth_classes.shape)
+        else:
+            groundtruth_classes_index = np.vectorize(category_name_to_index.get)(groundtruth_classes)
         groundtruth = {'groundtruth_boxes': groundtruth_boxes,
                        'groundtruth_classes': groundtruth_classes_index}
         evaluator_base.add_single_ground_truth_image_info(image_id=groundtruth_image_id, groundtruth_dict=groundtruth)
@@ -52,22 +55,29 @@ if __name__ == '__main__':
         # add detections from voc file to evaluator
         detection_image_id, detection_boxes, detection_classes, detection_scores = read_voc_for_detections(
             os.path.join(prediction_annotation_path, file), scores=True)
-        detection_classes_id = np.vectorize(category_name_to_index.get)(detection_classes)
+        if detection_classes.size == 0:
+            detection_classes_index = np.empty(detection_classes.shape)
+        else:
+            detection_classes_index = np.vectorize(category_name_to_index.get)(detection_classes)
         detections = {'detection_boxes': detection_boxes,
-                      'detection_classes': detection_classes_id,
+                      'detection_classes': detection_classes_index,
                       'detection_scores': detection_scores}
         evaluator_base.add_single_detected_image_info(image_id=detection_image_id, detections_dict=detections)
 
         #get class_name from soft voting majority and write in xml
-        best_class_name = soft_voting_decision(detection_classes_id, detection_scores)
-        write_class_name(os.path.join(softvoting_path, file), best_class_name)
+        if detection_classes_index.size != 0:
+            best_class_name = soft_voting_decision(detection_classes_index, detection_scores)
+            write_class_name(os.path.join(softvoting_path, file), best_class_name)
 
         # add detections from voc file to evaluator
         detection_image_id, detection_boxes, detection_classes, detection_scores = read_voc_for_detections(
             os.path.join(prediction_annotation_path, file), scores=True)
-        detection_classes_id = np.vectorize(category_name_to_index.get)(detection_classes)
+        if detection_classes.size == 0:
+            detection_classes_index = np.empty(detection_classes.shape)
+        else:
+            detection_classes_index = np.vectorize(category_name_to_index.get)(detection_classes)
         detections = {'detection_boxes': detection_boxes,
-                      'detection_classes': detection_classes_id,
+                      'detection_classes': detection_classes_index,
                       'detection_scores': detection_scores}
         evaluator_softvoting.add_single_detected_image_info(image_id=detection_image_id, detections_dict=detections)
 
