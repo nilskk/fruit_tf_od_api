@@ -5,6 +5,7 @@ from object_detection.protos import pipeline_pb2
 from object_detection import model_lib_v2
 from object_detection import exporter_lib_v2
 import tensorflow as tf
+from absl import logging
 
 
 class Model:
@@ -30,6 +31,7 @@ class Model:
                 print(e)
 
     def train(self, checkpoint_every_n_epochs=10, batch_size=8):
+        logging.set_verbosity(logging.INFO)
         pipeline = pipeline_pb2.TrainEvalPipelineConfig()
         with tf.io.gfile.GFile(self.config_path, 'r') as f:
             proto_str = f.read()
