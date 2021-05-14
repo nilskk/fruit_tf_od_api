@@ -16,7 +16,8 @@ if __name__ == '__main__':
 
     steps_per_epoch = get_steps_per_epoch(tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)
 
-    config = Pipeline(config_path=CONFIG_PATH)
+    config = Pipeline(config_path=CONFIG_PATH,
+                      model_type=MODEL_TYPE)
     config.set_labelmap(labelmap_path=LABELMAP_PATH)
     config.set_train_tfrecord(train_tfrecord_path=TRAIN_TFRECORD_PATH)
     config.set_val_tfrecord(val_tfrecord_path=VAL_TFRECORD_PATH)

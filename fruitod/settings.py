@@ -3,21 +3,22 @@ from pathlib import Path
 
 # Variables to customize
 HOME = os.path.join(Path.home(), 'rewe_project')
-VOC_PATH = os.path.join(HOME, 'data/voc_weight_test')
-MODEL_PATH = os.path.join(HOME, 'models/own_models/efficientdet_d0_notl')
+VOC_PATH = os.path.join(HOME, 'data/voc_data')
+MODEL_PATH = os.path.join(HOME, 'models/two_stage_test/efficientdet_d0_5')
 
+MODEL_TYPE = "prob_two_stage"
 NUM_CLASSES = 5
 BATCH_SIZE = 8
 LEARNING_RATE = 0.001
-TRAIN_EPOCHS = 10
+TRAIN_EPOCHS = 310
 FIRST_DECAY_EPOCHS = 10
 OPTIMIZER_NAME = 'adam'
 
-SCORE_THRESHOLD = 0.5
-IOU_THRESHOLD = 0.95
-VISUALIZE = False
+SCORE_THRESHOLD = 0.90
+IOU_THRESHOLD = 0.5
+VISUALIZE = True
 
-ADD_WEIGHT_INFORMATION = True
+ADD_WEIGHT_INFORMATION = False
 
 
 # Inferred Variables

@@ -2,8 +2,9 @@ from fruitod.utils.file_util import read_config, write_config, get_steps_per_epo
 
 
 class Pipeline:
-    def __init__(self, config_path):
+    def __init__(self, config_path, model_type):
         self.config_path = config_path
+        self.model_type = model_type
 
     def set_model_name(self,
                        model_name):
@@ -17,7 +18,10 @@ class Pipeline:
                         num_classes):
         pipeline = read_config(self.config_path)
 
-        pipeline.model.ssd.num_classes = num_classes
+        if self.model_type == 'ssd':
+            pipeline.model.ssd.num_classes = num_classes
+        elif self.model_type == 'prob_two_stage':
+            pipeline.model.prob_two_stage.num_classes = num_classes
 
         write_config(pipeline=pipeline, config_path=self.config_path)
 
