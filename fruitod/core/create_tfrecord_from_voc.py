@@ -19,7 +19,7 @@ from __future__ import print_function
 
 import hashlib
 import io
-import logging
+from absl import logging
 import os
 import json
 
