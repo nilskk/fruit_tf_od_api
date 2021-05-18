@@ -7,7 +7,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils
 from lxml import etree
 from fruitod.utils.file_util import read_tfrecord
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 
 
 def filter_detections_nms(detections, iou_threshold, score_threshold):

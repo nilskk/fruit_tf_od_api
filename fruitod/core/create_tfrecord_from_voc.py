@@ -30,7 +30,7 @@ import tensorflow.compat.v1 as tf
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 
 
 def dict_to_tf_example(data,

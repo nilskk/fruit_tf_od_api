@@ -4,7 +4,7 @@ import os
 import time
 from fruitod.utils.csv_util import write_metrics
 from fruitod.utils.file_util import read_tfrecord
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 import numpy as np
 
 

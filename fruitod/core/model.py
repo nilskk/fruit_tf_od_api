@@ -9,29 +9,12 @@ from absl import logging
 
 
 class Model:
-    def __init__(self, checkpoint_path, config_path, export_path, gpu_device='0'):
+    def __init__(self, checkpoint_path, config_path, export_path):
         self.checkpoint_path = checkpoint_path
         self.config_path = config_path
         self.export_path = export_path
 
-        tf.config.set_soft_device_placement(True)
-
-        os.environ["CUDA_VISIBLE_DEVICES"] = gpu_device
-
-        gpus = tf.config.experimental.list_physical_devices('GPU')
-        if gpus:
-            try:
-                # Currently, memory growth needs to be the same across GPUs
-                for gpu in gpus:
-                    tf.config.experimental.set_memory_growth(gpu, True)
-                logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-                print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-            except RuntimeError as e:
-                # Memory growth must be set before GPUs have been initialized
-                print(e)
-
     def train(self, checkpoint_every_n_epochs=10, batch_size=8):
-        logging.set_verbosity(logging.INFO)
         pipeline = pipeline_pb2.TrainEvalPipelineConfig()
         with tf.io.gfile.GFile(self.config_path, 'r') as f:
             proto_str = f.read()

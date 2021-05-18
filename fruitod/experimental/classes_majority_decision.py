@@ -3,7 +3,7 @@ from object_detection.utils import label_map_util
 from fruitod.utils.voc_util import read_voc_for_detections, write_class_name
 
 from pathlib import Path
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 from lxml import etree
 import numpy as np
 import pandas as pd

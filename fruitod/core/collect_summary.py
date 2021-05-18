@@ -2,7 +2,7 @@ import pandas as pd
 import glob
 import os
 
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 
 
 def collect_csv(models_path):

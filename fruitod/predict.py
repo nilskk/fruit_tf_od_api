@@ -1,5 +1,5 @@
 from fruitod.core.predict_image import predict
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 from fruitod.core.calculate_performance import inference, flops
 from fruitod.core.collect_summary import collect_csv
 

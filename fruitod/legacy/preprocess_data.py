@@ -2,7 +2,7 @@ from fruitod.core.pipeline import Pipeline
 from fruitod.core.create_tfrecord_from_voc import create_tfrecord
 from fruitod.utils.file_util import get_steps_per_epoch
 from fruitod.utils.csv_util import write_metrics
-from fruitod.settings import *
+from fruitod.settings_gpu_0 import *
 
 
 if __name__ == '__main__':
