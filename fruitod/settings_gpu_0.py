@@ -23,8 +23,8 @@ ADD_WEIGHT_INFORMATION = False
 
 # Inferred Variables
 TFRECORDS_PATH = VOC_PATH
-TRAIN_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'train.tfrecord')
-VAL_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'val.tfrecord')
+TRAIN_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'train_gpu_0.tfrecord')
+VAL_TFRECORD_PATH = os.path.join(TFRECORDS_PATH, 'val_gpu_0.tfrecord')
 LABELMAP_PATH = os.path.join(VOC_PATH, 'pascal_label_map.pbtxt')
 
 CONFIG_PATH = os.path.join(MODEL_PATH, 'pipeline.config')
