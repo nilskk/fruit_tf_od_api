@@ -15,6 +15,8 @@ if __name__ == '__main__':
 
     logging.set_verbosity(logging.INFO)
 
+    print(tf.executing_eagerly())
+    # tf.config.run_functions_eagerly(True)
     # tf.config.set_soft_device_placement(True)
 
     if args.gpu == 0:
@@ -38,10 +40,12 @@ if __name__ == '__main__':
 
     create_tfrecord(output_path=TRAIN_TFRECORD_PATH,
                     data_path=VOC_PATH,
+                    add_weight_information=ADD_WEIGHT_INFORMATION,
                     set='train')
 
     create_tfrecord(output_path=VAL_TFRECORD_PATH,
                     data_path=VOC_PATH,
+                    add_weight_information=ADD_WEIGHT_INFORMATION,
                     set='val')
 
     steps_per_epoch = get_steps_per_epoch(tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)
@@ -75,4 +79,4 @@ if __name__ == '__main__':
 
     model.evaluate()
     
-    model.export()
+    model.export(add_weight_information=ADD_WEIGHT_INFORMATION)

@@ -41,11 +41,15 @@ class Model:
             postprocess_on_cpu=True
         )
 
-    def export(self):
+    def export(self, add_weight_information=False):
         pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
         with tf.io.gfile.GFile(self.config_path, 'r') as f:
             text_format.Merge(f.read(), pipeline_config)
         exporter_lib_v2.export_inference_graph(input_type='image_tensor',
                                                pipeline_config=pipeline_config,
                                                trained_checkpoint_dir=self.checkpoint_path,
-                                               output_directory=self.export_path)
+                                               output_directory=self.export_path,
+                                               use_side_inputs=add_weight_information,
+                                               side_input_shapes='1',
+                                               side_input_types='tf.int64',
+                                               side_input_names='weightInGrams')
