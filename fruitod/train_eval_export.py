@@ -8,13 +8,14 @@ import tensorflow as tf
 from argparse import ArgumentParser
 import datetime
 import time
+import os
 
 
 if __name__ == '__main__':
     start = time.time()
 
     parser = ArgumentParser()
-    parser.add_argument('--gpu', type=int, choices=[0, 1], default=0)
+    parser.add_argument('--gpu', type=int, choices=[-1, 0, 1], default=0)
     args = parser.parse_args()
 
     logging.set_verbosity(logging.INFO)
