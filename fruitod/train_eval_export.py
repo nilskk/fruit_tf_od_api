@@ -6,16 +6,19 @@ from fruitod.utils.csv_util import write_metrics
 from absl import logging
 import tensorflow as tf
 from argparse import ArgumentParser
+import datetime
+import time
 
 
 if __name__ == '__main__':
+    start = time.time()
+
     parser = ArgumentParser()
     parser.add_argument('--gpu', type=int, choices=[0, 1], default=0)
     args = parser.parse_args()
 
     logging.set_verbosity(logging.INFO)
 
-    print(tf.executing_eagerly())
     # tf.config.run_functions_eagerly(True)
     # tf.config.set_soft_device_placement(True)
 
@@ -80,3 +83,7 @@ if __name__ == '__main__':
     model.evaluate()
     
     model.export(add_weight_information=ADD_WEIGHT_INFORMATION)
+
+    end = time.time()
+    time_diff = end - start
+    print("Laufzeit: " + str(datetime.timedelta(seconds=time_diff)))
