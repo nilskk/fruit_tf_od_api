@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # tf.config.run_functions_eagerly(True)
     # tf.config.set_soft_device_placement(True)
 
-    if args.gpu == 0:
+    if args.gpu == (0 or -1):
         from fruitod.settings_gpu_0 import *
     elif args.gpu == 1:
         from fruitod.settings_gpu_1 import *
