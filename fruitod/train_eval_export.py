@@ -15,7 +15,7 @@ if __name__ == '__main__':
     start = time.time()
 
     parser = ArgumentParser()
-    parser.add_argument('--gpu', type=int, choices=[-1, 0, 1], default=0)
+    parser.add_argument('--gpu', type=int, choices=[0, 1], default=0)
     args = parser.parse_args()
 
     logging.set_verbosity(logging.INFO)
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # tf.config.run_functions_eagerly(True)
     # tf.config.set_soft_device_placement(True)
 
-    if args.gpu == (0 or -1):
+    if args.gpu == 0:
         from fruitod.settings_gpu_0 import *
     elif args.gpu == 1:
         from fruitod.settings_gpu_1 import *
