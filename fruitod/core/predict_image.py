@@ -145,20 +145,15 @@ def create_voc(output_path,
     tree.write(os.path.join(complete_voc_annotation_path, image_name_without_extension + '.xml'), pretty_print=True)
 
 
-def predict(export_path,
-            output_path,
-            labelmap_path,
-            tfrecord_path,
-            score_threshold=0.5,
-            iou_threshold=0.5,
-            visualize=False,
-            gpu_device="-1"):
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_device
+def predict_on_tfrecord(export_path,
+                        output_path,
+                        labelmap_path,
+                        tfrecord_path,
+                        score_threshold=0.5,
+                        iou_threshold=0.5,
+                        visualize=False):
 
-    saved_model_path = os.path.join(export_path, 'saved_model')
-    model = tf.saved_model.load(saved_model_path)
-
-    categories = label_map_util.create_category_index_from_labelmap(labelmap_path, use_display_name=True)
+    model, categories = _load_model_and_categories(export_path=export_path, labelmap_path=labelmap_path)
 
     records = read_tfrecord(tfrecord_path)
     for record in records:
@@ -181,15 +176,61 @@ def predict(export_path,
                    detections=detections)
 
 
+def predict_on_image_folder(export_path,
+                            output_path,
+                            labelmap_path,
+                            image_folder_path,
+                            score_threshold=0.5,
+                            iou_threshold=0.5,
+                            visualize=False):
+
+    model, categories = _load_model_and_categories(export_path=export_path, labelmap_path=labelmap_path)
+
+    for image_name in os.listdir(image_folder_path):
+        image_path = os.path.join(image_folder_path, image_name)
+        image_np = np.array(Image.open(image_path))
+        detections = calculate_detections(model=model,
+                                          image=image_np,
+                                          score_threshold=score_threshold,
+                                          iou_threshold=iou_threshold)
+
+        if visualize:
+            visualize_detections(image=image_np,
+                                 image_name=image_name,
+                                 output_path=output_path,
+                                 categories=categories,
+                                 detections=detections)
+
+        create_voc(image=image_np,
+                   image_name=image_name,
+                   output_path=output_path,
+                   categories=categories,
+                   detections=detections)
+
+
+def _load_model_and_categories(export_path, labelmap_path):
+    saved_model_path = os.path.join(export_path, 'saved_model')
+    model = tf.saved_model.load(saved_model_path)
+
+    categories = label_map_util.create_category_index_from_labelmap(labelmap_path, use_display_name=True)
+
+    return model, categories
+
+
 def main():
-    predict(export_path=EXPORT_PATH,
-            output_path=PREDICTION_OUTPUT_PATH,
-            labelmap_path=LABELMAP_PATH,
-            tfrecord_path=VAL_TFRECORD_PATH,
-            score_threshold=SCORE_THRESHOLD,
-            iou_threshold=IOU_THRESHOLD,
-            visualize=VISUALIZE)
+    HOME = os.path.join(Path.home(), 'rewe_project')
+    image_folder_path = os.path.join(HOME, 'data/test_data/images')
+    predict_on_image_folder(export_path=EXPORT_PATH,
+                        output_path=PREDICTION_OUTPUT_PATH,
+                        labelmap_path=LABELMAP_PATH,
+                        image_folder_path=image_folder_path,
+                        score_threshold=SCORE_THRESHOLD,
+                        iou_threshold=IOU_THRESHOLD,
+                        visualize=VISUALIZE)
 
 
 if __name__ == '__main__':
+    os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
     main()
