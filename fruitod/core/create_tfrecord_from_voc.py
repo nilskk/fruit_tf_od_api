@@ -130,7 +130,7 @@ def normalize_weights(weights_dir):
     for weight_file in os.listdir(weights_dir):
         print(weight_file)
         weight_file_complete = os.path.join(weights_dir, weight_file)
-        with open(weight_file_complete, encoding='utf-8') as f:
+        with open(weight_file_complete) as f:
             json_dict = json.load(f)
         if 'weightInGrams' in json_dict.keys():
             weight_dict[weight_file] = json_dict['weightInGrams']
