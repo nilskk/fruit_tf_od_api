@@ -74,9 +74,9 @@ def dict_to_tf_example(data,
     height = int(data['size']['height'])
 
     if 'weightInGrams' in data.keys():
-        weight_in_grams = int(data['weightInGrams'])
+        weight_in_grams = data['weightInGrams']
     else:
-        weight_in_grams = -1
+        weight_in_grams = -1.0
 
     xmin = []
     ymin = []
@@ -105,7 +105,7 @@ def dict_to_tf_example(data,
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
         'image/width': dataset_util.int64_feature(width),
-        'image/weightInGrams': dataset_util.int64_feature(weight_in_grams),
+        'image/weightInGrams': dataset_util.float_feature(weight_in_grams),
         'image/filename': dataset_util.bytes_feature(
             data['filename'].encode('utf8')),
         'image/source_id': dataset_util.bytes_feature(
@@ -124,6 +124,7 @@ def dict_to_tf_example(data,
     }))
     return example
 
+
 def normalize_weights(weights_dir):
     weight_dict = {}
     for weight_file in os.listdir(weights_dir):
@@ -136,10 +137,9 @@ def normalize_weights(weights_dir):
     weight_max = np.amax(weight_arr)
     weight_min = np.amin(weight_arr)
     weight_mean = np.mean(weight_arr)
-    weight_dict_normalized = {key:(weight_dict[key] - weight_min)/(weight_max - weight_min) for key in weight_dict.keys()}
+    weight_dict_normalized = {key: (weight_dict[key] - weight_min)/(weight_max - weight_min) for key in weight_dict.keys()}
 
     return weight_dict_normalized, weight_mean
-
 
 
 def create_tfrecord(output_path,
