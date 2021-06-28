@@ -22,6 +22,7 @@ import io
 from absl import logging
 import os
 import json
+import numpy as np
 
 from lxml import etree
 import PIL.Image
@@ -123,6 +124,23 @@ def dict_to_tf_example(data,
     }))
     return example
 
+def normalize_weights(weights_dir):
+    weight_dict = {}
+    for weight_file in os.listdir(weights_dir):
+        weight_file_complete = os.path.join(weights_dir, weight_file)
+        with open(weight_file_complete) as f:
+            json_dict = json.load(f)
+        weight_dict[weight_file] = json_dict['weightInGrams']
+
+    weight_arr = np.array([val for val in weight_dict.values()])
+    weight_max = np.amax(weight_arr)
+    weight_min = np.amin(weight_arr)
+    weight_mean = np.mean(weight_arr)
+    weight_dict_normalized = {key:(weight_dict[key] - weight_min)/(weight_max - weight_min) for key in weight_dict.keys()}
+
+    return weight_dict_normalized, weight_mean
+
+
 
 def create_tfrecord(output_path,
                     data_path,
@@ -139,7 +157,10 @@ def create_tfrecord(output_path,
 
     examples_path = os.path.join(data_path, 'ImageSets', 'Main', set + '.txt')
     annotations_dir = os.path.join(data_path, 'Annotations')
-    weights_dir = os.path.join(data_path, 'Weights')
+    if add_weight_information:
+        weights_dir = os.path.join(data_path, 'Weights')
+        weight_dict_normalized, weight_mean = normalize_weights(weights_dir)
+
     examples_list = dataset_util.read_examples_list(examples_path)
     for idx, example in enumerate(examples_list):
         example_without_extension = os.path.splitext(example)[0]
@@ -153,11 +174,11 @@ def create_tfrecord(output_path,
 
         # read weight informations from voc/Weights/<file>.json
         if add_weight_information:
-            weight_file = os.path.join(weights_dir, example_without_extension + '.json')
-            with open(weight_file) as f:
-                json_dict = json.load(f)
-
-            data['weightInGrams'] = json_dict['weightInGrams']
+            json_file = example_without_extension + '.json'
+            if json_file in weight_dict_normalized.keys():
+                data['weightInGrams'] = weight_dict_normalized[json_file]
+            else:
+                data['weightInGrams'] = weight_mean
 
         tf_example = dict_to_tf_example(data, data_path, label_map_dict,
                                         ignore_difficult_instances)
