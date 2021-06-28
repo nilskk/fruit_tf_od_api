@@ -132,7 +132,8 @@ def normalize_weights(weights_dir):
         weight_file_complete = os.path.join(weights_dir, weight_file)
         with open(weight_file_complete, encoding='utf-8') as f:
             json_dict = json.load(f)
-        weight_dict[weight_file] = json_dict['weightInGrams']
+        if 'weightInGrams' in json_dict.keys():
+            weight_dict[weight_file] = json_dict['weightInGrams']
 
     weight_arr = np.array([val for val in weight_dict.values()])
     weight_max = np.amax(weight_arr)
