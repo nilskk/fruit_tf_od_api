@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     # tf.config.run_functions_eagerly(True)
     # tf.config.set_soft_device_placement(True)
-    tf.config.optimizer.set_jit(True)
+    # tf.config.optimizer.set_jit(True)
 
     if args.gpu == 0:
         from fruitod.settings_gpu_0 import *
