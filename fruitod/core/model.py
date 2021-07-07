@@ -32,7 +32,7 @@ class Model:
                 model_dir=self.checkpoint_path,
                 checkpoint_every_n=checkpoints_every_n_steps,
                 checkpoint_max_to_keep=150,
-                record_summaries=False)
+                record_summaries=True)
 
     def evaluate(self):
         model_lib_v2.eval_continuously(
