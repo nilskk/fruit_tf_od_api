@@ -115,8 +115,10 @@ if __name__ == '__main__':
     val_list_gesamt = []
     for fruit_name in fruit_list:
         train_list, val_list = _create_train_val_lists(fruit_name)
-        train_list_gesamt.append(train_list)
-        val_list_gesamt.append(val_list)
+        for name in train_list:
+            train_list_gesamt.append(name)
+        for name in val_list:
+            val_list_gesamt.append(name)
 
         _write_lists(train_list_gesamt, '/data/voc_fruit_weights/ImageSets/Main/train.txt')
         _write_lists(val_list_gesamt, '/data/voc_fruit_weights/ImageSets/Main/val.txt')
