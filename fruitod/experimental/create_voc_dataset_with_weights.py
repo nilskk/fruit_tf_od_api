@@ -72,7 +72,10 @@ def _create_missing_weights(fruit_name):
     # calculate mean weight per object
     weight_path = '/data/classes/{}/weights'.format(fruit_name)
     for weight_file in os.listdir(weight_path):
-        weight_file_percent_encoded = urllib.parse.quote(weight_file)
+        if ' ' in weight_file:
+            weight_file_percent_encoded = urllib.parse.quote(weight_file)
+        else:
+            weight_file_percent_encoded = weight_file
         complete_weight_file = os.path.join(weight_path, weight_file_percent_encoded)
         file_name_without_extension = Path(complete_weight_file).stem
         with open(complete_weight_file) as f:
