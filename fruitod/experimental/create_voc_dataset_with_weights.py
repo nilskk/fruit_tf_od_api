@@ -69,10 +69,12 @@ def _save_weight_to_json(json_path, count, weight_per_object):
 def _create_missing_weights(fruit_name):
     weight_per_object_list = []
     # calculate mean weight per object
-    for weight_file in glob.glob('/data/classes/{}/weights/*.json'.format(fruit_name)):
-        print(weight_file)
-        file_name_without_extension = Path(weight_file).stem
-        with open(weight_file) as f:
+    weight_path ='/data/classes/{}/weights'.format(fruit_name)
+    for weight_file in os.listdir(weight_path):
+        complete_weight_file = os.path.join(weight_path, weight_file)
+        print(complete_weight_file)
+        file_name_without_extension = Path(complete_weight_file).stem
+        with open(complete_weight_file) as f:
             json_dict = json.load(f)
         if 'weightInGrams' in json_dict.keys():
             weight = float(json_dict['weightInGrams'])
