@@ -44,9 +44,12 @@ def _create_train_val_lists(fruit_name):
 
 def _copy_images_annotations_weights(fruit_name, voc_base_path):
     input_path = '/data/classes/{}'.format(fruit_name)
-    shutil.copytree(os.path.join(input_path, 'images'), os.path.join(voc_base_path, 'JPEGImages'), dirs_exist_ok=True)
-    shutil.copytree(os.path.join(input_path, 'annotations'), os.path.join(voc_base_path, 'Annotations'), dirs_exist_ok=True)
-    shutil.copytree(os.path.join(input_path, 'weights'), os.path.join(voc_base_path, 'Weights'), dirs_exist_ok=True)
+    for file_path in glob.glob(os.path.join(input_path, 'images/*')):
+        shutil.copy2(file_path, os.path.join(voc_base_path, 'JPEGImages'))
+    for file_path in glob.glob(os.path.join(input_path, 'annotations/*')):
+        shutil.copy2(file_path, os.path.join(voc_base_path, 'Annotations'))
+    for file_path in glob.glob(os.path.join(input_path, 'weights/*')):
+        shutil.copy2(file_path, os.path.join(voc_base_path, 'Weights'))
 
 
 def _count_number_of_objects(fruit_name, xml_file_name):
