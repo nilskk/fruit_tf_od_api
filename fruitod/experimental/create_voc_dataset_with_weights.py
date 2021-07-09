@@ -70,8 +70,8 @@ def _create_missing_weights(fruit_name):
     weight_per_object_list = []
     # calculate mean weight per object
     for weight_file in glob.glob('/data/classes/{}/weights/*.json'.format(fruit_name)):
+        print(weight_file)
         file_name_without_extension = Path(weight_file).stem
-        print(file_name_without_extension.encode('ascii', 'replace'))
         with open(weight_file) as f:
             json_dict = json.load(f)
         if 'weightInGrams' in json_dict.keys():
