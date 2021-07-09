@@ -26,7 +26,7 @@ def _create_train_val_lists(fruit_name):
     for i, image_name in enumerate(os.listdir('/data/classes/{}/images'.format(fruit_name))):
         image_name_with_extension = Path(image_name).name
         image_name_without_extension = Path(image_name).stem
-        json_path = Path(os.path.join('/data/classes/{}/weights'.format(fruit_name), image_name_without_extension + '.json'))
+        json_path = Path(os.path.join('/data/classes/{}/weights_correct_format'.format(fruit_name), image_name_without_extension + '.json'))
 
         if not json_path.is_file():
             train_list.append(image_name_with_extension + '\n')
@@ -49,7 +49,7 @@ def _copy_images_annotations_weights(fruit_name, voc_base_path):
         shutil.copy2(file_path, os.path.join(voc_base_path, 'JPEGImages'))
     for file_path in glob.glob(os.path.join(input_path, 'annotations/*')):
         shutil.copy2(file_path, os.path.join(voc_base_path, 'Annotations'))
-    for file_path in glob.glob(os.path.join(input_path, 'weights/*')):
+    for file_path in glob.glob(os.path.join(input_path, 'weights_correct_format/*')):
         shutil.copy2(file_path, os.path.join(voc_base_path, 'Weights'))
 
 
@@ -70,7 +70,7 @@ def _save_weight_to_json(json_path, count, weight_per_object):
 def _create_missing_weights(fruit_name):
     weight_per_object_list = []
     # calculate mean weight per object
-    weight_path = '/data/classes/{}/weights'.format(fruit_name)
+    weight_path = '/data/classes/{}/weights_correct_format'.format(fruit_name)
     for weight_file in os.listdir(weight_path):
         complete_weight_file = os.path.join(weight_path, weight_file)
         file_name_without_extension = Path(complete_weight_file).stem
@@ -88,7 +88,7 @@ def _create_missing_weights(fruit_name):
     for image_name in os.listdir('/data/classes/{}/images'.format(fruit_name)):
         image_name_without_extension = Path(image_name).stem
         json_path = Path(
-            os.path.join('/data/classes/{}/weights'.format(fruit_name), image_name_without_extension + '.json'))
+            os.path.join('/data/classes/{}/weights_correct_format'.format(fruit_name), image_name_without_extension + '.json'))
 
         count = _count_number_of_objects(fruit_name, image_name_without_extension + '.xml')
 
