@@ -63,7 +63,9 @@ if __name__ == '__main__':
     config.set_val_tfrecord(val_tfrecord_path=VAL_TFRECORD_PATH)
     config.set_model_name(model_name=MODEL_NAME)
     config.set_optimizer(optimizer_name=OPTIMIZER_NAME,
+                         scheduler_name=SCHEDULER_NAME,
                          first_decay_epochs=FIRST_DECAY_EPOCHS,
+                         train_epochs=TRAIN_EPOCHS,
                          steps_per_epoch=steps_per_epoch,
                          learning_rate=LEARNING_RATE)
     config.set_batch_size(batch_size=BATCH_SIZE)
