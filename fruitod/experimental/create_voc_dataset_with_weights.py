@@ -81,7 +81,8 @@ def _create_missing_weights(fruit_name):
 
             count = _count_number_of_objects(fruit_name, file_name_without_extension + '.xml')
 
-            weight_per_object_list.append(float(weight/count))
+            if count > 0:
+                weight_per_object_list.append(float(weight/count))
 
     weight_per_object = np.mean(np.asarray(weight_per_object_list))
 
