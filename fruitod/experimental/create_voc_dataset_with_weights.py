@@ -73,7 +73,6 @@ def _create_missing_weights(fruit_name):
     weight_path = '/data/classes/{}/weights_correct_format'.format(fruit_name)
     for weight_file in glob.glob(os.path.join(weight_path, '*')):
         file_name_without_extension = Path(weight_file).stem
-        print(weight_file)
         with open(weight_file) as f:
             json_dict = json.load(f)
         if 'weightInGrams' in json_dict.keys():
