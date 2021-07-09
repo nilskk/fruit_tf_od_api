@@ -23,7 +23,7 @@ def _make_voc_directories(voc_base_path):
 def _create_train_val_lists(fruit_name):
     val_list =[]
     train_list = []
-    for i, image_name in enumerate(os.listdir('/data/classes/{}/images'.format(fruit_name))):
+    for i, image_name in enumerate(glob.glob('/data/classes/{}/images/*'.format(fruit_name))):
         image_name_with_extension = Path(image_name).name
         image_name_without_extension = Path(image_name).stem
         json_path = Path(os.path.join('/data/classes/{}/weights_correct_format'.format(fruit_name), image_name_without_extension + '.json'))
@@ -71,10 +71,9 @@ def _create_missing_weights(fruit_name):
     weight_per_object_list = []
     # calculate mean weight per object
     weight_path = '/data/classes/{}/weights_correct_format'.format(fruit_name)
-    for weight_file in os.listdir(weight_path):
-        complete_weight_file = os.path.join(weight_path, weight_file)
-        file_name_without_extension = Path(complete_weight_file).stem
-        with open(complete_weight_file) as f:
+    for weight_file in glob.glob(os.path.join(weight_path, '*')):
+        file_name_without_extension = Path(weight_file).stem
+        with open(weight_file) as f:
             json_dict = json.load(f)
         if 'weightInGrams' in json_dict.keys():
             weight = float(json_dict['weightInGrams'])
@@ -85,7 +84,7 @@ def _create_missing_weights(fruit_name):
 
     weight_per_object = np.mean(np.asarray(weight_per_object_list))
 
-    for image_name in os.listdir('/data/classes/{}/images'.format(fruit_name)):
+    for image_name in glob.glob('/data/classes/{}/images/*'.format(fruit_name)):
         image_name_without_extension = Path(image_name).stem
         json_path = Path(
             os.path.join('/data/classes/{}/weights_correct_format'.format(fruit_name), image_name_without_extension + '.json'))
