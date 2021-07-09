@@ -118,8 +118,8 @@ if __name__ == '__main__':
         train_list_gesamt.append(train_list)
         val_list_gesamt.append(val_list)
 
-        _write_lists(train_list, '/data/voc_fruit_weights/ImageSets/Main/train.txt')
-        _write_lists(val_list, '/data/voc_fruit_weights/ImageSets/Main/val.txt')
+        _write_lists(train_list_gesamt, '/data/voc_fruit_weights/ImageSets/Main/train.txt')
+        _write_lists(val_list_gesamt, '/data/voc_fruit_weights/ImageSets/Main/val.txt')
 
         _copy_images_annotations_weights(fruit_name, voc_path_string)
 
