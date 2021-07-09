@@ -11,6 +11,7 @@ if __name__ == '__main__':
     for fruit_name in fruit_list:
         input_path = '/data/classes/{}'.format(fruit_name)
         write_path = os.path.join(input_path, 'weights_correct_format')
+        Path(write_path).mkdir(exist_ok=True, parents=True)
         for file_path in glob.glob(os.path.join(input_path, 'weights/*')):
             if ' ' in file_path:
                 file_name = Path(file_path).name
