@@ -5,6 +5,7 @@ import glob
 import json
 import lxml.etree
 import numpy as np
+import urllib
 
 
 def _make_voc_directories(voc_base_path):
@@ -71,9 +72,9 @@ def _create_missing_weights(fruit_name):
     # calculate mean weight per object
     weight_path = '/data/classes/{}/weights'.format(fruit_name)
     for weight_file in os.listdir(weight_path):
-        print(Path(weight_file).as_uri())
+        print(urllib.parse.quote(weight_file))
         complete_weight_file = os.path.join(weight_path, weight_file)
-        print(complete_weight_file)
+        print(urllib.parse.quote(complete_weight_file))
         file_name_without_extension = Path(complete_weight_file).stem
         with open(complete_weight_file) as f:
             json_dict = json.load(f)
