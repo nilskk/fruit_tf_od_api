@@ -101,6 +101,11 @@ def _create_missing_weights(fruit_name):
                 _save_weight_to_json(json_path, count, weight_per_object)
 
 
+def _write_lists(list, txt_path):
+    with open(txt_path, 'w') as f:
+        f.writelines('\n'.join(list))
+
+
 if __name__ == '__main__':
     voc_path_string = '/data/voc_fruit_weights/'
     _make_voc_directories(voc_path_string)
@@ -112,6 +117,9 @@ if __name__ == '__main__':
         train_list, val_list = _create_train_val_lists(fruit_name)
         train_list_gesamt.append(train_list)
         val_list_gesamt.append(val_list)
+
+        _write_lists(train_list, '/data/voc_fruit_weights/ImageSets/Main/train.txt')
+        _write_lists(val_list, '/data/voc_fruit_weights/ImageSets/Main/val.txt')
 
         _copy_images_annotations_weights(fruit_name, voc_path_string)
 
