@@ -29,16 +29,16 @@ def _create_train_val_lists(fruit_name):
         json_path = Path(os.path.join('/data/classes/{}/weights_correct_format'.format(fruit_name), image_name_without_extension + '.json'))
 
         if not json_path.is_file():
-            train_list.append(image_name_with_extension + '\n')
+            train_list.append(image_name_with_extension)
         else:
             with open(json_path) as f:
                 json_dict = json.load(f)
             if 'weightInGrams' not in json_dict.keys():
-                train_list.append(image_name_with_extension + '\n')
+                train_list.append(image_name_with_extension)
             elif i % 4 == 0:
-                val_list.append(image_name_with_extension + '\n')
+                val_list.append(image_name_with_extension)
             else:
-                train_list.append(image_name_with_extension + '\n')
+                train_list.append(image_name_with_extension)
 
     return train_list, val_list
 
