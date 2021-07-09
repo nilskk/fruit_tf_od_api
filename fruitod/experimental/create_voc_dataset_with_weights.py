@@ -72,9 +72,8 @@ def _create_missing_weights(fruit_name):
     # calculate mean weight per object
     weight_path = '/data/classes/{}/weights'.format(fruit_name)
     for weight_file in os.listdir(weight_path):
-        print(urllib.parse.quote(weight_file))
-        complete_weight_file = os.path.join(weight_path, weight_file)
-        print(urllib.parse.quote(complete_weight_file))
+        weight_file_percent_encoded = urllib.parse.quote(weight_file)
+        complete_weight_file = os.path.join(weight_path, weight_file_percent_encoded)
         file_name_without_extension = Path(complete_weight_file).stem
         with open(complete_weight_file) as f:
             json_dict = json.load(f)
@@ -88,8 +87,7 @@ def _create_missing_weights(fruit_name):
     weight_per_object = np.mean(np.asarray(weight_per_object_list))
 
     for image_name in os.listdir('/data/classes/{}/images'.format(fruit_name)):
-        image_name_without_extension = Path(image_name).stem
-        image_name_with_extension = Path(image_name).name
+        image_name_without_extension = urllib.parse.quote(Path(image_name).stem)
         json_path = Path(
             os.path.join('/data/classes/{}/weights'.format(fruit_name), image_name_without_extension + '.json'))
 
