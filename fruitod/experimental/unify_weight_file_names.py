@@ -1,7 +1,7 @@
 import shutil
 import glob
 import os
-import urllib
+import urllib.parse
 
 
 if __name__ == '__main__':

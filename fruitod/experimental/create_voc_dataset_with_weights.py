@@ -5,7 +5,7 @@ import glob
 import json
 import lxml.etree
 import numpy as np
-import urllib
+import urllib.parse
 
 
 def _make_voc_directories(voc_base_path):
