@@ -53,8 +53,8 @@ def _copy_images_annotations_weights(fruit_name, voc_base_path):
 
 
 def _count_number_of_objects(fruit_name, xml_file_name):
-    xml_path = Path(os.path.join('/data/classes/{}/annotations'.format(fruit_name), xml_file_name)).as_uri()
-    xml = lxml.etree.parse(xml_path)
+    xml = lxml.etree.parse(
+        os.path.join('/data/classes/{}/annotations'.format(fruit_name), xml_file_name))
     count = float(xml.xpath('count(//object)'))
     return count
 
@@ -71,6 +71,7 @@ def _create_missing_weights(fruit_name):
     # calculate mean weight per object
     for weight_file in glob.glob('/data/classes/{}/weights/*.json'.format(fruit_name)):
         file_name_without_extension = Path(weight_file).stem
+        print(file_name_without_extension)
         with open(weight_file) as f:
             json_dict = json.load(f)
         if 'weightInGrams' in json_dict.keys():
