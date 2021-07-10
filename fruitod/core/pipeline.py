@@ -44,9 +44,7 @@ class Pipeline:
 
     def set_optimizer(self,
                       optimizer_name,
-                      scheduler_name,
                       first_decay_epochs,
-                      train_epochs,
                       steps_per_epoch,
                       learning_rate):
         pipeline = read_config(self.config_path)
@@ -57,14 +55,9 @@ class Pipeline:
         elif optimizer_name == 'sgd':
             optimizer = pipeline.train_config.optimizer.momentum_optimizer
             pipeline.train_config.optimizer.momentum_optimizer.momentum_optimizer_value = 0.9
-        if scheduler_name == 'cosine_restart':
-            optimizer.learning_rate.cosine_restart_learning_rate.first_decay_steps = first_decay_epochs * steps_per_epoch
-            optimizer.learning_rate.cosine_restart_learning_rate.initial_learning_rate = learning_rate
-        if scheduler_name == 'cosine_decay':
-            optimizer.learning_rate.cosine_decay_learning_rate.learning_rate_base = learning_rate
-            optimizer.learning_rate.cosine_decay_learning_rate.warmup_learning_rate = 0.0
-            optimizer.learning_rate.cosine_decay_learning_rate.warmup_steps = first_decay_epochs * steps_per_epoch
-            optimizer.learning_rate.cosine_decay_learning_rate.total_steps = train_epochs * steps_per_epoch
+
+        optimizer.learning_rate.cosine_restart_learning_rate.first_decay_steps = first_decay_epochs * steps_per_epoch
+        optimizer.learning_rate.cosine_restart_learning_rate.initial_learning_rate = learning_rate
 
         write_config(pipeline=pipeline, config_path=self.config_path)
 
