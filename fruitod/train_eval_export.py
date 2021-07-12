@@ -30,7 +30,6 @@ if __name__ == '__main__':
         from fruitod.settings_gpu_1 import *
 
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
-    os.environ['TF_GPU_THREAD_MODE'] = 'gpu_private'
 
     gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
