@@ -172,7 +172,7 @@ def create_tfrecord(output_path,
             weights_dict[weight_file_without_extension] = json_dict['weightInGrams']
 
         scaler = RobustScaler()
-        weights_values = np.asarray(weights_dict.values()).reshape(-1, 1)
+        weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
         scaler.fit(weights_values)
         pickle.dump(scaler, open(os.path.join(data_path, 'scaler.pkl'), 'wb'))
         transformed_weights = scaler.transform(weights_values)
