@@ -32,6 +32,8 @@ from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
 from fruitod.settings_gpu_0 import *
+from sklearn.preprocessing import RobustScaler
+import pickle
 
 
 def dict_to_tf_example(data,
@@ -161,7 +163,20 @@ def create_tfrecord(output_path,
     annotations_dir = os.path.join(data_path, 'Annotations')
     if add_weight_information:
         weights_dir = os.path.join(data_path, 'Weights')
-        weight_dict_normalized, weight_mean = normalize_weights(weights_dir)
+        weights_dict = {}
+        for weight_file in os.listdir(weights_dir):
+            weight_file_without_extension = Path(weight_file).stem
+            weight_file_complete = os.path.join(weights_dir, weight_file)
+            with open(weight_file_complete) as f:
+                json_dict = json.load(f)
+            weights_dict[weight_file_without_extension] = json_dict['weightInGrams']
+
+        scaler = RobustScaler()
+        scaler.fit(list(weights_dict.values()))
+        pickle.dump(scaler, open(os.path.join(data_path, 'scaler.pkl'), 'wb'))
+        transformed_weights = scaler.transform(list(weights_dict.values()))
+
+        normalized_weights_dict = dict(zip(list(weights_dict.keys()), list(transformed_weights)))
 
     examples_list = dataset_util.read_examples_list(examples_path)
     for idx, example in enumerate(examples_list):
@@ -176,11 +191,7 @@ def create_tfrecord(output_path,
 
         # read weight informations from voc/Weights/<file>.json
         if add_weight_information:
-            json_file = example_without_extension + '.json'
-            if json_file in weight_dict_normalized.keys():
-                data['weightInGrams'] = weight_dict_normalized[json_file]
-            else:
-                data['weightInGrams'] = weight_mean
+            data['weightInGrams'] = normalized_weights_dict[example_without_extension]
 
         tf_example = dict_to_tf_example(data, data_path, label_map_dict,
                                         ignore_difficult_instances)
