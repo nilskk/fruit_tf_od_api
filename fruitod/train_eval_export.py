@@ -69,6 +69,8 @@ if __name__ == '__main__':
     config.set_num_classes(num_classes=NUM_CLASSES)
     config.set_train_epochs(train_epochs=TRAIN_EPOCHS,
                             steps_per_epoch=steps_per_epoch)
+    config.set_weight_information(add_weight_information=ADD_WEIGHT_INFORMATION,
+                                  weight_method=WEIGHT_METHOD)
 
     metrics = {'Name': MODEL_NAME,
                'Optimizer': OPTIMIZER_NAME,
