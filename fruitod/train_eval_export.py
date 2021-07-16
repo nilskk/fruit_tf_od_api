@@ -46,11 +46,13 @@ if __name__ == '__main__':
     create_tfrecord(output_path=TRAIN_TFRECORD_PATH,
                     data_path=VOC_PATH,
                     add_weight_information=ADD_WEIGHT_INFORMATION,
+                    scaler_method=SCALER_METHOD,
                     set='train')
 
     create_tfrecord(output_path=VAL_TFRECORD_PATH,
                     data_path=VOC_PATH,
                     add_weight_information=ADD_WEIGHT_INFORMATION,
+                    scaler_method=SCALER_METHOD,
                     set='val')
 
     steps_per_epoch = get_steps_per_epoch(tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)

@@ -32,7 +32,7 @@ from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
 from fruitod.settings_gpu_0 import *
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import RobustScaler, MinMaxScaler
 import pickle
 
 
@@ -150,6 +150,7 @@ def create_tfrecord(output_path,
                     data_path,
                     set,
                     add_weight_information=False,
+                    scaler_method='robust',
                     ignore_difficult_instances=False):
 
     if not os.path.exists(os.path.split(output_path)[0]):
@@ -171,7 +172,10 @@ def create_tfrecord(output_path,
                 json_dict = json.load(f)
             weights_dict[weight_file_without_extension] = json_dict['weightInGrams']
 
-        scaler = RobustScaler()
+        if scaler_method == 'robust':
+            scaler = RobustScaler()
+        elif scaler_method == 'minmax':
+            scaler = MinMaxScaler()
         weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
         scaler.fit(weights_values)
         pickle.dump(scaler, open(os.path.join(data_path, 'scaler.pkl'), 'wb'))
