@@ -7,6 +7,8 @@ VOC_PATH = os.path.join(HOME, 'data/voc_weight_test')
 MODEL_PATH = os.path.join(HOME, 'models/models_server/prob_two_stage/efficientdet_d0_iou0.5_score0.7')
 
 SCALER_METHOD = 'robust'
+ADD_WEIGHT_INFORMATION = True
+WEIGHT_METHOD = 'concat'
 
 MODEL_TYPE = "prob_two_stage"
 NUM_CLASSES = 5
@@ -20,8 +22,6 @@ SCORE_THRESHOLD = 0.90
 IOU_THRESHOLD = 0.5
 VISUALIZE = True
 
-ADD_WEIGHT_INFORMATION = True
-WEIGHT_METHOD = 'concat'
 
 
 # Inferred Variables
