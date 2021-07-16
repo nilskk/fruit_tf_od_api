@@ -178,7 +178,10 @@ def create_tfrecord(output_path,
             scaler = MinMaxScaler()
         weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
         scaler.fit(weights_values)
-        pickle.dump(scaler, open(os.path.join(data_path, 'scaler.pkl'), 'wb'))
+        if scaler_method == 'robust':
+            pickle.dump(scaler, open(os.path.join(data_path, 'robust_scaler.pkl'), 'wb'))
+        elif scaler_method == 'minmax':
+            pickle.dump(scaler, open(os.path.join(data_path, 'minmax_scaler.pkl'), 'wb'))
         transformed_weights = scaler.transform(weights_values)
         print(transformed_weights)
 
