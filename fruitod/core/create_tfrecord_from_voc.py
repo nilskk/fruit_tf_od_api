@@ -162,33 +162,47 @@ def create_tfrecord(output_path,
 
     examples_path = os.path.join(data_path, 'ImageSets', 'Main', set + '.txt')
     annotations_dir = os.path.join(data_path, 'Annotations')
+
+    examples_list = dataset_util.read_examples_list(examples_path)
+
     if add_weight_information:
         weights_dir = os.path.join(data_path, 'Weights')
         weights_dict = {}
-        for weight_file in os.listdir(weights_dir):
-            weight_file_without_extension = Path(weight_file).stem
-            weight_file_complete = os.path.join(weights_dir, weight_file)
+        # for weight_file in os.listdir(weights_dir):
+        #     weight_file_without_extension = Path(weight_file).stem
+        #     weight_file_complete = os.path.join(weights_dir, weight_file)
+        #     with open(weight_file_complete) as f:
+        #         json_dict = json.load(f)
+        #     weights_dict[weight_file_without_extension] = json_dict['weightInGrams']
+
+        for example in examples_list:
+            example_without_extension = Path(example).stem
+            weight_file_complete = os.path.join(weights_dir, example_without_extension + '.json')
             with open(weight_file_complete) as f:
                 json_dict = json.load(f)
-            weights_dict[weight_file_without_extension] = json_dict['weightInGrams']
+            weights_dict[example_without_extension] = json_dict['weightInGrams']
+
+        weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
 
         if scaler_method == 'robust':
             scaler = RobustScaler()
         elif scaler_method == 'minmax':
             scaler = MinMaxScaler()
-        weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
-        scaler.fit(weights_values)
-        if scaler_method == 'robust':
-            pickle.dump(scaler, open(os.path.join(data_path, 'robust_scaler.pkl'), 'wb'))
-        elif scaler_method == 'minmax':
-            pickle.dump(scaler, open(os.path.join(data_path, 'minmax_scaler.pkl'), 'wb'))
+        if set == 'train':
+            scaler.fit(weights_values)
+            if scaler_method == 'robust':
+                pickle.dump(scaler, open(os.path.join(data_path, 'robust_scaler.pkl'), 'wb'))
+            elif scaler_method == 'minmax':
+                pickle.dump(scaler, open(os.path.join(data_path, 'minmax_scaler.pkl'), 'wb'))
+        elif set == 'val':
+            if scaler_method == 'robust':
+                scaler = pickle.load(open(os.path.join(data_path, 'robust_scaler.pkl'), 'rb'))
+            elif scaler_method == 'minmax':
+                scaler = pickle.load(open(os.path.join(data_path, 'minmax_scaler.pkl'), 'rb'))
         transformed_weights = scaler.transform(weights_values)
-        print(transformed_weights)
 
         normalized_weights_dict = dict(zip(list(weights_dict.keys()), list(transformed_weights)))
-        print(normalized_weights_dict)
 
-    examples_list = dataset_util.read_examples_list(examples_path)
     for idx, example in enumerate(examples_list):
         example_without_extension = os.path.splitext(example)[0]
         if idx % 5 == 0:
