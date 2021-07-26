@@ -150,6 +150,7 @@ def create_tfrecord(output_path,
                     data_path,
                     set,
                     add_weight_information=False,
+                    add_weight_as_output=False,
                     scaler_method='robust',
                     ignore_difficult_instances=False):
 
@@ -165,7 +166,7 @@ def create_tfrecord(output_path,
 
     examples_list = dataset_util.read_examples_list(examples_path)
 
-    if add_weight_information:
+    if add_weight_information or add_weight_as_output:
         weights_dir = os.path.join(data_path, 'Weights')
         weights_dict = {}
         # for weight_file in os.listdir(weights_dir):
@@ -214,7 +215,7 @@ def create_tfrecord(output_path,
         data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
         # read weight informations from voc/Weights/<file>.json
-        if add_weight_information:
+        if add_weight_information or add_weight_as_output:
             data['weightInGrams'] = normalized_weights_dict[example_without_extension]
 
         tf_example = dict_to_tf_example(data, data_path, label_map_dict,

@@ -35,14 +35,15 @@ def calculate_detections(model,
     # detection_classes should be ints.
     detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
-    indices = filter_detections_nms(detections, iou_threshold=iou_threshold,
-                                    score_threshold=score_threshold)
-
-    detections_with_nms_filter = {'detection_boxes': detections['detection_boxes'][indices],
-                                  'detection_classes': detections['detection_classes'][indices],
-                                  'detection_scores': detections['detection_scores'][indices]}
-
-    return detections_with_nms_filter
+    # indices = filter_detections_nms(detections, iou_threshold=iou_threshold,
+    #                                 score_threshold=score_threshold)
+    #
+    # detections_with_nms_filter = {'detection_boxes': detections['detection_boxes'][indices],
+    #                               'detection_classes': detections['detection_classes'][indices],
+    #                               'detection_scores': detections['detection_scores'][indices]}
+    #
+    # return detections_with_nms_filter
+    return detections
 
 
 def visualize_detections(output_path,
