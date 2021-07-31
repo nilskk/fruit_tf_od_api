@@ -59,12 +59,14 @@ class Pipeline:
             pipeline.train_config.optimizer.momentum_optimizer.momentum_optimizer_value = 0.9
 
         if scheduler_name == 'cosine_restart':
-            optimizer.learning_rate.cosine_restart_learning_rate.first_decay_steps = first_decay_epochs * steps_per_epoch
-            optimizer.learning_rate.cosine_restart_learning_rate.initial_learning_rate = learning_rate
+            scheduler = optimizer.learning_rate.cosine_restart_learning_rate
+            scheduler.first_decay_steps = first_decay_epochs * steps_per_epoch
+            scheduler.initial_learning_rate = learning_rate
         elif scheduler_name == 'cosine_decay':
-            optimizer.learning_rate.cosine_decay_learning_rate.learning_rate_base = learning_rate
-            optimizer.learning_rate.cosine_decay_learning_rate.warmup_steps = first_decay_epochs * steps_per_epoch
-            optimizer.learning_rate.cosine_decay_learning_rate.total_steps = train_epochs * steps_per_epoch
+            scheduler = optimizer.learning_rate.cosine_decay_learning_rate
+            scheduler.learning_rate_base = learning_rate
+            scheduler.warmup_steps = first_decay_epochs * steps_per_epoch
+            scheduler.total_steps = train_epochs * steps_per_epoch
 
         write_config(pipeline=pipeline, config_path=self.config_path)
 
