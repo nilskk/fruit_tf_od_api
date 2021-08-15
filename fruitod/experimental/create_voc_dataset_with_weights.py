@@ -35,7 +35,7 @@ def _create_train_val_lists(fruit_name):
                 json_dict = json.load(f)
             if 'weightInGrams' not in json_dict.keys():
                 train_list.append(image_name_with_extension)
-            elif i % 4 == 0:
+            elif i % 5 == 0:
                 val_list.append(image_name_with_extension)
             else:
                 train_list.append(image_name_with_extension)
