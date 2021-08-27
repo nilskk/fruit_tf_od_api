@@ -75,10 +75,8 @@ def dict_to_tf_example(data,
     width = int(data['size']['width'])
     height = int(data['size']['height'])
 
-    if 'weightInGrams' in data.keys():
-        weight_in_grams = data['weightInGrams']
-    else:
-        weight_in_grams = -1.0
+    weightScaled = data['weightScaled']
+    weightPerObject = data['weightPerObject']
 
     xmin = []
     ymin = []
@@ -107,7 +105,8 @@ def dict_to_tf_example(data,
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
         'image/width': dataset_util.int64_feature(width),
-        'image/weightInGrams': dataset_util.float_feature(weight_in_grams),
+        'image/weightScaled': dataset_util.float_feature(weightScaled),
+        'image/weightPerObject': dataset_util.float_feature(weightPerObject),
         'image/filename': dataset_util.bytes_feature(
             data['filename'].encode('utf8')),
         'image/source_id': dataset_util.bytes_feature(
@@ -127,24 +126,17 @@ def dict_to_tf_example(data,
     return example
 
 
-def normalize_weights(weights_dir):
-    weight_dict = {}
-    for weight_file in os.listdir(weights_dir):
-        print(weight_file)
-        weight_file_complete = os.path.join(weights_dir, weight_file)
+def _get_weight_values(weights_dir):
+    weights_dict = {}
+
+    for example in examples_list:
+        example_without_extension = Path(example).stem
+        weight_file_complete = os.path.join(weights_dir, example_without_extension + '.json')
         with open(weight_file_complete) as f:
             json_dict = json.load(f)
-        if 'weightInGrams' in json_dict.keys():
-            weight_dict[weight_file] = json_dict['weightInGrams']
+        weights_dict[example_without_extension] = json_dict['weightInGrams']
 
-    weight_arr = np.array([val for val in weight_dict.values()])
-    weight_max = np.amax(weight_arr)
-    weight_min = np.amin(weight_arr)
-    weight_mean = np.mean(weight_arr)
-    weight_dict_normalized = {key: (weight_dict[key] - weight_min)/(weight_max - weight_min) for key in weight_dict.keys()}
-
-    return weight_dict_normalized, weight_mean
-
+    return weights_dict
 
 def create_tfrecord(output_path,
                     data_path,
@@ -163,26 +155,12 @@ def create_tfrecord(output_path,
 
     examples_path = os.path.join(data_path, 'ImageSets', 'Main', set + '.txt')
     annotations_dir = os.path.join(data_path, 'Annotations')
+    weights_dir = os.path.join(data_path, 'Weights')
 
     examples_list = dataset_util.read_examples_list(examples_path)
 
-    if add_weight_information or add_weight_as_output:
-        weights_dir = os.path.join(data_path, 'Weights')
-        weights_dict = {}
-        # for weight_file in os.listdir(weights_dir):
-        #     weight_file_without_extension = Path(weight_file).stem
-        #     weight_file_complete = os.path.join(weights_dir, weight_file)
-        #     with open(weight_file_complete) as f:
-        #         json_dict = json.load(f)
-        #     weights_dict[weight_file_without_extension] = json_dict['weightInGrams']
-
-        for example in examples_list:
-            example_without_extension = Path(example).stem
-            weight_file_complete = os.path.join(weights_dir, example_without_extension + '.json')
-            with open(weight_file_complete) as f:
-                json_dict = json.load(f)
-            weights_dict[example_without_extension] = json_dict['weightInGrams']
-
+    if add_weight_information:
+        weights_dict = _get_weight_values(weights_dir)
         weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
 
         if scaler_method == 'robust':
@@ -204,6 +182,25 @@ def create_tfrecord(output_path,
 
         normalized_weights_dict = dict(zip(list(weights_dict.keys()), list(transformed_weights)))
 
+    if add_weight_as_output:
+        weights_dict = _get_weight_values(weights_dir)
+        weights_dict_kg = {k: float(v/1000) for k, v in weights_dict.items()}
+
+        weights_dict_kg_per_object = {}
+        for example in examples_list:
+            example_without_extension = Path(example).stem
+            xml_path = os.path.join(annotations_dir, example_without_extension + '.xml')
+            tree = ET.parse(xml_path)
+            number_of_objects = tree.xpath('count(//object)')
+
+            if number_of_objects < 1 :
+                number_of_objects = 1
+
+            weights_dict_kg_per_object[example_without_extension] = \
+                float(weights_dict_kg[example_without_extension]/number_of_objects)
+
+
+
     for idx, example in enumerate(examples_list):
         example_without_extension = os.path.splitext(example)[0]
         if idx % 5 == 0:
@@ -215,8 +212,15 @@ def create_tfrecord(output_path,
         data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
         # read weight informations from voc/Weights/<file>.json
-        if add_weight_information or add_weight_as_output:
-            data['weightInGrams'] = normalized_weights_dict[example_without_extension]
+        if add_weight_information:
+            data['weightScaled'] = normalized_weights_dict[example_without_extension]
+        else:
+            data['weightScaled'] = -1.0
+
+        if add_weight_as_output:
+            data['weightPerObject'] = weights_dict_kg_per_object[example_without_extension]
+        else:
+            data['weightPerObject'] = -1.0
 
         tf_example = dict_to_tf_example(data, data_path, label_map_dict,
                                         ignore_difficult_instances)
