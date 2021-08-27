@@ -101,7 +101,8 @@ class Pipeline:
         if self.model_type == 'ssd':
             pipeline.model.ssd.add_weight_information = add_weight_information
             pipeline.model.ssd.weight_method = weight_method
-            pipeline.model.ssd.add_weight_as_output_v2 = add_weight_as_output
+            pipeline.model.ssd.add_weight_as_output = add_weight_as_output
+            # pipeline.model.ssd.add_weight_as_output_v2 = add_weight_as_output
         elif self.model_type == 'prob_two_stage':
             pipeline.model.prob_two_stage.add_weight_information = add_weight_information
             pipeline.model.prob_two_stage.weight_method = weight_method
