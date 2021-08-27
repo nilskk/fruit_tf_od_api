@@ -126,7 +126,7 @@ def dict_to_tf_example(data,
     return example
 
 
-def _get_weight_values(weights_dir):
+def _get_weight_values(weights_dir, examples_list):
     weights_dict = {}
 
     for example in examples_list:
@@ -160,7 +160,7 @@ def create_tfrecord(output_path,
     examples_list = dataset_util.read_examples_list(examples_path)
 
     if add_weight_information:
-        weights_dict = _get_weight_values(weights_dir)
+        weights_dict = _get_weight_values(weights_dir, examples_list)
         weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
 
         if scaler_method == 'robust':
@@ -183,14 +183,14 @@ def create_tfrecord(output_path,
         normalized_weights_dict = dict(zip(list(weights_dict.keys()), list(transformed_weights)))
 
     if add_weight_as_output:
-        weights_dict = _get_weight_values(weights_dir)
+        weights_dict = _get_weight_values(weights_dir, examples_list)
         weights_dict_kg = {k: float(v/1000) for k, v in weights_dict.items()}
 
         weights_dict_kg_per_object = {}
         for example in examples_list:
             example_without_extension = Path(example).stem
             xml_path = os.path.join(annotations_dir, example_without_extension + '.xml')
-            tree = ET.parse(xml_path)
+            tree = etree.parse(xml_path)
             number_of_objects = tree.xpath('count(//object)')
 
             if number_of_objects < 1 :
