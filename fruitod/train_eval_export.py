@@ -77,6 +77,7 @@ if __name__ == '__main__':
                             steps_per_epoch=steps_per_epoch)
     config.set_weight_information(add_weight_information=ADD_WEIGHT_INFORMATION,
                                   add_weight_as_output=ADD_WEIGHT_AS_OUTPUT,
+                                  add_weight_as_output_v2=ADD_WEIGHT_AS_OUTPUT_V2,
                                   weight_method=WEIGHT_METHOD)
 
     metrics = {'Name': MODEL_NAME,

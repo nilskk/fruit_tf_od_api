@@ -95,14 +95,18 @@ class Pipeline:
 
         write_config(pipeline=pipeline, config_path=self.config_path)
 
-    def set_weight_information(self, add_weight_information, weight_method, add_weight_as_output):
+    def set_weight_information(self,
+                               add_weight_information=False,
+                               weight_method='input',
+                               add_weight_as_output=False,
+                               add_weight_as_output_v2=False):
         pipeline = read_config(self.config_path)
 
         if self.model_type == 'ssd':
             pipeline.model.ssd.add_weight_information = add_weight_information
             pipeline.model.ssd.weight_method = weight_method
             pipeline.model.ssd.add_weight_as_output = add_weight_as_output
-            # pipeline.model.ssd.add_weight_as_output_v2 = add_weight_as_output
+            pipeline.model.ssd.add_weight_as_output_v2 = add_weight_as_output_v2
         elif self.model_type == 'prob_two_stage':
             pipeline.model.prob_two_stage.add_weight_information = add_weight_information
             pipeline.model.prob_two_stage.weight_method = weight_method
