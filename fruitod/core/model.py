@@ -53,4 +53,4 @@ class Model:
                                                use_side_inputs=add_weight_information,
                                                side_input_shapes='1',
                                                side_input_types='tf.float32',
-                                               side_input_names='weightInGrams')
+                                               side_input_names='weightScaled')
