@@ -134,7 +134,8 @@ if __name__ == '__main__':
 
     # Gewicht in Abhängigkeit von Anzahl der Objekte
     plt.figure()
-    sns.scatterplot(data=file_dataframe, x='weight', y='objects', hue='class')
+    sns.catplot(data=file_dataframe, x='objects', y='weight', hue='class', split=True,
+                jitter=0.4, size=8, linewidth=1, alpha=0.5)
     plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     plt.savefig(os.path.join(output_directory, 'weight_number_of_objects.png'), bbox_inches='tight')
 
