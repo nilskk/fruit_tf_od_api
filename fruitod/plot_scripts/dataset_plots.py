@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     # Anzahl Größe der Boxen
     plt.figure()
-    ax = sns.scatterplot(data=object_dataframe, x='box_width', y='box_height', hue='class', style='size')
+    ax = sns.scatterplot(data=object_dataframe, x='width', y='height', hue='class', style='size')
     plt.savefig(os.path.join(output_directory, 'box_size.png'), bbox_inches='tight')
 
     # Seitenverhältnisse der Boxen
