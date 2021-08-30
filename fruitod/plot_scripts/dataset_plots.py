@@ -119,9 +119,7 @@ if __name__ == '__main__':
 
     # Anzahl Größe der Boxen
     plt.figure()
-    ax = sns.countplot(data=object_dataframe, x='size', hue='class')
-    for p in ax.patches:
-        ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
+    ax = sns.catplot(data=object_dataframe, x='size', hue='class')
     plt.savefig(os.path.join(output_directory, 'box_size.png'), bbox_inches='tight')
 
     # Seitenverhältnisse der Boxen
