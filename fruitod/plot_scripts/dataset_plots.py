@@ -60,8 +60,8 @@ def _get_annotation_information(annotation_file, weight_complete):
 
 
 if __name__ == '__main__':
-    data_dir_string = '/home/nilskk/rewe_project/data/voc_weight_test'
-    # data_dir_string = '/data/voc_fruit_weights'
+    # data_dir_string = '/home/nilskk/rewe_project/data/voc_weight_test'
+    data_dir_string = '/data/voc_fruit_weights'
     data_directory = Path(data_dir_string)
     output_directory = Path(os.path.join(data_dir_string, 'dataset_plots'))
     output_directory.mkdir(exist_ok=True, parents=True)
