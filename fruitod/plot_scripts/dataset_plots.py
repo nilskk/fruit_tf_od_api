@@ -60,8 +60,8 @@ def _get_annotation_information(annotation_file, weight_complete):
 
 
 if __name__ == '__main__':
+    data_dir_string = '/home/nilskk/rewe_project/data/voc_weight_test'
     # data_dir_string = '/data/voc_fruit_weights'
-    data_dir_string = '/data/voc_fruit_weights'
     data_directory = Path(data_dir_string)
     output_directory = Path(os.path.join(data_dir_string, 'dataset_plots'))
     output_directory.mkdir(exist_ok=True, parents=True)
@@ -113,13 +113,15 @@ if __name__ == '__main__':
     # Anzahl Bilder pro Klasse Train/Test
     plt.figure()
     ax = sns.countplot(data=file_dataframe, x='class', hue='set')
-    ax.bar_label(ax.containers[0])
+    for p in ax.patches:
+        ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
     plt.savefig(os.path.join(output_directory, 'images_per_class.png'), bbox_inches='tight')
 
     # Anzahl Größe der Boxen
     plt.figure()
     ax = sns.countplot(data=object_dataframe, x='size', hue='class')
-    ax.bar_label(ax.containers[0])
+    for p in ax.patches:
+        ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
     plt.savefig(os.path.join(output_directory, 'box_size.png'), bbox_inches='tight')
 
     # Seitenverhältnisse der Boxen
