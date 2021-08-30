@@ -120,9 +120,9 @@ if __name__ == '__main__':
     plt.savefig(os.path.join(output_directory, 'images_per_class.png'), bbox_inches='tight')
 
     # Anzahl Größe der Boxen
-    plt.figure(figsize=(24, 16))
+    plt.figure()
     plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
-    ax = sns.scatterplot(data=object_dataframe, x='width', y='height', hue='class', style='size')
+    ax = sns.scatterplot(data=object_dataframe, x='width', y='height', hue='class', style='size', alpha=0.8)
     plt.savefig(os.path.join(output_directory, 'box_size.png'), bbox_inches='tight')
 
     # Seitenverhältnisse der Boxen
