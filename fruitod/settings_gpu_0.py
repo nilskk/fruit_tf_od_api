@@ -4,19 +4,22 @@ from pathlib import Path
 # Variables to customize
 HOME = os.path.join(Path.home(), 'rewe_project')
 VOC_PATH = os.path.join(HOME, 'data/voc_weight_test')
-MODEL_PATH = os.path.join(HOME, 'models/models_server/prob_two_stage/efficientdet_d0_iou0.5_score0.7')
+MODEL_PATH = os.path.join(HOME, 'models/models_server/ssd/efficientdet_d0_test')
 
-SCALER_METHOD = 'robust'
-ADD_WEIGHT_INFORMATION = True
-WEIGHT_METHOD = 'concat'
+SCALER_METHOD = 'minmax'
+ADD_WEIGHT_INFORMATION = False
+WEIGHT_METHOD = 'input-multiply'
+ADD_WEIGHT_AS_OUTPUT = False
+ADD_WEIGHT_AS_OUTPUT_V2 = False
 
-MODEL_TYPE = "prob_two_stage"
+MODEL_TYPE = "ssd"
 NUM_CLASSES = 5
 BATCH_SIZE = 8
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.01
 TRAIN_EPOCHS = 10
 FIRST_DECAY_EPOCHS = 10
 OPTIMIZER_NAME = 'adam'
+SCHEDULER_NAME = 'decay'
 
 SCORE_THRESHOLD = 0.90
 IOU_THRESHOLD = 0.5
@@ -35,11 +38,9 @@ CONFIG_PATH = os.path.join(MODEL_PATH, 'pipeline.config')
 MODEL_NAME = os.path.basename(MODEL_PATH)
 
 SAVE_PATH = os.path.join(MODEL_PATH,
-                         'lr={}_bs={}_classes={}_{}_{}'.format(LEARNING_RATE,
+                         'lr={}_bs={}_classes={}_{}'.format(LEARNING_RATE,
                                                                 BATCH_SIZE,
-                                                                NUM_CLASSES,
-                                                                OPTIMIZER_NAME,
-                                                                SCALER_METHOD))
+                                                                NUM_CLASSES, OPTIMIZER_NAME))
 CHECKPOINT_PATH = os.path.join(SAVE_PATH, 'checkpoints')
 EXPORT_PATH = os.path.join(SAVE_PATH, 'export')
 PREDICTION_OUTPUT_PATH = os.path.join(SAVE_PATH, 'prediction')
