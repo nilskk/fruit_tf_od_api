@@ -102,6 +102,7 @@ if __name__ == '__main__':
     print(object_dataframe)
 
     sns.set_theme()
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
 
     # Anzahl Objekte pro Klasse Train/Test
     plt.figure()
