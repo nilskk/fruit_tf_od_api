@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     # Gewicht in Abhängigkeit von Anzahl der Objekte
     plt.figure()
-    sns.relplot(data=file_dataframe, x='weight', y='objects', hue='class', kind='line')
+    sns.lmplot(data=file_dataframe, x='weight', y='objects', hue='class')
     plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     plt.savefig(os.path.join(output_directory, 'weight_number_of_objects.png'), bbox_inches='tight')
 
