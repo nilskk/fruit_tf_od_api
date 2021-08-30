@@ -98,9 +98,8 @@ if __name__ == '__main__':
 
     file_dataframe = pd.DataFrame(file_data_list)
     object_dataframe = pd.DataFrame(object_data_list)
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
-        print(file_dataframe)
-        print(object_dataframe)
+    print(file_dataframe)
+    print(object_dataframe)
 
     sns.set_theme()
 
@@ -118,8 +117,8 @@ if __name__ == '__main__':
     plt.savefig(os.path.join(output_directory, 'images_per_class.png'), bbox_inches='tight')
 
     # Anzahl Größe der Boxen
-    plt.figure()
-    ax = sns.scatterplot(data=object_dataframe, x='width', y='height', hue='class', style='size')
+    plt.figure(figsize=(12,8))
+    ax = sns.scatterplot(data=object_dataframe, x='width', y='height', hue='class', style='size', alpha=0.5)
     plt.savefig(os.path.join(output_directory, 'box_size.png'), bbox_inches='tight')
 
     # Seitenverhältnisse der Boxen
