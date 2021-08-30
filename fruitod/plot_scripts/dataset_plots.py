@@ -102,16 +102,18 @@ if __name__ == '__main__':
     print(object_dataframe)
 
     sns.set_theme()
-    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
+
 
     # Anzahl Objekte pro Klasse Train/Test
     plt.figure()
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     sns.catplot(data=file_dataframe, x='class', y='objects', hue='set', split=True,
                 jitter=0.4, size=8, linewidth=1, alpha=0.5)
     plt.savefig(os.path.join(output_directory, 'objects_per_class.png'), bbox_inches='tight')
 
     # Anzahl Bilder pro Klasse Train/Test
     plt.figure()
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     ax = sns.countplot(data=file_dataframe, x='class', hue='set')
     for p in ax.patches:
         ax.annotate(str(p.get_height()), (p.get_x() * 1.005, p.get_height() * 1.005))
@@ -119,17 +121,20 @@ if __name__ == '__main__':
 
     # Anzahl Größe der Boxen
     plt.figure(figsize=(24, 16))
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     ax = sns.scatterplot(data=object_dataframe, x='width', y='height', hue='class', style='size')
     plt.savefig(os.path.join(output_directory, 'box_size.png'), bbox_inches='tight')
 
     # Seitenverhältnisse der Boxen
     plt.figure()
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     sns.catplot(data=object_dataframe, x='class', y='ratio', hue='set', split=True,
                 jitter=0.4, size=8, linewidth=1, alpha=0.5)
     plt.savefig(os.path.join(output_directory, 'box_ratio.png'), bbox_inches='tight')
 
     # Gewicht in Abhängigkeit von Anzahl der Objekte
     plt.figure()
+    plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)
     sns.scatterplot(data=file_dataframe, x='weight', y='objects', hue='class')
     plt.savefig(os.path.join(output_directory, 'weight_number_of_objects.png'), bbox_inches='tight')
 
