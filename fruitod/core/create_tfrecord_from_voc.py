@@ -173,7 +173,7 @@ def create_tfrecord(output_path,
                 pickle.dump(scaler, open(os.path.join(data_path, 'robust_scaler.pkl'), 'wb'))
             elif scaler_method == 'minmax':
                 pickle.dump(scaler, open(os.path.join(data_path, 'minmax_scaler.pkl'), 'wb'))
-        elif set == 'val':
+        elif set == 'test':
             if scaler_method == 'robust':
                 scaler = pickle.load(open(os.path.join(data_path, 'robust_scaler.pkl'), 'rb'))
             elif scaler_method == 'minmax':
