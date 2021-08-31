@@ -37,11 +37,12 @@ def _get_annotation_information(annotation_file, weight_complete):
         ymax = float(object.find('bndbox').find('ymax').text)
         bndbox_width = xmax - xmin
         bndbox_height = ymax - ymin
+        bndbox_area = bndbox_height * bndbox_width
         bndbox_ratio = bndbox_width / bndbox_height
         bndbox_size = ''
-        if bndbox_height < 32 and bndbox_width < 32:
+        if bndbox_area < 32**2:
             bndbox_size = 'small'
-        elif bndbox_height < 96 and bndbox_width < 96:
+        elif bndbox_area < 96**2:
             bndbox_size = 'medium'
         else:
             bndbox_size = 'large'
@@ -52,6 +53,7 @@ def _get_annotation_information(annotation_file, weight_complete):
                        'width': bndbox_width,
                        'height': bndbox_height,
                        'ratio': bndbox_ratio,
+                       'area': bndbox_area,
                        'size': bndbox_size,
                        'weight': weight_per_object}
         object_list.append(object_dict)
