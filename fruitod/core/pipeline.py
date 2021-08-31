@@ -110,7 +110,7 @@ class Pipeline:
         elif self.model_type == 'prob_two_stage':
             pipeline.model.prob_two_stage.add_weight_information = add_weight_information
             pipeline.model.prob_two_stage.weight_method = weight_method
-            pipeline.model.prob_two_stage.add_weight_as_outputv1 = add_weight_as_output
+            pipeline.model.prob_two_stage.add_weight_as_output = add_weight_as_output
 
         write_config(pipeline=pipeline, config_path=self.config_path)
 
