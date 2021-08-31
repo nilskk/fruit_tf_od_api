@@ -50,12 +50,12 @@ if __name__ == '__main__':
                     scaler_method=SCALER_METHOD,
                     set='train')
 
-    create_tfrecord(output_path=VAL_TFRECORD_PATH,
+    create_tfrecord(output_path=TEST_TFRECORD_PATH,
                     data_path=VOC_PATH,
                     add_weight_information=ADD_WEIGHT_INFORMATION,
                     add_weight_as_output=ADD_WEIGHT_AS_OUTPUT,
                     scaler_method=SCALER_METHOD,
-                    set='val')
+                    set='test')
 
     steps_per_epoch = get_steps_per_epoch(tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                       model_type=MODEL_TYPE)
     config.set_labelmap(labelmap_path=LABELMAP_PATH)
     config.set_train_tfrecord(train_tfrecord_path=TRAIN_TFRECORD_PATH)
-    config.set_val_tfrecord(val_tfrecord_path=VAL_TFRECORD_PATH)
+    config.set_val_tfrecord(val_tfrecord_path=TEST_TFRECORD_PATH)
     config.set_model_name(model_name=MODEL_NAME)
     config.set_optimizer(optimizer_name=OPTIMIZER_NAME,
                          scheduler_name=SCHEDULER_NAME,

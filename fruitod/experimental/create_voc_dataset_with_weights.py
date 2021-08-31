@@ -10,7 +10,7 @@ import urllib.parse
 
 def _make_voc_directories(voc_base_path):
     Path(voc_base_path).mkdir(parents=True, exist_ok=True)
-    trainval_path = os.path.join(voc_base_path, 'ImageSets/Main')
+    trainval_path = os.path.join(voc_base_path, 'ImageSets')
     Path(trainval_path).mkdir(parents=True, exist_ok=True)
     image_path = os.path.join(voc_base_path, 'JPEGImages')
     Path(image_path).mkdir(parents=True, exist_ok=True)
@@ -112,16 +112,16 @@ if __name__ == '__main__':
 
     fruit_list = ['apfel', 'bunte_paprika', 'kiwi', 'kohlrabi','mango', 'paprika_rot', 'tomate']
     train_list_gesamt = []
-    val_list_gesamt = []
+    test_list_gesamt = []
     for fruit_name in fruit_list:
-        train_list, val_list = _create_train_val_lists(fruit_name)
+        train_list, test_list = _create_train_val_lists(fruit_name)
         for name in train_list:
             train_list_gesamt.append(name)
-        for name in val_list:
-            val_list_gesamt.append(name)
+        for name in test_list:
+            test_list_gesamt.append(name)
 
-        _write_lists(train_list_gesamt, '/data/voc_fruit_weights/ImageSets/Main/train.txt')
-        _write_lists(val_list_gesamt, '/data/voc_fruit_weights/ImageSets/Main/val.txt')
+        _write_lists(train_list_gesamt, '/data/voc_fruit_weights/ImageSets/train.txt')
+        _write_lists(test_list_gesamt, '/data/voc_fruit_weights/ImageSets/test.txt')
 
         _copy_images_annotations_weights(fruit_name, voc_path_string)
 

@@ -5,7 +5,7 @@ from fruitod.core.collect_summary import collect_csv
 
 if __name__ == '__main__':
     inference(export_path=EXPORT_PATH,
-              tfrecord_path=VAL_TFRECORD_PATH)
+              tfrecord_path=TEST_TFRECORD_PATH)
 
     flops(export_path=EXPORT_PATH)
 
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     predict(export_path=EXPORT_PATH,
             output_path=PREDICTION_OUTPUT_PATH,
             labelmap_path=LABELMAP_PATH,
-            tfrecord_path=VAL_TFRECORD_PATH,
+            tfrecord_path=TEST_TFRECORD_PATH,
             score_threshold=SCORE_THRESHOLD,
             iou_threshold=IOU_THRESHOLD,
             visualize=VISUALIZE)

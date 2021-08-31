@@ -74,7 +74,7 @@ def flops(export_path):
 def main():
     flops(export_path=EXPORT_PATH)
     inference(export_path=EXPORT_PATH,
-              tfrecord_path=VAL_TFRECORD_PATH)
+              tfrecord_path=TEST_TFRECORD_PATH)
 
 
 if __name__ == "__main__":

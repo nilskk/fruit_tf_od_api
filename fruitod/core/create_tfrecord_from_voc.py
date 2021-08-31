@@ -153,7 +153,7 @@ def create_tfrecord(output_path,
     complete_label_map_path = os.path.join(data_path, 'pascal_label_map.pbtxt')
     label_map_dict = label_map_util.get_label_map_dict(complete_label_map_path)
 
-    examples_path = os.path.join(data_path, 'ImageSets', 'Main', set + '.txt')
+    examples_path = os.path.join(data_path, 'ImageSets', set + '.txt')
     annotations_dir = os.path.join(data_path, 'Annotations')
     weights_dir = os.path.join(data_path, 'Weights')
 
@@ -235,10 +235,10 @@ def main():
                     add_weight_information=ADD_WEIGHT_INFORMATION,
                     set='train')
 
-    create_tfrecord(output_path=VAL_TFRECORD_PATH,
+    create_tfrecord(output_path=TEST_TFRECORD_PATH,
                     data_path=VOC_PATH,
                     add_weight_information=ADD_WEIGHT_INFORMATION,
-                    set='val')
+                    set='test')
 
 
 if __name__ == '__main__':
