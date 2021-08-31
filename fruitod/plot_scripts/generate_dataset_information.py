@@ -66,9 +66,9 @@ if __name__ == '__main__':
     output_directory = Path(os.path.join(data_dir_string, 'dataset_information'))
     output_directory.mkdir(exist_ok=True, parents=True)
 
-    train_file = os.path.join(data_directory, 'ImageSets', 'Main', 'train.txt')
+    train_file = os.path.join(data_directory, 'ImageSets', 'train.txt')
     train_list = dataset_util.read_examples_list(train_file)
-    test_file = os.path.join(data_directory, 'ImageSets', 'Main', 'val.txt')
+    test_file = os.path.join(data_directory, 'ImageSets', 'test.txt')
     test_list = dataset_util.read_examples_list(test_file)
 
     # read information per file and per object from annotation and weight file and save to dict
