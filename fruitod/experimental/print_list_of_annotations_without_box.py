@@ -8,8 +8,6 @@ import numpy as np
 import seaborn as sns
 import pandas as pd
 from lxml import etree
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 
 from object_detection.utils import dataset_util
 
