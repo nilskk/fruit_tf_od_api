@@ -21,7 +21,7 @@ if __name__ == '__main__':
         for i, image_name in enumerate(glob.glob('/data/classes/{}/images/*'.format(fruit_name))):
             image_name_with_extension = Path(image_name).name
             image_name_without_extension = Path(image_name).stem
-            json_path = Path(os.path.join('/data/classes/{}/weights'.format(fruit_name), image_name_without_extension + '.json'))
+            json_path = Path(os.path.join('/data/classes/{}/weights_correct_format_v2'.format(fruit_name), image_name_without_extension + '.json'))
 
             if not json_path.is_file():
                 missing_weight_files_list.append(image_name)
