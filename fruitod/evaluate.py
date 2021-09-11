@@ -174,8 +174,7 @@ def get_flops(model, side_input=False):
     if side_input:
         signature_dict = {"input_tensor": tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'),
                           "weightScaled": tf.TensorSpec(shape=[1], dtype=tf.float32, name='weightScaled')}
-        full_model = full_model.get_concrete_function([tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'),
-                                                      tf.TensorSpec(shape=[1], dtype=tf.float32, name='weightScaled')])
+        full_model = full_model.get_concrete_function(signature_dict)
     else:
         full_model = full_model.get_concrete_function(tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8))
 
