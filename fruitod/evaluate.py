@@ -100,6 +100,8 @@ def inference(model,
 
     elapsed_time = []
 
+    print(side_input)
+
     for example in examples_list:
         example_without_extension = Path(example).stem
 
@@ -111,7 +113,7 @@ def inference(model,
             with open(weight_path) as f:
                 json_dict = json.load(f)
             weight = json_dict['weightInGrams']
-            weight_scaled = scaler.transform(weight)
+            weight_scaled = scaler.transform(np.asarray(weight).reshape(-1, 1))
 
         image_path = os.path.join(data_path, 'JPEGImages', example)
         image_np = _load_image_into_numpy_array(image_path)
