@@ -108,7 +108,7 @@ def inference(model,
         if side_input:
             scaler = pickle.load(open(os.path.join(data_path, scaler_file), 'rb'))
             weight_path = os.path.join(data_path, 'Weights', example_without_extension + '.json')
-            with open(weight_file_complete) as f:
+            with open(weight_path) as f:
                 json_dict = json.load(f)
             weight = json_dict['weightInGrams']
             weight_scaled = np.array(scaler.transform(weight)).astype(np.float32)
