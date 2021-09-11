@@ -228,7 +228,7 @@ def main(_):
     print(per_category_ap)
 
     if not side_input:
-        flops = get_flops(model, side_input)
+        flops = get_flops(model)
     else:
         flops = 0
 
