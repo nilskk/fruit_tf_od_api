@@ -17,6 +17,8 @@ from fruitod.utils.file_util import read_tfrecord
 from absl import flags, app
 from fruitod.utils import voc_util
 from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2_as_graph
+from tensorflow.python.profiler.model_analyzer import profile
+from tensorflow.python.profiler.option_builder import ProfileOptionBuilder
 
 flags.DEFINE_string('model_path', None, 'Path to model')
 flags.DEFINE_string('data_path', None, 'Path to dataset')
@@ -172,11 +174,12 @@ def inference(model,
 def get_flops(model, side_input=False):
     full_model = tf.function(lambda x: model(x))
     if side_input:
-        signature_dict = {"input_tensor": tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'),
-                          "weightScaled": tf.TensorSpec(shape=[1], dtype=tf.float32, name='weightScaled')}
-        full_model = full_model.get_concrete_function(signature_dict)
+        full_model = full_model.get_concrete_function(
+            [tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'),
+             tf.TensorSpec(shape=[1], dtype=tf.float32, name='weightScaled')])
     else:
-        full_model = full_model.get_concrete_function(tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8))
+        full_model = full_model.get_concrete_function(
+            tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'))
 
     frozen_func, graph_def = convert_variables_to_constants_v2_as_graph(full_model)
     with tf.Graph().as_default() as graph:
