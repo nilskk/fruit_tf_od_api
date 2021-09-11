@@ -172,8 +172,8 @@ def inference(model,
 def get_flops(model, side_input=False):
     full_model = tf.function(lambda x: model(x))
     if side_input:
-        full_model = full_model.get_concrete_function(tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8),
-                                                      tf.TensorSpec(shape=[1], dtype=tf.float32))
+        full_model = full_model.get_concrete_function([tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8),
+                                                      tf.TensorSpec(shape=[1], dtype=tf.float32)])
     else:
         full_model = full_model.get_concrete_function(tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8))
 
