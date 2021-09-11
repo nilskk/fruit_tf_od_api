@@ -111,7 +111,7 @@ def inference(model,
             with open(weight_path) as f:
                 json_dict = json.load(f)
             weight = json_dict['weightInGrams']
-            weight_scaled = np.array(scaler.transform(weight)).astype(np.float32)
+            weight_scaled = scaler.transform(weight)
 
         image_path = os.path.join(data_path, 'JPEGImages', example)
         image_np = _load_image_into_numpy_array(image_path)
