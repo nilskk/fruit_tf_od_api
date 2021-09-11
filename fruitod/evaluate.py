@@ -114,7 +114,7 @@ def inference(model,
                 json_dict = json.load(f)
             weight = json_dict['weightInGrams']
             weight_scaled = scaler.transform(np.asarray(weight).reshape(-1, 1))
-            weight_scaled =np.squeeze(weight_scaled)
+            weight_scaled =np.asarray(np.squeeze(weight_scaled), dtype=np.float32)
 
         image_path = os.path.join(data_path, 'JPEGImages', example)
         image_np = _load_image_into_numpy_array(image_path)
