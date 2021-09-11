@@ -171,15 +171,11 @@ def inference(model,
 
     return dt_ids, dt_boxes, dt_classes, dt_scores, mean_elapsed
 
-def get_flops(model, side_input=False):
+def get_flops(model):
     full_model = tf.function(lambda x: model(x))
-    if side_input:
-        full_model = full_model.get_concrete_function(
-            (tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'),
-             tf.TensorSpec(shape=[1], dtype=tf.float32, name='weightScaled')))
-    else:
-        full_model = full_model.get_concrete_function(
-            tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'))
+
+    full_model = full_model.get_concrete_function(
+        tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8, name='input_tensor'))
 
     frozen_func, graph_def = convert_variables_to_constants_v2_as_graph(full_model)
     with tf.Graph().as_default() as graph:
@@ -231,7 +227,10 @@ def main(_):
     print(summary_metrics)
     print(per_category_ap)
 
-    flops = get_flops(model, side_input)
+    if not side_input:
+        flops = get_flops(model, side_input)
+    else:
+        flops = 0
 
     metrics_dict = {'flops': round(flops / 1e9, 2),
                     'time_per_image': round(time_per_image*1000, 2)}
