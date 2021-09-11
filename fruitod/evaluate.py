@@ -146,7 +146,7 @@ def inference(model,
 
         detection_weights = None
         if 'detection_weightPerObject' in detections:
-            detection_weights = detections['detection_weightPerObject']
+            detection_weights = detections['detection_weightPerObject'][0].numpy()
 
         image_np_with_detections = image_np.copy()
         visualization_utils.visualize_boxes_and_labels_on_image_array(
