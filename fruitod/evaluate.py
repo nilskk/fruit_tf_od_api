@@ -85,6 +85,7 @@ def _load_image_into_numpy_array(path):
   return np.array(image.getdata()).reshape(
       (im_height, im_width, 3)).astype(np.uint8)
 
+
 def inference(model,
               data_path,
               model_path,
@@ -148,13 +149,18 @@ def inference(model,
         if 'detection_weightPerObject' in detections:
             detection_weights = detections['detection_weightPerObject'][0].numpy()
 
+        indices = tf.image.non_max_suppression(boxes=detection_boxes,
+                                               scores=detection_scores,
+                                               iou_threshold=0.95)
+        indices_np = indices.numpy()
+
         image_np_with_detections = image_np.copy()
         visualization_utils.visualize_boxes_and_labels_on_image_array(
             image_np_with_detections,
-            boxes=detection_boxes,
-            classes=detection_classes,
-            scores=detection_scores,
-            weights=detection_weights,
+            boxes=detection_boxes[indices_np],
+            classes=detection_classes[indices_np],
+            scores=detection_scores[indices_np],
+            weights=detection_weights[indices_np],
             category_index=category_index,
             use_normalized_coordinates=False,
             max_boxes_to_draw=100,
