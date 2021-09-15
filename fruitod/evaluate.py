@@ -151,7 +151,8 @@ def inference(model,
 
         indices = tf.image.non_max_suppression(boxes=detection_boxes,
                                                scores=detection_scores,
-                                               iou_threshold=0.95)
+                                               iou_threshold=0.95,
+                                               max_output_size=64)
         indices_np = indices.numpy()
 
         image_np_with_detections = image_np.copy()
@@ -163,7 +164,7 @@ def inference(model,
             weights=detection_weights[indices_np],
             category_index=category_index,
             use_normalized_coordinates=False,
-            max_boxes_to_draw=100,
+            max_boxes_to_draw=64,
             min_score_thresh=0.5,
             line_thickness=2
         )
