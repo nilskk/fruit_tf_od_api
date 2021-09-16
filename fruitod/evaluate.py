@@ -145,15 +145,17 @@ def inference(model,
         dt_classes.append(detection_classes)
         dt_scores.append(detection_scores)
 
-        detection_weights = None
-        if 'detection_weightPerObject' in detections:
-            detection_weights = detections['detection_weightPerObject'][0].numpy()
-
         indices = tf.image.non_max_suppression(boxes=detection_boxes,
                                                scores=detection_scores,
                                                iou_threshold=0.95,
                                                max_output_size=64)
         indices_np = indices.numpy()
+
+        detection_weights = None
+        if 'detection_weightPerObject' in detections:
+            detection_weights = detections['detection_weightPerObject'][0].numpy()
+            detection_weights = detection_weights[indices_np]
+
 
         image_np_with_detections = image_np.copy()
         visualization_utils.visualize_boxes_and_labels_on_image_array(
@@ -161,7 +163,7 @@ def inference(model,
             boxes=detection_boxes[indices_np],
             classes=detection_classes[indices_np],
             scores=detection_scores[indices_np],
-            weights=detection_weights[indices_np],
+            weights=detection_weights,
             category_index=category_index,
             use_normalized_coordinates=False,
             max_boxes_to_draw=64,
