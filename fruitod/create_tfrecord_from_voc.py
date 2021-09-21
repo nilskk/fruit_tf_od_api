@@ -13,6 +13,9 @@
 # limitations under the License.
 # ==============================================================================
 
+# Source:
+# Mit Veränderungen um das skalierte Gesamtgewicht oder das skalierte Gewicht pro Objekt mit in die TFRecord einzulesen
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -141,8 +144,9 @@ def _get_weight_values(weights_dir, examples_list):
 def create_tfrecord(output_path,
                     data_path,
                     set,
-                    add_weight_information=False,
-                    add_weight_as_output=False,
+                    add_weight_as_input=False,
+                    add_weight_as_output_gpo=False,
+                    add_weight_as_output_gesamt=False,
                     scaler_method='robust',
                     ignore_difficult_instances=False):
 
@@ -150,7 +154,7 @@ def create_tfrecord(output_path,
         os.makedirs(os.path.split(output_path)[0])
     writer = tf.python_io.TFRecordWriter(output_path)
 
-    complete_label_map_path = os.path.join(data_path, 'pascal_label_map.pbtxt')
+    complete_label_map_path = os.path.join(data_path, 'label_map.pbtxt')
     label_map_dict = label_map_util.get_label_map_dict(complete_label_map_path)
 
     examples_path = os.path.join(data_path, 'ImageSets', set + '.txt')
@@ -159,7 +163,7 @@ def create_tfrecord(output_path,
 
     examples_list = dataset_util.read_examples_list(examples_path)
 
-    if add_weight_information:
+    if add_weight_as_input or add_weight_as_output_gesamt:
         weights_dict = _get_weight_values(weights_dir, examples_list)
         weights_values = np.asarray(list(weights_dict.values())).reshape(-1, 1)
 
@@ -182,7 +186,7 @@ def create_tfrecord(output_path,
 
         normalized_weights_dict = dict(zip(list(weights_dict.keys()), list(transformed_weights)))
 
-    if add_weight_as_output:
+    if add_weight_as_output_gpo:
         weights_dict = _get_weight_values(weights_dir, examples_list)
         weights_dict_kg = {k: float(v/1000) for k, v in weights_dict.items()}
 
@@ -212,12 +216,12 @@ def create_tfrecord(output_path,
         data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
 
         # read weight informations from voc/Weights/<file>.json
-        if add_weight_information:
+        if add_weight_as_input or add_weight_as_output_gesamt:
             data['weightScaled'] = normalized_weights_dict[example_without_extension]
         else:
             data['weightScaled'] = -1.0
 
-        if add_weight_as_output:
+        if add_weight_as_output_gpo:
             data['weightPerObject'] = weights_dict_kg_per_object[example_without_extension]
         else:
             data['weightPerObject'] = -1.0
@@ -232,12 +236,18 @@ def create_tfrecord(output_path,
 def main():
     create_tfrecord(output_path=TRAIN_TFRECORD_PATH,
                     data_path=VOC_PATH,
-                    add_weight_information=ADD_WEIGHT_INFORMATION,
+                    add_weight_as_input=ADD_WEIGHT_AS_INPUT,
+                    add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
+                    add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
+                    scaler_method=SCALER_METHOD,
                     set='train')
 
     create_tfrecord(output_path=TEST_TFRECORD_PATH,
                     data_path=VOC_PATH,
-                    add_weight_information=ADD_WEIGHT_INFORMATION,
+                    add_weight_as_input=ADD_WEIGHT_AS_INPUT,
+                    add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
+                    add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
+                    scaler_method=SCALER_METHOD,
                     set='test')
 
 
