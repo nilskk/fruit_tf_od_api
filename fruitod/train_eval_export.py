@@ -42,22 +42,6 @@ if __name__ == '__main__':
             # Memory growth must be set before GPUs have been initialized
             print(e)
 
-    create_tfrecord(output_path=TRAIN_TFRECORD_PATH,
-                    data_path=VOC_PATH,
-                    add_weight_as_input=ADD_WEIGHT_AS_INPUT,
-                    add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
-                    add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
-                    scaler_method=SCALER_METHOD,
-                    set='train')
-
-    create_tfrecord(output_path=TEST_TFRECORD_PATH,
-                    data_path=VOC_PATH,
-                    add_weight_as_input=ADD_WEIGHT_AS_INPUT,
-                    add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
-                    add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
-                    scaler_method=SCALER_METHOD,
-                    set='test')
-
     steps_per_epoch = get_steps_per_epoch(train_tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)
 
     config = Pipeline(config_path=CONFIG_PATH,
