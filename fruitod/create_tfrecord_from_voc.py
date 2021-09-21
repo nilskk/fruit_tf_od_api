@@ -26,6 +26,7 @@ from absl import logging
 import os
 import json
 import numpy as np
+from argparse import ArgumentParser
 
 from lxml import etree
 import PIL.Image
@@ -34,7 +35,6 @@ import tensorflow.compat.v1 as tf
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
-from fruitod.settings_gpu_0 import *
 from sklearn.preprocessing import RobustScaler, MinMaxScaler
 import pickle
 
@@ -252,4 +252,15 @@ def main():
 
 
 if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument('--gpu', type=int, choices=[0, 1], default=0)
+    args = parser.parse_args()
+
+    if args.gpu == 0:
+        from fruitod.settings_gpu_0 import *
+    elif args.gpu == 1:
+        from fruitod.settings_gpu_1 import *
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
+
     main()
