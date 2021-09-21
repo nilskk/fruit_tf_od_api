@@ -10,19 +10,24 @@ from absl import logging
 
 class Model:
     def __init__(self, checkpoint_path, config_path, export_path):
+        """
+            Constructor.
+        Args:
+            checkpoint_path: Path where to save checkpoints while training.
+            config_path: Path of config file of model
+            export_path: Path to save exported model
+        """
         self.checkpoint_path = checkpoint_path
         self.config_path = config_path
         self.export_path = export_path
 
-    def train(self, checkpoint_every_n_epochs=10, batch_size=8):
-        pipeline = pipeline_pb2.TrainEvalPipelineConfig()
-        with tf.io.gfile.GFile(self.config_path, 'r') as f:
-            proto_str = f.read()
-            text_format.Merge(proto_str, pipeline)
-
-        train_tfrecords_path = pipeline.train_input_reader.tf_record_input_reader.input_path
-        num_train_images = sum(1 for _ in tf.data.TFRecordDataset(train_tfrecords_path))
-        steps_per_epoch = math.ceil(num_train_images / batch_size)
+    def train(self, steps_per_epoch, checkpoint_every_n_epochs=10):
+        """
+            Trains the model.
+        Args:
+            steps_per_epoch: Number of steps that are to be trained for one epoch
+            checkpoint_every_n_epochs: Epoch interval in which to save a checkpoint while training
+        """
         checkpoints_every_n_steps = steps_per_epoch * checkpoint_every_n_epochs
 
         strategy = tf.compat.v2.distribute.MirroredStrategy()
@@ -35,6 +40,9 @@ class Model:
                 record_summaries=True)
 
     def evaluate(self):
+        """
+            Evaluates all Training Checkpoints.
+        """
         model_lib_v2.eval_continuously(
             pipeline_config_path=self.config_path,
             model_dir=self.checkpoint_path,
@@ -42,7 +50,13 @@ class Model:
             postprocess_on_cpu=True
         )
 
-    def export(self, add_weight_information=False):
+    def export(self, add_weight_as_input=False):
+        """
+            Exports trained model with or without additional weight input
+        Args:
+            add_weight_as_input: If true, add weight 'gesamtgewicht' as additional input to input signature
+                of exported model
+        """
         pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
         with tf.io.gfile.GFile(self.config_path, 'r') as f:
             text_format.Merge(f.read(), pipeline_config)
@@ -50,7 +64,7 @@ class Model:
                                                pipeline_config=pipeline_config,
                                                trained_checkpoint_dir=self.checkpoint_path,
                                                output_directory=self.export_path,
-                                               use_side_inputs=add_weight_information,
+                                               use_side_inputs=add_weight_as_input,
                                                side_input_shapes='1',
                                                side_input_types='tf.float32',
                                                side_input_names='weightScaled')
