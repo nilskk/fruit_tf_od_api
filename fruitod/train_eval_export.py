@@ -1,8 +1,7 @@
 from fruitod.core.model import Model
 from fruitod.core.pipeline import Pipeline
-from fruitod.core.create_tfrecord_from_voc import create_tfrecord
+from fruitod.create_tfrecord_from_voc import create_tfrecord
 from fruitod.utils.file_util import get_steps_per_epoch
-from fruitod.utils.csv_util import write_metrics
 from absl import logging
 import tensorflow as tf
 from argparse import ArgumentParser
@@ -45,19 +44,21 @@ if __name__ == '__main__':
 
     create_tfrecord(output_path=TRAIN_TFRECORD_PATH,
                     data_path=VOC_PATH,
-                    add_weight_information=ADD_WEIGHT_INFORMATION,
-                    add_weight_as_output=ADD_WEIGHT_AS_OUTPUT,
+                    add_weight_as_input=ADD_WEIGHT_AS_INPUT,
+                    add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
+                    add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
                     scaler_method=SCALER_METHOD,
                     set='train')
 
     create_tfrecord(output_path=TEST_TFRECORD_PATH,
                     data_path=VOC_PATH,
-                    add_weight_information=ADD_WEIGHT_INFORMATION,
-                    add_weight_as_output=ADD_WEIGHT_AS_OUTPUT,
+                    add_weight_as_input=ADD_WEIGHT_AS_INPUT,
+                    add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
+                    add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
                     scaler_method=SCALER_METHOD,
                     set='test')
 
-    steps_per_epoch = get_steps_per_epoch(tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)
+    steps_per_epoch = get_steps_per_epoch(train_tfrecord_path=TRAIN_TFRECORD_PATH, batch_size=BATCH_SIZE)
 
     config = Pipeline(config_path=CONFIG_PATH,
                       model_type=MODEL_TYPE)
@@ -75,26 +76,20 @@ if __name__ == '__main__':
     config.set_num_classes(num_classes=NUM_CLASSES)
     config.set_train_epochs(train_epochs=TRAIN_EPOCHS,
                             steps_per_epoch=steps_per_epoch)
-    config.set_weight_information(add_weight_information=ADD_WEIGHT_INFORMATION,
-                                  add_weight_as_output=ADD_WEIGHT_AS_OUTPUT,
-                                  add_weight_as_output_v2=ADD_WEIGHT_AS_OUTPUT_V2,
-                                  weight_method=WEIGHT_METHOD)
-
-    metrics = {'Name': MODEL_NAME,
-               'Optimizer': OPTIMIZER_NAME,
-               'Batch Size': BATCH_SIZE,
-               'Learning Rate': LEARNING_RATE}
-    write_metrics(SAVE_PATH, metrics)
+    config.set_weight_information(add_weight_as_input=ADD_WEIGHT_AS_INPUT,
+                                  add_weight_as_output_gpo=ADD_WEIGHT_AS_OUTPUT_GPO,
+                                  add_weight_as_output_gesamt=ADD_WEIGHT_AS_OUTPUT_GESAMT,
+                                  input_method=INPUT_METHOD)
 
     model = Model(checkpoint_path=CHECKPOINT_PATH,
                   config_path=CONFIG_PATH,
                   export_path=EXPORT_PATH)
 
-    model.train(batch_size=BATCH_SIZE, checkpoint_every_n_epochs=10)
+    model.train(steps_per_epoch=steps_per_epoch, checkpoint_every_n_epochs=10)
 
     model.evaluate()
     
-    model.export(add_weight_information=ADD_WEIGHT_INFORMATION)
+    model.export(add_weight_as_input=ADD_WEIGHT_AS_INPUT)
 
     end = time.time()
     time_diff = end - start
