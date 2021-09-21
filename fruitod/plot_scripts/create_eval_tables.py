@@ -103,19 +103,13 @@ def generate_complete_df(parent_path):
         dir_paths = glob.glob(os.path.join(parent_path, directory, '*'))
         for dir_path in dir_paths:
             if '.idea' not in dir_path:
-                name_params_path = os.path.join(dir_path, 'metrics.csv')
-                metrics_path = os.path.join(dir_path, 'inference', 'metrics.csv')
-                df1 = pd.read_csv(name_params_path)
-                name_params_df = df1[['Name', 'Parameter']]
+                metrics_path = os.path.join(dir_path, 'metrics', 'metrics.csv')
                 metrics_df = pd.read_csv(metrics_path)
 
                 metrics_df.reset_index(drop=True, inplace=True)
                 metrics_df.drop(metrics_df.filter(regex="Unname"), axis=1, inplace=True)
-                name_params_df.reset_index(drop=True, inplace=True)
-                name_params_df.drop(name_params_df.filter(regex="Unname"), axis=1, inplace=True)
 
-                whole_df = pd.concat([name_params_df, metrics_df], axis=1)
-                df_list.append(whole_df)
+                df_list.append(metrics_df)
 
     complete_df = pd.concat(df_list, axis=0)
     return complete_df
