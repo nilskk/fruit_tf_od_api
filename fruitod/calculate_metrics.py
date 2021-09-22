@@ -65,26 +65,6 @@ def _read_annotations_for_groundtruth(voc_path, set_file, labelmap_dict):
     return image_ids, gt_boxes, gt_classes
 
 
-# From Tensorflow Object Detection API object_detection/colab_tutorials/inference_from_saved_model_tf2_colab.ipynb
-def _load_image_into_numpy_array(path):
-    """Load an image from file into a numpy array.
-
-  Puts image into numpy array to feed into tensorflow graph.
-  Note that by convention we put it into a numpy array with shape
-  (height, width, channels), where channels=3 for RGB.
-
-  Args:
-    path: a file path (this can be local or on colossus)
-
-  Returns:
-    uint8 numpy array with shape (img_height, img_width, 3)
-  """
-    img_data = tf.io.gfile.GFile(path, 'rb').read()
-    image = Image.open(BytesIO(img_data))
-    (im_width, im_height) = image.size
-    return np.array(image.getdata()).reshape(
-        (im_height, im_width, 3)).astype(np.uint8)
-
 
 def inference(model,
               voc_path,
@@ -143,7 +123,7 @@ def inference(model,
             weight_scaled = np.asarray([np.squeeze(weight_scaled)], dtype=np.float32)
 
         image_path = os.path.join(voc_path, 'JPEGImages', example)
-        image_np = _load_image_into_numpy_array(image_path)
+        image_np = file_util.load_image_into_numpy_array(image_path)
         image_height = image_np.shape[0]
         image_width = image_np.shape[1]
         input_tensor = np.expand_dims(image_np, 0)
@@ -282,7 +262,7 @@ def main(_):
                     'time_per_image': time_per_image * 1000}
 
     # Read Trainable Params and Name Dictionary from Pickle file
-    name_params_dict = pickle.load(open(os.path.join(model_path, 'name_params.pkl'), 'rb'))
+    name_params_dict = pickle.load(open(os.path.join(model_path, 'metrics', 'name_params.pkl'), 'rb'))
     metrics_dict.update(name_params_dict)
 
     metrics_dict.update(summary_metrics)
