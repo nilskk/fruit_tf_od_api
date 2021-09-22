@@ -4,7 +4,7 @@
 
 1. Download Dockerfile from `dockerfiles` directory
 2. Build Docker Image with the following command
-```bash
+```
 docker run -it --gpus all -v <data_path>:/data -v <code_path>:/code fruit_tf_od_api:1.0
 ```
 - `<data_path>` should be a path to a directory on your machine, where you want to save the VOC Dataset directory and model directories
@@ -96,7 +96,7 @@ Now the directory with the `pipeline.config` should look like this:
 ```
 <br/><br/>
 3. Collect Metrics of the exported model on the test set with 
-```bash
+```
 python fruitod/calculate_metrics.py
   --labelmap_file: Name of labelmap File
     (default: 'label_map.pbtxt')
@@ -120,7 +120,7 @@ Now the directory with the `pipeline.config` should look like this:
 ```
 <br/><br/>
 4. Predict new images from a directory with
-```bash
+```
 python fruitod/predict_images.py:
   --images_path: Path to folder with images for prediction
   --iou_threshold: IoU threshold for extra class agnostic NMS
