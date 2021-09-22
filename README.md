@@ -9,7 +9,7 @@ wget -L https://raw.githubusercontent.com/nilskk/fruit_tf_od_api/master/dockerfi
 
 2. Build the Docker Container from the Dockerfile directory with
 ```bash
-docker build -t --no-cache fruit_tf_od_api:1.0 . 
+docker build --no-cache -t fruit_tf_od_api:1.0 . 
 ```
 
 3. Run the Docker Container with the following command
