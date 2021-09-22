@@ -1,5 +1,8 @@
 import tensorflow as tf
 import math
+import numpy as np
+from PIL import Image
+from six import BytesIO
 import os
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
@@ -40,6 +43,27 @@ def load_labelmap(voc_path, labelmap_file):
     labelmap_dict = label_map_util.get_label_map_dict(labelmap_path)
 
     return categories, labelmap_dict, category_index
+
+
+# From Tensorflow Object Detection API object_detection/colab_tutorials/inference_from_saved_model_tf2_colab.ipynb
+def load_image_into_numpy_array(path):
+    """Load an image from file into a numpy array.
+
+  Puts image into numpy array to feed into tensorflow graph.
+  Note that by convention we put it into a numpy array with shape
+  (height, width, channels), where channels=3 for RGB.
+
+  Args:
+    path: a file path (this can be local or on colossus)
+
+  Returns:
+    uint8 numpy array with shape (img_height, img_width, 3)
+  """
+    img_data = tf.io.gfile.GFile(path, 'rb').read()
+    image = Image.open(BytesIO(img_data))
+    (im_width, im_height) = image.size
+    return np.array(image.getdata()).reshape(
+        (im_height, im_width, 3)).astype(np.uint8)
 
 
 def get_steps_per_epoch(train_tfrecord_path,
