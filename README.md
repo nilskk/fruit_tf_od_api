@@ -2,13 +2,21 @@
 
 ## Installation with Docker
 
-1. Download Dockerfile from `dockerfiles` directory
-2. Build Docker Image with the following command
+1. Download Dockerfile from `dockerfiles` to a directory
+```bash
+wget -L https://raw.githubusercontent.com/nilskk/fruit_tf_od_api/master/dockerfiles/Dockerfile
 ```
-docker run -it --gpus all -v <data_path>:/data -v <code_path>:/code fruit_tf_od_api:1.0
+
+2. Build the Docker Container from the Dockerfile directory with
+```bash
+docker build -t --no-cache fruit_tf_od_api:1.0 . 
+```
+
+3. Run the Docker Container with the following command
+```
+docker run -it --gpus all -v <data_path>:/data fruit_tf_od_api:1.0
 ```
 - `<data_path>` should be a path to a directory on your machine, where you want to save the VOC Dataset directory and model directories
-- `<code_path>` is the path, where the Dockerfile will save the downloaded Github Repositories
 
 ---
 
