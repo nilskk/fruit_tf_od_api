@@ -3,6 +3,7 @@ import math
 import os
 from google.protobuf import text_format
 from object_detection.protos import pipeline_pb2
+from object_detection.utils import label_map_util
 
 
 def load_model(model_path):
