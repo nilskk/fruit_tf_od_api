@@ -7,6 +7,8 @@ from absl import flags, app
 from fruitod.utils import file_util
 from object_detection.utils import visualization_utils
 from lxml import etree
+import pickle
+import json
 
 
 flags.DEFINE_string('model_path', None, 'Path to model (has checkpoints directory)')
@@ -41,75 +43,77 @@ def inference(images_path,
 
     model = file_util.load_model(model_path)
 
+    included_extensions = ('jpg', 'jpeg', 'bmp', 'png', 'gif')
+
     for image in os.listdir(images_path):
+        if image.lower().endswith(included_extensions):
+            image_without_extension = Path(image).stem
 
-        image_without_extension = Path(image).stem
+            if side_input:
+                scaler = pickle.load(open(os.path.join(voc_path, scaler_file), 'rb'))
+                weightfile_path = os.path.join(weight_path, image_without_extension + '.json')
+                with open(weightfile_path) as f:
+                    json_dict = json.load(f)
+                weight = json_dict['weightInGrams']
+                weight_scaled = scaler.transform(np.asarray(weight).reshape(-1, 1))
+                weight_scaled = np.asarray([np.squeeze(weight_scaled)], dtype=np.float32)
 
-        if side_input:
-            scaler = pickle.load(open(os.path.join(voc_path, scaler_file), 'rb'))
-            weightfile_path = os.path.join(weight_path, image_without_extension + '.json')
-            with open(weightfile_path) as f:
-                json_dict = json.load(f)
-            weight = json_dict['weightInGrams']
-            weight_scaled = scaler.transform(np.asarray(weight).reshape(-1, 1))
-            weight_scaled = np.asarray([np.squeeze(weight_scaled)], dtype=np.float32)
+            image_path = os.path.join(images_path, image)
+            image_np = file_util.load_image_into_numpy_array(image_path)
+            input_tensor = np.expand_dims(image_np, 0)
 
-        image_path = os.path.join(images_path, image)
-        image_np = _load_image_into_numpy_array(image_path)
-        input_tensor = np.expand_dims(image_np, 0)
+            if side_input:
+                detections = model(input_tensor, weight_scaled)
+            else:
+                detections = model(input_tensor)
 
-        if side_input:
-            detections = model(input_tensor, weight_scaled)
-        else:
-            detections = model(input_tensor)
-
-        detection_scores = detections['detection_scores'][0].numpy()
-        detection_boxes = detections['detection_boxes'][0].numpy()
-        detection_classes = detections['detection_classes'][0].numpy().astype(np.int32)
+            detection_scores = detections['detection_scores'][0].numpy()
+            detection_boxes = detections['detection_boxes'][0].numpy()
+            detection_classes = detections['detection_classes'][0].numpy().astype(np.int32)
 
 
-        # Additional class agnostic NMS processing to select best box of object for multi label classification
-        indices = tf.image.non_max_suppression(boxes=detection_boxes,
-                                               scores=detection_scores,
-                                               iou_threshold=iou_threshold,
-                                               score_threshold=score_threshold,
-                                               max_output_size=64)
-        indices_np = indices.numpy()
+            # Additional class agnostic NMS processing to select best box of object for multi label classification
+            indices = tf.image.non_max_suppression(boxes=detection_boxes,
+                                                   scores=detection_scores,
+                                                   iou_threshold=iou_threshold,
+                                                   score_threshold=score_threshold,
+                                                   max_output_size=64)
+            indices_np = indices.numpy()
 
-        nmsed_detection_scores = detection_scores[indices_np]
-        nmsed_detection_boxes = detection_boxes[indices_np]
-        nmsed_detection_classes = detection_classes[indices_np]
+            nmsed_detection_scores = detection_scores[indices_np]
+            nmsed_detection_boxes = detection_boxes[indices_np]
+            nmsed_detection_classes = detection_classes[indices_np]
 
-        nmsed_detection_weights = None
-        if 'detection_weightPerObject' in detections:
-            detection_weights = detections['detection_weightPerObject'][0].numpy()
-            nmsed_detection_weights = detection_weights[indices_np]
+            nmsed_detection_weights = None
+            if 'detection_weightPerObject' in detections:
+                detection_weights = detections['detection_weightPerObject'][0].numpy()
+                nmsed_detection_weights = detection_weights[indices_np]
 
-        image_np_with_detections = image_np.copy()
-        visualization_utils.visualize_boxes_and_labels_on_image_array(
-            image_np_with_detections,
-            boxes=nmsed_detection_boxes,
-            classes=nmsed_detection_classes,
-            scores=nmsed_detection_scores,
-            weights=nmsed_detection_weights,
-            category_index=category_index,
-            use_normalized_coordinates=True,
-            max_boxes_to_draw=64,
-            min_score_thresh=score_threshold,
-            line_thickness=2
-        )
-        im = Image.fromarray(image_np_with_detections)
-        image_save_path = Path(os.path.join(output_path, 'images_with_boxes'))
-        image_save_path.mkdir(parents=True, exist_ok=True)
-        im.save(os.path.join(image_save_path, image))
+            image_np_with_detections = image_np.copy()
+            visualization_utils.visualize_boxes_and_labels_on_image_array(
+                image_np_with_detections,
+                boxes=nmsed_detection_boxes,
+                classes=nmsed_detection_classes,
+                scores=nmsed_detection_scores,
+                weights=nmsed_detection_weights,
+                category_index=category_index,
+                use_normalized_coordinates=True,
+                max_boxes_to_draw=64,
+                min_score_thresh=score_threshold,
+                line_thickness=2
+            )
+            im = Image.fromarray(image_np_with_detections)
+            image_save_path = Path(os.path.join(output_path, 'images_with_boxes'))
+            image_save_path.mkdir(parents=True, exist_ok=True)
+            im.save(os.path.join(image_save_path, image))
 
-        create_voc(output_path=output_path,
-                   image=image_np,
-                   image_name=image,
-                   categories=categories,
-                   detection_boxes=nmsed_detection_boxes,
-                   detection_classes=nmsed_detection_classes,
-                   detection_scores=nmsed_detection_scores)
+            create_voc(output_path=output_path,
+                       image=image_np,
+                       image_name=image,
+                       categories=categories,
+                       detection_boxes=nmsed_detection_boxes,
+                       detection_classes=nmsed_detection_classes,
+                       detection_scores=nmsed_detection_scores)
 
 
 def create_voc(output_path,
