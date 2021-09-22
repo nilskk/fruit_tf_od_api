@@ -176,16 +176,16 @@ class Pipeline:
         if self.model_type == 'ssd':
             if input_method not in ['input-multiply', 'fpn-multiply']:
                 raise ValueError('String input_method must be one of: [input-multiply, fpn-multiply]')
-            pipeline.model.ssd.add_weight_information = add_weight_as_input
-            pipeline.model.ssd.weight_method = input_method
-            pipeline.model.ssd.add_weight_as_output = add_weight_as_output_gpo
-            pipeline.model.ssd.add_weight_as_output_v2 = add_weight_as_output_gesamt
+            pipeline.model.ssd.add_weight_as_input = add_weight_as_input
+            pipeline.model.ssd.input_method = input_method
+            pipeline.model.ssd.add_weight_as_output_gpo = add_weight_as_output_gpo
+            pipeline.model.ssd.add_weight_as_output_gesamt = add_weight_as_output_gesamt
         elif self.model_type == 'prob_two_stage':
             if input_method not in ['input-multiply', 'fpn-multiply', 'roi-multiply', 'concat']:
                 raise ValueError('String input_method must be one of: [input-multiply, fpn-multiply, roi-multiply, concat]')
-            pipeline.model.prob_two_stage.add_weight_information = add_weight_as_input
-            pipeline.model.prob_two_stage.weight_method = input_method
-            pipeline.model.prob_two_stage.add_weight_as_output = add_weight_as_output_gpo
+            pipeline.model.prob_two_stage.add_weight_as_input = add_weight_as_input
+            pipeline.model.prob_two_stage.input_method = input_method
+            pipeline.model.prob_two_stage.add_weight_as_output_gpo = add_weight_as_output_gpo
 
         write_config(pipeline=pipeline, config_path=self.config_path)
 
