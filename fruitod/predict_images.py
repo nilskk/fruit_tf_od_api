@@ -39,6 +39,8 @@ def inference(images_path,
 
     categories, labelmap_dict, category_index = file_util.load_labelmap(voc_path, labelmap_file)
 
+    model = file_util.load_model(model_path)
+
     for image in os.listdir(images_path):
 
         image_without_extension = Path(image).stem
@@ -189,8 +191,6 @@ def create_voc(output_path,
     tree.write(os.path.join(complete_voc_annotation_path, image_name_without_extension + '.xml'), pretty_print=True)
 
 
-
-
 def main(_):
     model_path = FLAGS.model_path
     images_path = FLAGS.images_path
@@ -211,7 +211,6 @@ def main(_):
               side_input=side_input,
               iou_threshold=iou_threshold,
               score_threshold=score_threshold)
-
 
 
 if __name__ == '__main__':
