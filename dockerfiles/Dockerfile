@@ -67,6 +67,7 @@ RUN python3 -m pip install --editable .
 WORKDIR /code/fruit_tf_od_api
 RUN python3 -m pip install --editable .
 
+RUN pip3 install tensorflow-addons==0.11.2
 RUN pip3 install tensorflow==2.3.3
 
 
