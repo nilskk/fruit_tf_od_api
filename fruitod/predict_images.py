@@ -18,7 +18,7 @@ flags.DEFINE_string('labelmap_file', 'label_map.pbtxt', 'Name of labelmap File')
 flags.DEFINE_string('scaler_file', 'minmax_scaler.pkl', 'Filename of scaler pickle')
 flags.DEFINE_boolean('side_input', False, 'wether to include weights as side input into model')
 flags.DEFINE_float('iou_threshold', 0.95, 'IoU threshold for extra class agnostic NMS')
-flags.DEFINE_float('score_threshold', 0.95, 'score threshold for extra class agnostic NMS and printing')
+flags.DEFINE_float('score_threshold', 0.5, 'score threshold for extra class agnostic NMS and printing')
 
 flags.mark_flags_as_required(['model_path', 'images_path', 'voc_path'])
 FLAGS = flags.FLAGS
@@ -34,7 +34,7 @@ def inference(images_path,
               iou_threshold=0.95,
               score_threshold=0.5):
 
-    output_path = Path(os.path.join(model_path, 'prediction'))
+    output_path = Path(os.path.join(images_path, 'prediction'))
     output_path.mkdir(parents=True, exist_ok=True)
 
     categories, labelmap_dict, category_index = file_util.load_labelmap(voc_path, labelmap_file)
